@@ -1,11 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World</title>
+    <title>MeetUp Planner | Your One Stop MeetUp Solution</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .hero {
+            height: 90vh;
+            background: url('Vancouver.jpg') center no-repeat;
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+        .features-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .features-list li::before {
+            content: "\2713\0020";
+            color: green;
+        }
+    </style>
 </head>
+
 <body>
-    HI
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">MeetUp Planner</a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#about">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#features">Features</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#contact">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container">
+            <h1 class="display-4">Plan Your Meetups Effortlessly</h1>
+            <p class="lead">With MeetUp Planner, scheduling and location mapping have never been easier.</p>
+            <a href="#features" class="btn btn-light btn-lg">Discover Features</a>
+        </div>
+    </header>
+
+    <div class="container mt-5">
+        <section id="about" class="mt-5">
+            <h2>About MeetUp Planner</h2>
+            <p>
+                MeetUp Planner is the ultimate scheduling and location mapping platform to bring people together.
+                We integrate the power of Google Maps API with a robust calendar and scheduling feature,
+                making it simple and effortless to plan meetups. From coffee dates to business meetings
+                or grand reunions, we provide a seamless and stress-free process.
+            </p>
+        </section>
+
+        <section id="features" class="mt-5">
+            <h2>Features</h2>
+            <ul class="features-list">
+                <li><strong>Seamless Integration with Google Maps:</strong> Easily pick your meetup location.</li>
+                <li><strong>Scheduling:</strong> Schedule your meetups and invite attendees in a few clicks.</li>
+                <li><strong>Reminder Notifications:</strong> Receive notifications and never miss a meetup.</li>
+                <li><strong>User-friendly Interface:</strong> Enjoy a clean, intuitive, and easy-to-use interface.</li>
+            </ul>
+        </section>
+    </div>
+
+    <footer class="footer mt-5 py-3 bg-light">
+        <div class="container">
+            <section id="contact" class="contact">
+                <h2>Contact Us</h2>
+                <p>For any inquiries, feedback, or support, <a href="mailto:info@meetupplanner.com">email us</a>.</p>
+            </section>
+            <p class="text-center">&copy; 2023 MeetUp Planner | All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
+
 </html>
