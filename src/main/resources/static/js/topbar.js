@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function() {
 // create function that will set showViewAll
 // get userid and check if admin approval if so set this to true
 // if plain user set to false
-var showViewAll = false; // Replace with your boolean value
+var showViewAll = true; // Replace with your boolean value
 
 
 // Get the reference to the "View All" link element

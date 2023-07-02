@@ -4,18 +4,6 @@ body, html {
     padding: 0;
   }
 
-
-.profileUser {
-  color: #000000;
-  text-decoration: none;
-  font-size: 50px;
-}
-
-#pfp {
-  width: 200px;
-  height: 200px;
-}
-
 .container {
     display: flex;
     position: relative;
@@ -36,3 +24,20 @@ body, html {
     border-left: solid black;
   }
 
+  /* left panel */
+  #pfp {
+    width: 200px;
+    height: 200px;
+  }
+
+  .profileUsername {
+    font-size: 50px;
+  }
+
+  .friends {
+    font-size: 20px;
+    width: 200px;
+    height: 50px;
+  }
+
+  /* right panel */

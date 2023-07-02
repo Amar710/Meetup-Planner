@@ -5,8 +5,8 @@
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
-    border-width: 1px;
     border-bottom: solid black;
+    border-width: 1px;
   }
   
   .links {
