@@ -1,0 +1,38 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+
+.profileUser {
+  color: #000000;
+  text-decoration: none;
+  font-size: 50px;
+}
+
+#pfp {
+  width: 200px;
+  height: 200px;
+}
+
+.container {
+    display: flex;
+    position: relative;
+    height: 100%;
+    
+  }
+
+  .leftpanel {
+    flex: 1;
+    padding: 20px;
+
+  }
+
+  .rightpanel {
+    flex: 9;
+    padding: 10px;
+    border-width: 1px;
+    border-left: solid black;
+  }
+

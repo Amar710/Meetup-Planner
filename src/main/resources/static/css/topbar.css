@@ -1,30 +1,32 @@
-body, html {
-    margin: 0;
-    padding: 0;
-  }
-
 /* top bar */
 .topbar {
     background-color: #d9aaff;
-    color: #d9aaff;
-    padding: 20px;
+    padding: 15px;
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
+    border-width: 1px;
+    border-bottom: solid black;
   }
   
   .links {
     color: #fff;
     text-decoration: none;
-    font-size: 20px;
+    font-size: 15px;
   }
   
   .LOGO {
     color: #fff;
     text-decoration: none;
-    font-size: 40px;
+    font-size: 30px;
     margin-right: auto; /* Push LOGO element to the left */
   }
+
+  #pfp2 {
+    width: 40px;
+    height: 40px;
+  }
+
 
   /* dropdown menu */
   .dropdown {
@@ -37,8 +39,8 @@ body, html {
     display: none;
     position: absolute;
     background-color: #f9f9f9;
-    min-width: 160px;
-    z-index: 0;
+    min-width: 120px;
+    z-index: 1;
     right: 0; 
     border: solid black;
     border-width: 1px;
@@ -52,7 +54,7 @@ body, html {
     color: black;
     display: block;
     text-align: left;
-    padding: 10px 5px 10px 5px;
+    padding: 5px 5px 5px 5px;
   }
 
 

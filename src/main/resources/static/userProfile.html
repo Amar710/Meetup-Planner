@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="/css/topbar.css">
+    <link rel="stylesheet" href="/css/userProfile.css">
     <script src="/js/topbar.js" defer></script>
+    <script src="/js/userProfile.js" defer></script>
 </head>
 
 
@@ -16,10 +18,10 @@
     <div class="topbar">
         <a href="./hello.html" class="LOGO">MeetUp Planner</a>
 
-        <a href="#" id="username-link" class="links">username</a>
-
         <div class="dropdown">
-          <button class="dropbtn"></button>
+          <a href="#" id="username1" class="links">username</a>
+
+          <!-- <button class="dropbtn"></button> -->
 
           <div class="dropdown-content">
 
@@ -35,14 +37,21 @@
             <a href="./hello.html" class="links">Sign Out</a>
           </div>
         </div>
-
-        <a href="#" class="links">pfp</a>
+        <img src="../image/pfp.png" alt="Profile Picture" id="pfp2">
     </div>
       <!-- top bar end -->
 
-    <div>
+    <div class="container">
+      <div class="leftpanel">
+        <img src="../image/pfp.png" alt="Profile Picture" id="pfp"> <br>
 
+        <a href="#" id="username2" class="profileUser">username</a>
+        
+      </div>
+
+      <div class="rightpanel">
+        <a href="#" class="profileUser">temp display </a>
+      </div>
     </div>
-
-</body>
+  </body>
 </html>
