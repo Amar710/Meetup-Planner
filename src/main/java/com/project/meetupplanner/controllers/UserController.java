@@ -45,8 +45,7 @@ public class UserController {
         String newName = newuser.get("name");
         String newPwd = newuser.get("password");
         String newEmail = newuser.get("email");
-        int newSize = Integer.parseInt(newuser.get("size"));
-        userRepo.save(new User(newName, newEmail, newPwd, newSize)); 
+        userRepo.save(new User(newName, newEmail, newPwd)); 
         response.setStatus(201);
         return "users/addedUser";
     }
