@@ -69,14 +69,14 @@ public class UserController {
         String pwd = formData.get("password");
         List <User> userList = userRepo.findByNameAndPassword(name, pwd);
         if (userList.isEmpty()) {
-            return "users/login";
+            return "users/success";
         }
         else {
             // success login
             User user = userList.get(0);
             request.getSession().setAttribute("session_user", user);
             model.addAttribute("user", user);
-            return "users/protected";
+            return "users/userProfile";
         }
     }
 
@@ -87,5 +87,16 @@ public class UserController {
     }
 
     
-    
+
+    // user profile and admin
+
+    @GetMapping("/adminView")
+    public String adminview() {
+        return "/users/admin";
+    }
+
+    @GetMapping("/userProfile")
+    public String userProfile() {
+        return "/users/userProfile";
+    }
 }
