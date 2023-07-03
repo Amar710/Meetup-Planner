@@ -1,4 +1,4 @@
-package com.example.demo.controllers;
+package com.project.meetupplanner.controllers;
 
 import java.util.List;
 import java.util.Map;
@@ -11,18 +11,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
 
-import com.example.demo.models.User;
-import com.example.demo.models.UserRepository;
+import com.project.meetupplanner.models.User;
+import com.project.meetupplanner.models.UserRespository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-public class UsersController {
+public class UserController {
 
     @Autowired
-    private UserRepository userRepo;
+    private UserRespository userRepo;
 
     @GetMapping("/users/view")
     public String getAllUsers(Model model) {
@@ -36,7 +36,7 @@ public class UsersController {
 
     @GetMapping("/")
     public RedirectView process() {
-        return new RedirectView("login");
+        return new RedirectView("homepage.html");
     }
 
     @PostMapping("/users/add")
@@ -44,8 +44,8 @@ public class UsersController {
         System.out.println("ADD user");
         String newName = newuser.get("name");
         String newPwd = newuser.get("password");
-        int newSize = Integer.parseInt(newuser.get("size"));
-        userRepo.save(new User(newName, newPwd, newSize)); 
+        String newEmail = newuser.get("email");
+        userRepo.save(new User(newName, newEmail, newPwd)); 
         response.setStatus(201);
         return "users/addedUser";
     }
