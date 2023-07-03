@@ -89,17 +89,7 @@ public String login(@RequestParam Map<String, String> formData, Model model, Htt
 
     
 
-    // user profile and admin
-
-   @GetMapping("/adminView")
-    public String adminView(Model model, HttpSession session) {
-        User user = (User) session.getAttribute("session_user");
-        
-        model.addAttribute("user", user);
-        return "users/admin";
-    
-    }
-
+    // user profile and admin link pather
     @GetMapping("/userProfile")
     public String userProfile(Model model, HttpSession session) {
         User user = (User) session.getAttribute("session_user");
@@ -107,5 +97,31 @@ public String login(@RequestParam Map<String, String> formData, Model model, Htt
         model.addAttribute("user", user);
         return "users/userProfile";
     }
+
+//   @GetMapping("/adminView")
+//     public String adminView(Model model, HttpSession session) {
+//         User user = (User) session.getAttribute("session_user");
+        
+//         model.addAttribute("user", user);
+//         return "users/admin";
+    
+//     }
+
+
+
+@GetMapping("/adminView")
+public String adminView(Model model, HttpSession session) {
+    User user = (User) session.getAttribute("session_user");
+    if (user == null) {
+        // Redirect or handle the case where the user is not an admin
+        return "redirect:/homepage";
+    }
+    
+    List<User> users = userRepo.findAll();
+    model.addAttribute("users", users);
+    model.addAttribute("user", user);
+    return "users/admin";
+}
+
 
 }

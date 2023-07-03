@@ -11,15 +11,16 @@
 
 <body>
     
-<!-- top bar start -->
-<div class="topbar">
+ <!-- top bar start -->
+ <div class="topbar">
   <a href="./homepage.html" class="LOGO">MeetUp Planner</a>
 
   <!-- checks for admin approval -->
   <span id="user" style="display: none">[[${user.admin}]]</span>
 
   <div class="dropdown">
-    <a href="#" class="links">[[${user.name}]]</a>
+    <a class="links">[[${user.name}]]</a> 
+    <img src="../image/dropdown button.png" alt="Profile Picture" id="pfp3">
 
     <!-- <button class="dropbtn"></button> -->
 
@@ -42,19 +43,19 @@
 <!-- top bar end -->
 
 
-  <ul>
-    <div id="container" th:each="users:${us}">
-                                                    
-      
-      <div id="text">
-                                
-          uid: <span th:text="${users.uid}"></span> <br>
-          email: <span th:text="${users.email}"></span> <br>
-          Name: <span th:text="${users.name}"></span> <br>
-                           
-      </div>
+<ul>
+  <div id="container" th:each="user: ${users}">
+                                                  
+    
+    <div id="text">
+                              
+        uid: <span th:text="${user.uid}"></span> <br>
+        email: <span th:text="${user.email}"></span> <br>
+        Name: <span th:text="${user.name}"></span> <br>
+                         
     </div>
-  </ul>
+  </div>
+</ul>
 
 
 </body>

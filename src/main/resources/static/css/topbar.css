@@ -27,6 +27,14 @@
     height: 40px;
   }
 
+  #pfp3 {
+    width: 10px;
+    height: 10px;
+  }
+
+  /* #username:hover {
+    background-color: #d441f5;
+  } */
 
   /* dropdown menu */
   .dropdown {

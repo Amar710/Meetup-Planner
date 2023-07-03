@@ -6,12 +6,13 @@
 
     #container{
         float: left;
+        padding: 10px;
     }
 
     #text{
         text-align: center;
         width: 200px;
-        height: 200px;
+        height: 100px;
         border: solid black;
         border-width: 1px;
     }   
