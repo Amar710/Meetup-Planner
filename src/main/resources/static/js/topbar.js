@@ -1,16 +1,3 @@
-
-//username
-// Get the reference to the <a> element
-var usernameLink = document.getElementById('username1');
-
-// get user username from server when they log in
-var username = 'BrianLam'; // Replace with your variable value
-
-// Set the variable value as the content of the <a> element
-usernameLink.textContent = username;
-
-
-
 // dropbox
 
 // JavaScript to toggle the active class on click
