@@ -21,14 +21,13 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   });
 
-// create function that will set showViewAll
-// get userid and check if admin approval if so set this to true
-// if plain user set to false
-var showViewAll = true; // Replace with your boolean value
 
+
+// Extract the 'admin' field from the user object
+var isAdmin = document.getElementById('user').textContent === 'true'; 
 
 // Get the reference to the "View All" link element
 var viewAllLink = document.getElementById('view-all-link');
 
-// Set the visibility based on the boolean value
-viewAllLink.style.display = showViewAll ? 'block' : 'none';
+// Set the visibility based on the 'isAdmin' value
+viewAllLink.style.display = isAdmin ? 'block' : 'none';
