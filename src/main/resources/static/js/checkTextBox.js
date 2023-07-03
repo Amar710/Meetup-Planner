@@ -20,7 +20,7 @@ function validate(){
     // get all of the values in the text box
     var email = document.getElementById("email").value;
     var name = document.getElementById("name").value;
-    var weight = document.getElementById("password").value;
+    var password = document.getElementById("password").value;
     var confirm = document.getElementById("confirm").value;
 
     // check for email validation
@@ -51,7 +51,7 @@ function validate(){
     if(password.trim() == "")
     {
         alert("Please enter a password")
-        document.getElementById("passowrd").focus()
+        document.getElementById("password").focus()
         return false;
 
     }
