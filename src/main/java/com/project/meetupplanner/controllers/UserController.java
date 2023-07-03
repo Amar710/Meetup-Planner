@@ -36,7 +36,7 @@ public class UserController {
 
     @GetMapping("/")
     public RedirectView process() {
-        return new RedirectView("login");
+        return new RedirectView("homepage.html");
     }
 
     @PostMapping("/users/add")
