@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>user profile page</title>
+    <link rel="stylesheet" href="/css/topbar.css">
+    <link rel="stylesheet" href="/css/userProfile.css">
+    <script src="/js/topbar.js" defer></script>
+    <script src="/js/userProfile.js" defer></script>
+</head>
+
+<body>
+    
+  <!-- top bar start -->
+    <div class="topbar">
+        <a href="./hello.html" class="LOGO">MeetUp Planner</a>
+
+        <div class="dropdown">
+          <a href="#" id="username1" class="links">username</a>
+
+          <!-- <button class="dropbtn"></button> -->
+
+          <div class="dropdown-content">
+
+            <a href="./admin.html" class="links" id="view-all-link">View All</a>
+
+            <a href="./userProfile.html   " class="links">Profile</a>
+            <a href="#" class="links">Friends</a>
+            <a href="#" class="links">Schedule</a>
+            <a href="#" class="links">Account Setting</a>
+            <a href="#" class="links">Preference</a>
+
+            <!-- sign out button -->
+            <a href="./hello.html" class="links">Sign Out</a>
+          </div>
+        </div>
+        <img src="../image/pfp.png" alt="Profile Picture" id="pfp2">
+    </div>
+      <!-- top bar end -->
+
+
+
+
+    <div class="container">
+      <div class="leftpanel">
+        <img src="../image/pfp.png" alt="Profile Picture" id="pfp"> <br>
+
+        <a id="username2" class="profileUsername">username</a>
+        
+        <button href="friends" class="friends">Friends</button>
+
+      </div>
+
+      <div class="rightpanel">
+        <a class="profileUser">temp display </a>
+      </div>
+    </div>
+  </body>
+</html>

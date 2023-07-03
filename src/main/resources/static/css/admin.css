@@ -1,0 +1,17 @@
+    body, html {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    #container{
+        float: left;
+    }
+
+    #text{
+        text-align: center;
+        width: 200px;
+        height: 200px;
+        border: solid black;
+        border-width: 1px;
+    }   
