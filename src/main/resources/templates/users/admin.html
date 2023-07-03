@@ -49,10 +49,17 @@
     
     <div id="text">
                               
-        uid: <span th:text="${user.uid}"></span> <br>
-        email: <span th:text="${user.email}"></span> <br>
-        Name: <span th:text="${user.name}"></span> <br>
-                         
+      uid: <span th:text="${user.uid}"></span> <br>
+      email: <span th:text="${user.email}"></span> <br>
+      Name: <span th:text="${user.name}"></span> <br>
+                  
+        
+      <!-- delete button -->
+      <form method="post" action="/user/delete" style="display: inline;">
+      <input type="hidden" name="userId" th:value="${user.uid}">
+      <button class="btn btn-danger" type="submit">Delete</button>
+      </form>
+
     </div>
   </div>
 </ul>
