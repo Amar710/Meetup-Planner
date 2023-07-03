@@ -34,7 +34,7 @@ public class UserController {
         // add the user to the database
         userRepo.save(new User(newEmail, newName, newPassword));
         response.setStatus(201);
-        return "/users/success.html";
+        return "/users/success";
     }
 
 
