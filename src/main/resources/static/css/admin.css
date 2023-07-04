@@ -2,17 +2,70 @@ body, html {
     height: 100%;
     margin: 0;
     padding: 0;
-}
-
-#container{
+  }
+  
+  #container {
     float: left;
     padding: 10px;
-}
-
-#text{
-    text-align: center;
+  }
+  
+  #text {
+    width: 250px;
+    height: 120px;
+    border: 1px solid black;
+    
+  display: flex;
+  position: relative;
+  }
+  
+  #pfp {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .leftside {
+    width: 50px;
+  }
+  
+  .rightside {
+    text-align: left;
     width: 200px;
-    height: 100px;
+  }
+
+
+
+  /* dropdown menu */
+.dropdown2 {
+    position: relative;
+    display: inline-block;
+    padding: 0px 5px 0px 5px;
+  }
+  
+  .dropdown-content2 {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 120px;
+    z-index: 1;
+    right: 0; 
     border: solid black;
     border-width: 1px;
-}   
+  }
+  
+  .dropdown2:hover .dropdown-content2 {
+    display: block;
+  }
+  
+  .dropdown-content2 a {
+    color: black;
+    display: block;
+    text-align: right;
+    padding: 5px 5px 5px 5px;
+  }
+  
+  
+  .dropdown-content2 a:hover {
+    background-color: #b1b1b1;
+  }
+
+

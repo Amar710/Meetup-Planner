@@ -109,7 +109,7 @@ public class UserController {
     }
 
  // below is delete student functions
-    @PostMapping("/user/delete")
+    @PostMapping("/delete")
     public String deleteUser(@RequestParam("userId") Integer userId, RedirectAttributes redirectAttributes) {
         System.out.println("DELETE user with ID: " + userId);
         userRepo.deleteById(userId);
