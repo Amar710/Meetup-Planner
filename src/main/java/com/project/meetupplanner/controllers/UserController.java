@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.project.meetupplanner.models.User;
@@ -23,16 +24,6 @@ public class UserController {
 
     @Autowired
     private UserRespository userRepo;
-
-    @GetMapping("/users/view")
-    public String getAllUsers(Model model) {
-        System.out.println("Getting all users");
-        // get all users from database
-        List<User> users = userRepo.findAll();
-        // end of database call
-        model.addAttribute("us", users);
-        return "users/showAlls";
-    }
 
     @GetMapping("/")
     public RedirectView process() {
@@ -76,7 +67,11 @@ public class UserController {
             User user = userList.get(0);
             request.getSession().setAttribute("session_user", user);
             model.addAttribute("user", user);
-            return "users/userProfile";
+
+            if(user.getAdmin()) 
+                return adminView(model, session);
+            else
+                return "users/userProfile";
         }
     }
 
@@ -114,11 +109,12 @@ public class UserController {
     }
 
  // below is delete student functions
-    @PostMapping("/users/admin")
-    public String deleteStudent(@RequestParam("userId") Integer userId) {
+    @PostMapping("/user/delete")
+    public String deleteUser(@RequestParam("userId") Integer userId, RedirectAttributes redirectAttributes) {
         System.out.println("DELETE user with ID: " + userId);
         userRepo.deleteById(userId);
-        return "redirect:/users/admin";
+        redirectAttributes.addFlashAttribute("deletedUser", true);
+        return "redirect:/adminView";
     }
 
 
