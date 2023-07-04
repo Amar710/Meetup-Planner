@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>user profile page</title>
+    <link rel="stylesheet" href="/css/topbar.css">
+    <link rel="stylesheet" href="/css/userProfile.css">
+    <script src="/js/topbar.js" defer></script>
+    <script src="/js/userProfile.js" defer></script>
+</head>
+
+<body>
+    
+  <!-- top bar start -->
+    <div class="topbar">
+        <a href="./homepage.html" class="LOGO">MeetUp Planner</a>
+
+        <!-- checks for admin approval -->
+        <span id="user" style="display: none">[[${user.admin}]]</span>
+
+        <div class="dropdown">
+          <div id="username">
+            <a class="links">[[${user.name}]]</a> 
+            <img src="../image/dropdown button.png" alt="Profile Picture" id="pfp3">
+          </div>
+
+          <!-- <button class="dropbtn"></button> -->
+
+          <div class="dropdown-content">
+
+            <a href="/adminView" class="links" id="view-all-link">View All</a>
+
+            <a href="/userProfile" class="links">Profile</a>
+            <a href="#" class="links">Friends</a>
+            <a href="#" class="links">Schedule</a>
+            <a href="#" class="links">Account Setting</a>
+            <a href="#" class="links">Preference</a>
+
+            <!-- sign out button -->
+            <a href="/logout" class="links">Sign Out</a>
+          </div>
+        </div>
+        <img src="../image/pfp.png" alt="Profile Picture" id="pfp2">
+    </div>
+      <!-- top bar end -->
+
+
+
+
+    <div class="container">
+      <div class="leftpanel">
+        <img src="../image/pfp.png" alt="Profile Picture" id="pfp"> <br>
+
+        <a class="profileUsername">[[${user.name}]]</a> <!-- Displaying the user's name -->
+        
+        <button href="friends" class="friends">Friends</button>
+
+      </div>
+
+      <div class="rightpanel">
+        <a class="profileUser">temp display </a>
+      </div>
+    </div>
+  </body>
+</html>

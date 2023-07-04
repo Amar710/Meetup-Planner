@@ -63,22 +63,23 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam Map<String,String> formData, Model model, HttpServletRequest request, HttpSession session){
-        // processing the login
+    public String login(@RequestParam Map<String, String> formData, Model model, HttpServletRequest request, HttpSession session) {
+        // Processing the login
         String name = formData.get("name");
         String pwd = formData.get("password");
-        List <User> userList = userRepo.findByNameAndPassword(name, pwd);
+        List<User> userList = userRepo.findByNameAndPassword(name, pwd);
+        
         if (userList.isEmpty()) {
             return "users/login";
-        }
-        else {
-            // success login
+        } else {
+            // Successful login
             User user = userList.get(0);
             request.getSession().setAttribute("session_user", user);
             model.addAttribute("user", user);
-            return "users/protected";
+            return "users/userProfile";
         }
     }
+
 
     @GetMapping("/logout")
     public String destroySession(HttpServletRequest request) {
@@ -87,5 +88,39 @@ public class UserController {
     }
 
     
-    
+
+    // user profile and admin link pather
+    @GetMapping("/userProfile")
+    public String userProfile(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("session_user");
+
+        model.addAttribute("user", user);
+        return "users/userProfile";
+    }
+
+
+    @GetMapping("/adminView")
+    public String adminView(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("session_user");
+        if (user == null) {
+            // Redirect or handle the case where the user is not an admin
+            return "redirect:/homepage";
+        }
+        
+        List<User> users = userRepo.findAll();
+        model.addAttribute("users", users);
+        model.addAttribute("user", user);
+        return "users/admin";
+    }
+
+ // below is delete student functions
+    @PostMapping("/users/admin")
+    public String deleteStudent(@RequestParam("userId") Integer userId) {
+        System.out.println("DELETE user with ID: " + userId);
+        userRepo.deleteById(userId);
+        return "redirect:/users/admin";
+    }
+
+
+
 }

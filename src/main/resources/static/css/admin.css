@@ -6,12 +6,14 @@
 
     #container{
         float: left;
+        padding: 10px;
+    }
+    body, html {
+        height: 100%;
+        margin: 0;
+        padding: 0;
     }
 
-    #text{
-        text-align: center;
-        width: 200px;
-        height: 200px;
-        border: solid black;
-        border-width: 1px;
-    }   
+    #container{
+        float: left;
+    }
