@@ -108,7 +108,7 @@ public class UserController {
         return "users/admin";
     }
 
- // below is delete student functions
+ // below is delete user functions
     @PostMapping("/delete")
     public String deleteUser(@RequestParam("userId") Integer userId, RedirectAttributes redirectAttributes) {
         System.out.println("DELETE user with ID: " + userId);

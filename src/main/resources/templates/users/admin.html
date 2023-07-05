@@ -8,40 +8,50 @@
     <link rel="stylesheet" href="/css/admin.css">
     <script src="/js/topbar.js" defer></script>
 
+    <script>
+      function confirmDelete() {
+        if (confirm("Are you sure you want to delete this user?")) {
+          // User confirmed, submit the form
+          document.getElementById("deleteForm").submit();
+        } else {
+          // User cancelled, do nothing
+        }
+      }
+    </script>
 </head>
 
 <body>
     
  <!-- top bar start -->
-  <div class="topbar">
-    <a href="./homepage.html" class="LOGO">MeetUp Planner</a>
+    <div class="topbar">
+      <a href="./homepage.html" class="LOGO">MeetUp Planner</a>
 
-    <!-- checks for admin approval -->
-    <span id="user" style="display: none">[[${user.admin}]]</span>
+      <!-- checks for admin approval -->
+      <span id="user" style="display: none">[[${user.admin}]]</span>
 
-    <div class="dropdown">
-      <a class="links">[[${user.name}]]</a> 
-      <img src="../image/dropdown button.png" alt="Profile Picture" id="dropDownIcon">
+      <div class="dropdown">
+        <a class="links">[[${user.name}]]</a> 
+        <img src="../image/dropdown button.png" alt="Profile Picture" id="dropDownIcon">
 
-      <!-- <button class="dropbtn"></button> -->
+          <!-- <button class="dropbtn"></button> -->
 
-      <div class="dropdown-content">
+        <div class="dropdown-content">
 
-        <a href="/adminView" class="links" id="view-all-link">View All</a>
+          <a href="/adminView" class="links" id="view-all-link">View All</a>
 
-        <a href="/userProfile" class="links">Profile</a>
-        <a href="#" class="links">Friends</a>
-        <a href="#" class="links">Schedule</a>
-        <a href="#" class="links">Account Setting</a>
-        <a href="#" class="links">Preference</a>
+          <a href="/userProfile" class="links">Profile</a>
+          <a href="#" class="links">Friends</a>
+          <a href="#" class="links">Schedule</a>
+          <a href="#" class="links">Account Setting</a>
+          <a href="#" class="links">Preference</a>
 
-        <!-- sign out button -->
-        <a href="/logout" class="links">Sign Out</a>
+          <!-- sign out button -->
+          <a href="/logout" class="links">Sign Out</a>
+        </div>
       </div>
+      <img src="../image/pfp.png" alt="Profile Picture" id="pfp2">
     </div>
-    <img src="../image/pfp.png" alt="Profile Picture" id="pfp2">
-  </div>
-<!-- top bar end -->
+    <!-- top bar end -->
 
 
   <div id="container" th:each="user: ${users}">
@@ -62,28 +72,29 @@
 
       <tr class="bottomside">
         <td class="dropdown2">
-          <img src="../image/dropdown button.png" alt="Profile Picture" id="dropDownIcon">
+          <img src="../image/dropdown button.png" alt="Profile Picture" id="dropDownIcon2">
     
           <div class="dropdown-content2">
-    
-            <a href="#" class="links">Delete</a>
+
+            <form id="deleteForm" method="post" action="/delete">
+              <input type="hidden" name="userId" th:value="${user.uid}">
+              <div class="form-button-container">
+                <button class="form-button" type="button" onclick="confirmDelete()">Delete</button>
+              </div>
+            </form>
+
+
             <a href="#" class="links">Grant admin</a>
             <a href="#" class="links">User info</a>
             <a href="#" class="links">Audit log</a>
           </div>
         </td>
 
-        <td>
-          <form method="post" action="/delete" style="display: inline;">
-            <input type="hidden" name="userId" th:value="${user.uid}">
-            <button class="btn btn-danger" type="submit">Delete</button>
-          </form>
-        </td>
+
       </tr>      
       
     </table>
   </div>
-
 
 </body>
 </html>

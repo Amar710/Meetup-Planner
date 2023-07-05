@@ -35,6 +35,11 @@ body, html {
 
 
   /* dropdown menu */
+  #dropDownIcon2 {
+    width: 10px;
+    height: 10px;
+  }
+
 .dropdown2 {
     position: relative;
     display: inline-block;
@@ -47,7 +52,7 @@ body, html {
     background-color: #f9f9f9;
     min-width: 120px;
     z-index: 1;
-    right: 0; 
+    left: 0; 
     border: solid black;
     border-width: 1px;
   }
@@ -59,13 +64,44 @@ body, html {
   .dropdown-content2 a {
     color: black;
     display: block;
-    text-align: right;
+    text-align: left;
     padding: 5px 5px 5px 5px;
   }
-  
-  
+    
   .dropdown-content2 a:hover {
     background-color: #b1b1b1;
   }
 
 
+
+  /* delete button formatting to match the other drop box */
+  .form-button {
+    display: block;
+    min-width: 120px;
+    background-color: transparent;
+    color: black;
+    text-decoration: none;
+    border: none;
+    font-size: 14px;
+    
+    padding: 5px 5px 5px 5px;
+    border-radius: 0;
+    cursor: pointer;
+    text-align: left;
+  } 
+  
+  .form-button:hover {
+    background-color: #b1b1b1;
+  }
+  
+  .form-button:focus {
+    outline: none;
+  }
+  
+  .form-button:active {
+    background-color: #b1b1b1;
+  }
+  
+  .form-button-container {
+    display: inline-block;
+  }
