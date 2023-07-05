@@ -105,7 +105,7 @@ public class UserController {
         List<User> users = userRepo.findAll();
         model.addAttribute("users", users);
         model.addAttribute("user", user);
-        return "users/admin";
+        return "users/adminView";
     }
 
  // below is delete user functions
@@ -114,6 +114,17 @@ public class UserController {
         System.out.println("DELETE user with ID: " + userId);
         userRepo.deleteById(userId);
         redirectAttributes.addFlashAttribute("deletedUser", true);
+        return "redirect:/adminView";
+    }
+
+
+    @PostMapping("/grantAdmin")
+    public String grantAdmin(@RequestParam("userId") Integer userId, RedirectAttributes redirectAttributes) {
+        List<User> userList = userRepo.findByUid(userId);
+        User user = userList.get(0);
+        user.setAdmin(true);
+        userRepo.save(user);
+        redirectAttributes.addFlashAttribute("adminGranted", true);
         return "redirect:/adminView";
     }
 
