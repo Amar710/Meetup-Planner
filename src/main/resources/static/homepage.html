@@ -7,16 +7,16 @@
     <style>
         .hero {
             height: 90vh;
-
             background: url('/image/Vancouver.jpg') center no-repeat;
-
             background-size: cover;
             display: flex;
-            align-items: center;
+            align-items: flex-start; 
             justify-content: center;
             color: white;
             text-align: center;
+            padding-top: 32vh; 
         }
+
         .features-list {
             list-style: none;
             padding-left: 0;
@@ -25,6 +25,20 @@
             content: "\2713\0020";
             color: green;
         }
+
+        .hero h1.display-4 {
+            font-size: 3rem; 
+            font-weight: normal; 
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5); 
+            
+        }
+
+        .hero p.lead {
+            font-size: 1.5rem; 
+            font-weight: normal; 
+           /*text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); */
+        }
+
     </style>
 </head>
 
@@ -46,7 +60,7 @@
                     <a class="nav-link" href="signup.html">Sign Up</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="login.html">Login</a>
+                    <a class="nav-link" href="/login">Login</a>
                 </li>
             </ul>
         </div>
