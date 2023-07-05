@@ -105,15 +105,27 @@ public class UserController {
         List<User> users = userRepo.findAll();
         model.addAttribute("users", users);
         model.addAttribute("user", user);
-        return "users/admin";
+        return "users/adminView";
     }
 
- // below is delete student functions
-    @PostMapping("/user/delete")
+ // below is delete user functions
+    @PostMapping("/delete")
     public String deleteUser(@RequestParam("userId") Integer userId, RedirectAttributes redirectAttributes) {
         System.out.println("DELETE user with ID: " + userId);
         userRepo.deleteById(userId);
         redirectAttributes.addFlashAttribute("deletedUser", true);
+        return "redirect:/adminView";
+    }
+
+
+    @PostMapping("/grantAdmin")
+    public String grantAdmin(@RequestParam("userId") Integer userId, RedirectAttributes redirectAttributes) {
+        System.out.println("granting admin access to user with ID: " + userId);
+        List<User> userList = userRepo.findByUid(userId);
+        User user = userList.get(0);
+        user.setAdmin(true);
+        userRepo.save(user);
+        redirectAttributes.addFlashAttribute("adminGranted", true);
         return "redirect:/adminView";
     }
 
