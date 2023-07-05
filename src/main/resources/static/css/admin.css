@@ -2,17 +2,107 @@ body, html {
     height: 100%;
     margin: 0;
     padding: 0;
-}
-
-#container{
+  }
+  
+  #container {
     float: left;
     padding: 10px;
-}
-
-#text{
-    text-align: center;
+  }
+  
+  #text {
+    width: 250px;
+    height: 120px;
+    border: 1px solid black;
+    
+  display: flex;
+  position: relative;
+  }
+  
+  #pfp {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .leftside {
+    width: 50px;
+  }
+  
+  .rightside {
+    text-align: left;
     width: 200px;
-    height: 100px;
+  }
+
+
+
+  /* dropdown menu */
+  #dropDownIcon2 {
+    width: 10px;
+    height: 10px;
+  }
+
+.dropdown2 {
+    position: relative;
+    display: inline-block;
+    padding: 0px 5px 0px 5px;
+  }
+  
+  .dropdown-content2 {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 120px;
+    z-index: 1;
+    left: 0; 
     border: solid black;
     border-width: 1px;
-}   
+  }
+  
+  .dropdown2:hover .dropdown-content2 {
+    display: block;
+  }
+  
+  .dropdown-content2 a {
+    color: black;
+    display: block;
+    text-align: left;
+    padding: 5px 5px 5px 5px;
+  }
+    
+  .dropdown-content2 a:hover {
+    background-color: #b1b1b1;
+  }
+
+
+
+  /* delete button formatting to match the other drop box */
+  .form-button {
+    display: block;
+    min-width: 120px;
+    background-color: transparent;
+    color: black;
+    text-decoration: none;
+    border: none;
+    font-size: 14px;
+    
+    padding: 5px 5px 5px 5px;
+    border-radius: 0;
+    cursor: pointer;
+    text-align: left;
+  } 
+  
+  .form-button:hover {
+    background-color: #b1b1b1;
+  }
+  
+  .form-button:focus {
+    outline: none;
+  }
+  
+  .form-button:active {
+    background-color: #b1b1b1;
+  }
+  
+
+  .form-button-container {
+    display: inline-block;
+  }
