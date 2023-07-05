@@ -120,6 +120,7 @@ public class UserController {
 
     @PostMapping("/grantAdmin")
     public String grantAdmin(@RequestParam("userId") Integer userId, RedirectAttributes redirectAttributes) {
+        System.out.println("granting admin access to user with ID: " + userId);
         List<User> userList = userRepo.findByUid(userId);
         User user = userList.get(0);
         user.setAdmin(true);
