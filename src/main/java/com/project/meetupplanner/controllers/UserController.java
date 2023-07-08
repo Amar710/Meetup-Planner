@@ -88,7 +88,21 @@ public class UserController {
     @GetMapping("/userProfile")
     public String userProfile(Model model, HttpSession session) {
         User user = (User) session.getAttribute("session_user");
+        model.addAttribute("user", user);
 
+        User profile = (User) session.getAttribute("session_user");
+        model.addAttribute("profile", profile);
+        return "users/userProfile";
+    }
+
+     @PostMapping("/ViewUser")
+    public String ViewUser(@RequestParam("userId") Integer userId, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+        System.out.println("View user with ID: " + userId);
+        List<User> userList = userRepo.findByUid(userId);
+        User profile = userList.get(0);
+        model.addAttribute("profile", profile);
+
+        User user = (User) session.getAttribute("session_user");
         model.addAttribute("user", user);
         return "users/userProfile";
     }
@@ -128,7 +142,6 @@ public class UserController {
         redirectAttributes.addFlashAttribute("adminGranted", true);
         return "redirect:/adminView";
     }
-
 
 
 }
