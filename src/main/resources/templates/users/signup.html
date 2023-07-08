@@ -18,8 +18,30 @@
             opacity: 0.9;
         }
     </style>
-    <script src = "/js/signup.js" defer></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="/js/signup.js" defer></script>
     <script src="/js/checkTextBox.js" defer></script>
+    <script>
+        $(document).ready(function() {
+            console.log("Signup page loaded");
+            $("#UserSubmit").click(function(event) {
+                var name = $("#name").val();
+                var email = $("#email").val();
+                var password = $("#password").val();
+                var confirm = $("#confirm").val();
+
+                if (name.trim() === "") {
+                    event.preventDefault();
+                    $("#errorMessage").text("Username cannot be empty");
+                    $("#errorMessage").show();
+                } else if (password !== confirm) {
+                    event.preventDefault();
+                    $("#errorMessage").text("Passwords do not match");
+                    $("#errorMessage").show();
+                }
+            });
+        });
+    </script>
 </head>
 <body>
     <div class="signup-page">
@@ -38,6 +60,7 @@
                                     <label for="name">Username</label>
                                     <small class="form-text text-muted"></small>
                                     <input type="text" id="name" name="name" class="form-control" placeholder="Enter your username" onkeypress="noSpace(event);">
+                                    <p id="errorMessage" style="display: none; color: red"></p>
                                 </div>
                                 <div class="form-group mt-3">
                                     <label for="password">Password</label>
@@ -62,3 +85,4 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>
+

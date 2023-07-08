@@ -31,7 +31,19 @@ public class UserController {
     public RedirectView process() {
         return new RedirectView("homepage.html");
     }
+       
+    @GetMapping("/users/exists")
+    @ResponseBody
+    public boolean userExists(@RequestParam String name) {
+        List<User> nameList = userRepo.findByName(name);
+        return !nameList.isEmpty();
+    }
 
+    @GetMapping("/users/add")
+    public String getSignup(Model model) {
+    model.addAttribute("user", new User());
+    return "/users/signup";
+    }   
    
     @PostMapping("/users/add")
     public String addUser(@RequestParam Map<String, String> newuser,  Model model, HttpServletResponse response) {
@@ -39,10 +51,12 @@ public class UserController {
         String newName = newuser.get("name");
         String newPwd = newuser.get("password");
         String newEmail = newuser.get("email");
+
         List<User> nameList = userRepo.findByName(newName);
-        // no match was find in the database
+        // match was found in the database
         if (!nameList.isEmpty()) {
-             return "users/success";
+             model.addAttribute("message", "Username is already in use");
+             return "users/signup";
         }
         else {
         userRepo.save(new User(newName, newEmail, newPwd)); 
