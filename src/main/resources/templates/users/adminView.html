@@ -65,16 +65,8 @@
 
       <tr class="bottomside">
 
-        <td>
-          <form id="ViewForm" method="post" action="/ViewUser">
-            <input type="hidden" name="userId" th:value="${user.uid}">
-              <button class="form-button" type="submit">view</button>
-          </form>
-        </td>
-
-
-
         <td class="dropdown2">
+
           <img src="../image/dropdown button.png" alt="Profile Picture" id="dropDownIcon2">
     
           <div class="dropdown-content2">
@@ -103,6 +95,12 @@
           </div>
         </td>
 
+        <td>
+          <form id="ViewForm" method="post" action="/ViewUser">
+            <input type="hidden" name="userId" th:value="${user.uid}">
+              <button class="form-button2" type="submit">View</button>
+          </form>
+        </td>
 
       </tr>      
       
