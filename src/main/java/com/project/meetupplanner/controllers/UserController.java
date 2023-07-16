@@ -1,7 +1,11 @@
 package com.project.meetupplanner.controllers;
 
+import java.time.DayOfWeek;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.time.LocalDate;
+import java.time.YearMonth;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,6 +18,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.project.meetupplanner.models.User;
 import com.project.meetupplanner.models.UserRespository;
+import com.project.meetupplanner.models.DateInfoService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,6 +29,9 @@ public class UserController {
 
     @Autowired
     private UserRespository userRepo;
+
+    @Autowired
+    private DateInfoService dateInfoService;
 
     @GetMapping("/")
     public RedirectView process() {
@@ -128,6 +136,52 @@ public class UserController {
         redirectAttributes.addFlashAttribute("adminGranted", true);
         return "redirect:/adminView";
     }
+
+    @GetMapping("/displayCalendar")
+    public String displayCalendar(Model model) {
+        LocalDate currentDate = LocalDate.now();
+        int year = currentDate.getYear();
+        int month = currentDate.getMonthValue();
+
+        int daysInMonth = dateInfoService.getDaysInMonth(year, month);
+        DayOfWeek firstDayOfMonth = dateInfoService.getFirstDayOfMonth(year, month);
+
+        List<List<Integer>> calendarWeeks = new ArrayList<>();
+        List<Integer> week = new ArrayList<>();
+
+        // Add empty cells for the days before the first day of the month
+        for (int i = 1; i < firstDayOfMonth.getValue(); i++) {
+            week.add(null);
+        }
+
+        // Populate the calendar with the days of the month
+        for (int day = 1; day <= daysInMonth; day++) {
+            week.add(day);
+            if (week.size() == 7) {
+                calendarWeeks.add(week);
+                week = new ArrayList<>();
+            }
+        }
+
+        // Add remaining empty cells to complete the last week
+        while (week.size() < 7) {
+            week.add(null);
+        }
+        calendarWeeks.add(week);
+
+        model.addAttribute("calendarWeeks", calendarWeeks);
+
+        return "users/calendar";
+    }
+
+
+
+
+
+
+
+
+
 
 
 
