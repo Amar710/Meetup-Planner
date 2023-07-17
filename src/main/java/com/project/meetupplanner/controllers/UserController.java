@@ -2,6 +2,7 @@ package com.project.meetupplanner.controllers;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -68,7 +69,7 @@ public class UserController {
             request.getSession().setAttribute("session_user", user);
             model.addAttribute("user", user);
 
-            if(user.getAdmin()) 
+            if(user.isAdmin()) 
                 return adminView(model, session);
             else
                 return "users/userProfile";
@@ -143,5 +144,26 @@ public class UserController {
         return "redirect:/adminView";
     }
 
+
+
+
+
+    // friend view code
+
+    @GetMapping("/friendView")
+    public String friendView(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("session_user");
+        if (user == null) {
+            // Redirect or handle the case where the user is not logged in
+            return "redirect:/login";
+        }
+        
+        Set<Integer> friendIds = user.getFriends();
+        List<User> friends = userRepo.findAllById(friendIds);
+        
+        model.addAttribute("users", friends);
+        model.addAttribute("user", user);
+        return "users/friendView";
+    }
 
 }
