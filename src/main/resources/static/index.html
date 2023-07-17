@@ -64,8 +64,7 @@
   const datePicker = new DayPilot.Navigator("nav", {
     showMonths: 3,
     skipMonths: 3,
-    selectMode: "Week",
-    viewType: "Week",
+    selectMode: "Month",
     onTimeRangeSelected: args => {
       calendar.update({
         startDate: args.day
@@ -75,8 +74,11 @@
   });
   datePicker.init();
 
-  const calendar = new DayPilot.Month("dp", {
+  const calendar = new DayPilot.Calendar("dp", {
     eventEndSpec: "Date",
+    viewType: "Week",
+    headerDateFormat: "dddd MMMM d",
+    // produces "Thursday June 17"
     eventHeight: 30,
     eventBarVisible: false,
     onTimeRangeSelected: async (args) => {
