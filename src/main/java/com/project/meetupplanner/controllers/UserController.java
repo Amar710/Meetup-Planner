@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.project.meetupplanner.models.User;
 import com.project.meetupplanner.models.UserRespository;
+import com.project.meetupplanner.models.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,8 +25,15 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class UserController {
 
+    private final UserRespository userRepo;
+    private final UserService userService;
+
     @Autowired
-    private UserRespository userRepo;
+    public UserController(UserRespository userRepo, UserService userService) {
+        this.userRepo = userRepo;
+        this.userService = userService;
+    }
+
 
     @GetMapping("/")
     public RedirectView process() {
@@ -158,12 +167,12 @@ public class UserController {
             return "redirect:/login";
         }
         
-        Set<Integer> friendIds = user.getFriends();
-        List<User> friends = userRepo.findAllById(friendIds);
+        List<User> friends = userService.getUserFriends(user);
         
         model.addAttribute("users", friends);
         model.addAttribute("user", user);
         return "users/friendView";
     }
-
+    
+    
 }
