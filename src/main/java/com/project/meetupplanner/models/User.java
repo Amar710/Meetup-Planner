@@ -15,7 +15,7 @@ public class User {
     private String email;
     private String password;
     private String confirmationCode;
-    private Boolean confirmed = false; 
+    private Boolean confirmed; 
     private boolean admin;
     private String resetPasswordToken;
 
