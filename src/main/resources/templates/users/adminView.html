@@ -31,7 +31,7 @@
 
           <a href="/userProfile" class="links">Profile</a>
           
-          <a href="#" class="links">Friends</a>
+          <a href="/friendView" class="links">Friends</a>
           <a href="#" class="links">Schedule</a>
           <a href="#" class="links">Account Setting</a>
           <a href="#" class="links">Preference</a>
@@ -43,6 +43,7 @@
       <img src="../image/pfp.png" alt="Profile Picture" id="pfp2">
     </div>
     <!-- top bar end -->
+
 
 
   <div id="container" th:each="user: ${users}">
@@ -63,35 +64,41 @@
 
 
       <tr class="bottomside">
+
         <td class="dropdown2">
+
           <img src="../image/dropdown button.png" alt="Profile Picture" id="dropDownIcon2">
     
           <div class="dropdown-content2">
 
-            <form id="deleteForm" method="post" action="/delete">
+            <form id="deleteForm" method="post" action="/delete" onsubmit="return confirmDelete()">
               <input type="hidden" name="userId" th:value="${user.uid}">
               <div class="form-button-container">      
-                <!-- <button class="form-button" type="button" onclick="confirmDelete()">Delete</button> -->
                 <button class="form-button" type="submit">Delete</button>
-
               </div>
             </form>
 
 
 
-            <form id="grantAdmin" method="post" action="/grantAdmin">
+            <form id="grantAdmin" method="post" action="/grantAdmin" onsubmit="return confirmAdmin()">
               <input type="hidden" name="userId" th:value="${user.uid}">
               <div class="form-button-container">
-                <!-- <button class="form-button" type="button" onclick="confirmAdmin()">Grant admin</button> -->
                 <button class="form-button" type="submit">Grant admin</button>
               </div>
-            </form>
+          </form>
+          
           
             <a href="#" class="links">User info</a>
             <a href="#" class="links">Audit log</a>
           </div>
         </td>
 
+        <td>
+          <form id="ViewForm" method="post" action="/ViewUser">
+            <input type="hidden" name="userId" th:value="${user.uid}">
+              <button class="form-button2" type="submit">View</button>
+          </form>
+        </td>
 
       </tr>      
       

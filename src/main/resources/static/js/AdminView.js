@@ -1,17 +1,21 @@
 function confirmDelete() {
-    if (confirm("Are you sure you want to delete this user?")) {
-      // User confirmed, submit the form
-      document.getElementById("deleteForm").submit();
+    var r = confirm("Are you sure you want to delete this user?"));
+      if (r == true) {
+        return true;
     } else {
-      // User cancelled, do nothing
+        return false;
     }
   }
 
+
   function confirmAdmin() {
-    if (confirm("Are you sure you want to grant admin this user?")) {
-      // User confirmed, submit the form
-      document.getElementById("grantAdmin").submit();
+    var r = confirm("Are you sure you want to grant admin rights?");
+    if (r == true) {
+        return true;
     } else {
-      // User cancelled, do nothing
+        return false;
     }
-  }
+}
+  
+
+  

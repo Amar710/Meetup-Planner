@@ -6,13 +6,16 @@ import java.util.List;
 import java.util.Map;
 import java.time.LocalDate;
 import java.util.UUID;
+import java.util.Set;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -20,6 +23,8 @@ import com.project.meetupplanner.models.User;
 import com.project.meetupplanner.models.UserRepository;
 import com.project.meetupplanner.models.DateInfoService;
 import com.project.meetupplanner.models.EmailService;
+import com.project.meetupplanner.models.UserService;
+
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,11 +33,11 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class UserController {
 
-    @Autowired
-    private EmailService emailService;
+    private final UserRespository userRepo;
+    private final UserService userService;
 
     @Autowired
-    private UserRepository userRepo;
+    private EmailService emailService;
 
     @Autowired
     private DateInfoService dateInfoService;
@@ -41,7 +46,20 @@ public class UserController {
     public RedirectView process() {
         return new RedirectView("homepage.html");
     }
+       
+    @GetMapping("/users/exists")
+    @ResponseBody
+    public boolean userExists(@RequestParam String name) {
+        List<User> nameList = userRepo.findByName(name);
+        return !nameList.isEmpty();
+    }
 
+    @GetMapping("/users/add")
+    public String getSignup(Model model) {
+    model.addAttribute("user", new User());
+    return "/users/signup";
+    }   
+   
     @PostMapping("/users/add")
     public String addUser(@RequestParam Map<String, String> newuser, HttpServletResponse response) {
         try {
@@ -109,13 +127,15 @@ public class UserController {
         
         if (userList.isEmpty()) {
             return "users/login";
-        } else {
+        } 
+        
+        else {
             // Successful login
             User user = userList.get(0);
             request.getSession().setAttribute("session_user", user);
             model.addAttribute("user", user);
 
-            if(user.getAdmin()) 
+            if(user.isAdmin()) 
                 return adminView(model, session);
             else
                 return "users/userProfile";
@@ -135,7 +155,21 @@ public class UserController {
     @GetMapping("/userProfile")
     public String userProfile(Model model, HttpSession session) {
         User user = (User) session.getAttribute("session_user");
+        model.addAttribute("user", user);
 
+        User profile = (User) session.getAttribute("session_user");
+        model.addAttribute("profile", profile);
+        return "users/userProfile";
+    }
+
+     @PostMapping("/ViewUser")
+    public String ViewUser(@RequestParam("userId") Integer userId, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+        System.out.println("View user with ID: " + userId);
+        List<User> userList = userRepo.findByUid(userId);
+        User profile = userList.get(0);
+        model.addAttribute("profile", profile);
+
+        User user = (User) session.getAttribute("session_user");
         model.addAttribute("user", user);
         return "users/userProfile";
     }
@@ -213,4 +247,24 @@ public class UserController {
         return "users/calendar";
     }
 
+
+
+    // friend view code
+
+    @GetMapping("/friendView")
+    public String friendView(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("session_user");
+        if (user == null) {
+            // Redirect or handle the case where the user is not logged in
+            return "redirect:/login";
+        }
+        
+        List<User> friends = userService.getUserFriends(user);
+        
+        model.addAttribute("users", friends);
+        model.addAttribute("user", user);
+        return "users/friendView";
+    }
+    
+    
 }
