@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.time.LocalDate;
-import java.time.YearMonth;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,8 +17,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.project.meetupplanner.models.User;
-import com.project.meetupplanner.models.UserRespository;
+import com.project.meetupplanner.models.UserRepository;
 import com.project.meetupplanner.models.DateInfoService;
+import com.project.meetupplanner.models.EmailService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,7 +29,10 @@ import jakarta.servlet.http.HttpSession;
 public class UserController {
 
     @Autowired
-    private UserRespository userRepo;
+    private EmailService emailService;
+
+    @Autowired
+    private UserRepository userRepo;
 
     @Autowired
     private DateInfoService dateInfoService;
@@ -40,14 +44,49 @@ public class UserController {
 
     @PostMapping("/users/add")
     public String addUser(@RequestParam Map<String, String> newuser, HttpServletResponse response) {
-        System.out.println("ADD user");
-        String newName = newuser.get("name");
-        String newPwd = newuser.get("password");
-        String newEmail = newuser.get("email");
-        userRepo.save(new User(newName, newEmail, newPwd)); 
-        response.setStatus(201);
-        return "users/addedUser";
+        try {
+            String newName = newuser.get("name");
+            String newPwd = newuser.get("password");
+            String newEmail = newuser.get("email");
+
+            // Generate confirmation code
+            String confirmationCode = UUID.randomUUID().toString();
+
+            // Save the user with the confirmation code
+            User newUser = new User(newName, newEmail, newPwd);
+            newUser.setConfirmationCode(confirmationCode);
+            userRepo.save(newUser);
+
+            // Send confirmation email
+            String subject = "Confirm your email";
+            String message = "Please click the following link to confirm your email: " +
+                    "http://localhost:8080/confirm?code=" + confirmationCode;
+
+            // Get the user's email from the form and pass it to the EmailService instance
+            String recipientEmail = newuser.get("email");
+            emailService.sendEmail(recipientEmail, subject, message);
+            response.setStatus(201);
+            return "users/confirmEmail";
+        }   catch (Exception e) {
+            e.printStackTrace();
+            response.setStatus(500); // Internal Server Error
+            return "users/errorPage";
+     }
+}
+
+    @GetMapping("/confirm")
+    public String confirmEmail(@RequestParam("code") String confirmationCode, HttpServletResponse response) {
+        User user = userRepo.findByConfirmationCode(confirmationCode);
+        if (user != null) {
+            user.setConfirmed(true);
+            userRepo.save(user);
+            return "users/success.html";
+        } else {
+            return "users/confirmError";
+        }
     }
+
+
 
     @GetMapping("/login")
     public String getLogin(Model model, HttpServletResponse request, HttpSession session){
@@ -173,16 +212,5 @@ public class UserController {
 
         return "users/calendar";
     }
-
-
-
-
-
-
-
-
-
-
-
 
 }
