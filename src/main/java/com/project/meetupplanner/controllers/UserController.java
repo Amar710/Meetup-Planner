@@ -2,7 +2,9 @@ package com.project.meetupplanner.controllers;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +17,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.project.meetupplanner.models.User;
 import com.project.meetupplanner.models.UserRespository;
+import com.project.meetupplanner.models.UserService;
 
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,8 +27,15 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class UserController {
 
+    private final UserRespository userRepo;
+    private final UserService userService;
+
     @Autowired
-    private UserRespository userRepo;
+    public UserController(UserRespository userRepo, UserService userService) {
+        this.userRepo = userRepo;
+        this.userService = userService;
+    }
+
 
 
     @GetMapping("/")
@@ -95,7 +105,7 @@ public class UserController {
             request.getSession().setAttribute("session_user", user);
             model.addAttribute("user", user);
 
-            if(user.getAdmin()) 
+            if(user.isAdmin()) 
                 return adminView(model, session);
             else
                 return "users/userProfile";
@@ -115,7 +125,21 @@ public class UserController {
     @GetMapping("/userProfile")
     public String userProfile(Model model, HttpSession session) {
         User user = (User) session.getAttribute("session_user");
+        model.addAttribute("user", user);
 
+        User profile = (User) session.getAttribute("session_user");
+        model.addAttribute("profile", profile);
+        return "users/userProfile";
+    }
+
+     @PostMapping("/ViewUser")
+    public String ViewUser(@RequestParam("userId") Integer userId, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+        System.out.println("View user with ID: " + userId);
+        List<User> userList = userRepo.findByUid(userId);
+        User profile = userList.get(0);
+        model.addAttribute("profile", profile);
+
+        User user = (User) session.getAttribute("session_user");
         model.addAttribute("user", user);
         return "users/userProfile";
     }
@@ -156,4 +180,26 @@ public class UserController {
         return "redirect:/adminView";
     }
 
+
+
+
+
+    // friend view code
+
+    @GetMapping("/friendView")
+    public String friendView(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("session_user");
+        if (user == null) {
+            // Redirect or handle the case where the user is not logged in
+            return "redirect:/login";
+        }
+        
+        List<User> friends = userService.getUserFriends(user);
+        
+        model.addAttribute("users", friends);
+        model.addAttribute("user", user);
+        return "users/friendView";
+    }
+    
+    
 }

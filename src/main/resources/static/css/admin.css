@@ -11,7 +11,7 @@ body, html {
   
   #text {
     width: 250px;
-    height: 120px;
+    height: 130px;
     border: 1px solid black;
     
   display: flex;
@@ -105,4 +105,21 @@ body, html {
 
   .form-button-container {
     display: inline-block;
+  }
+
+/* view button formatting */
+
+  .form-button2 {
+    min-width: 80px;
+    color: black;
+    font-size: 14px;
+    
+    
+    border-radius: 0;
+    cursor: pointer;
+    text-align: center;
+  } 
+
+  .form-button2:hover {
+    background-color: #b1b1b1;
   }
