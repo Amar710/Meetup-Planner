@@ -12,6 +12,7 @@ public class User {
     private String email;
     private String password;
     private boolean admin;
+    private String resetPasswordToken;
 
     public User() {
     }
@@ -55,6 +56,14 @@ public class User {
     }
     public void setAdmin(boolean admin) {
         this.admin = admin;
+    }
+
+    public String getResetPasswordToken() {
+        return resetPasswordToken;
+    }
+
+    public void setResetPasswordToken(String resetPasswordToken) {
+        this.resetPasswordToken = resetPasswordToken;
     }
     
     

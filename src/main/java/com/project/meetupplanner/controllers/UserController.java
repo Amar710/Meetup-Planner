@@ -27,6 +27,7 @@ public class UserController {
     @Autowired
     private UserRespository userRepo;
 
+
     @GetMapping("/")
     public RedirectView process() {
         return new RedirectView("homepage.html");
@@ -154,7 +155,5 @@ public class UserController {
         redirectAttributes.addFlashAttribute("adminGranted", true);
         return "redirect:/adminView";
     }
-
-
 
 }
