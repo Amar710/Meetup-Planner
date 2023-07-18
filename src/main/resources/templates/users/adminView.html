@@ -71,24 +71,22 @@
     
           <div class="dropdown-content2">
 
-            <form id="deleteForm" method="post" action="/delete">
+            <form id="deleteForm" method="post" action="/delete" onsubmit="return confirmDelete()">
               <input type="hidden" name="userId" th:value="${user.uid}">
               <div class="form-button-container">      
-                <!-- <button class="form-button" type="button" onclick="confirmDelete()">Delete</button> -->
                 <button class="form-button" type="submit">Delete</button>
-
               </div>
             </form>
 
 
 
-            <form id="grantAdmin" method="post" action="/grantAdmin">
+            <form id="grantAdmin" method="post" action="/grantAdmin" onsubmit="return confirmAdmin()">
               <input type="hidden" name="userId" th:value="${user.uid}">
               <div class="form-button-container">
-                <!-- <button class="form-button" type="button" onclick="confirmAdmin()">Grant admin</button> -->
                 <button class="form-button" type="submit">Grant admin</button>
               </div>
-            </form>
+          </form>
+          
           
             <a href="#" class="links">User info</a>
             <a href="#" class="links">Audit log</a>
