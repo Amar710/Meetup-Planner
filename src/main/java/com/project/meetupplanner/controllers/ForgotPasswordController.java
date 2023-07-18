@@ -21,6 +21,7 @@ import com.project.meetupplanner.Utilities.EmailUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 public class ForgotPasswordController {
@@ -90,7 +91,7 @@ public class ForgotPasswordController {
     }
     
     @PostMapping("/resetPassword")
-    public String changePassword(HttpServletRequest request, Model model) {
+    public String changePassword(HttpServletRequest request, Model model, HttpServletResponse response) {
         String token = request.getParameter("token");
         String password = request.getParameter("password");
         List<User> targetUser = userRepo.findByResetPasswordToken(token);
@@ -103,6 +104,8 @@ public class ForgotPasswordController {
         else {
             user.setPassword(password);
             user.setResetPasswordToken(null);
+            userRepo.save(user);
+            response.setStatus(201);
             return "/users/success";
         }
     }
