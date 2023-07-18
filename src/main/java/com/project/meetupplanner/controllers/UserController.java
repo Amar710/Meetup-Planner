@@ -2,7 +2,6 @@ package com.project.meetupplanner.controllers;
 
 import java.util.List;
 import java.util.Map;
-
 import java.util.UUID;
 
 import org.springframework.stereotype.Controller;
@@ -31,6 +30,8 @@ public class UserController {
     private final UserService userService;
     private final EmailService emailService;
     
+
+    @Autowired
     public UserController(UserRepository userRepo, UserService userService, EmailService emailService) {
         this.userRepo = userRepo;
         this.userService = userService;
