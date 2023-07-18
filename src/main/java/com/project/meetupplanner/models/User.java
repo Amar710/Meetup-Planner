@@ -2,39 +2,32 @@ package com.project.meetupplanner.models;
 
 import jakarta.persistence.*;
 
-
-// table where all the users will be stored
 @Entity
-@Table(name="user")
+@Table(name = "users")
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "uid")
     private int uid;
-    private String email;
     private String name;
+    private String email;
     private String password;
+    private String confirmationCode;
+    private boolean confirmed; 
+    private boolean admin;
 
-    // constructor
     public User() {
     }
 
-    public User(String email, String name, String password) {
-        this.email = email;
+    public User(String name, String email, String password) {
         this.name = name;
-        this.password = password;
-    }
-
-
-    // all getters and setters
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
         this.email = email;
+        this.password = password;
+        this.admin = false;
+        this.confirmed = false;
     }
+
+    // Getters and setters
 
     public String getName() {
         return name;
@@ -42,6 +35,14 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {
@@ -59,5 +60,34 @@ public class User {
     public void setUid(int uid) {
         this.uid = uid;
     }
-    
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
+
+    public boolean getAdmin() {
+        return admin;
+    }
+
+    public String getConfirmationCode() {
+        return confirmationCode;
+    }
+
+    public void setConfirmationCode(String confirmationCode) {
+        this.confirmationCode = confirmationCode;
+    }
+
+    public boolean isConfirmed() {
+        return confirmed;
+    }
+
+    public void setConfirmed(boolean confirmed) {
+        this.confirmed = confirmed;
+    }
 }
+
+
