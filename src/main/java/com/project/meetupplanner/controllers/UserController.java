@@ -6,9 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.time.LocalDate;
 import java.util.UUID;
-import java.util.Set;
 
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,14 +31,20 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class UserController {
 
-    private final UserRespository userRepo;
+    
+    private final UserRepository userRepo;
     private final UserService userService;
-
+    private final EmailService emailService;
+    private final DateInfoService dateInfoService;
+    
     @Autowired
-    private EmailService emailService;
-
-    @Autowired
-    private DateInfoService dateInfoService;
+    public UserController(UserRepository userRepo, UserService userService, EmailService emailService, DateInfoService dateInfoService) {
+        this.userRepo = userRepo;
+        this.userService = userService;
+        this.emailService = emailService;
+        this.dateInfoService = dateInfoService;
+    }
+    
 
     @GetMapping("/")
     public RedirectView process() {

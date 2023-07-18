@@ -10,10 +10,10 @@ import org.hibernate.Hibernate;
 @Service
 public class UserService {
 
-    private final UserRespository userRepo;
+    private final UserRepository userRepo;
 
     @Autowired
-    public UserService(UserRespository userRepo) {
+    public UserService(UserRepository userRepo) {
         this.userRepo = userRepo;
     }
 

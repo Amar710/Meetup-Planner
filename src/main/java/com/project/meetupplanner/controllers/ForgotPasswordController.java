@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import net.bytebuddy.utility.RandomString;
 
 import com.project.meetupplanner.models.User;
-import com.project.meetupplanner.models.UserRespository;
+import com.project.meetupplanner.models.UserRepository;
 import com.project.meetupplanner.Utilities.EmailUtil;
 
 import jakarta.mail.MessagingException;
@@ -27,7 +27,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class ForgotPasswordController {
     
     @Autowired
-    private UserRespository userRepo;
+    private UserRepository userRepo;
 
     @Autowired
     private JavaMailSender mailSender;
