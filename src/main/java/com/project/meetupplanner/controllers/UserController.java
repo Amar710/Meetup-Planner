@@ -9,11 +9,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.project.meetupplanner.models.User;
 import com.project.meetupplanner.models.UserRespository;
+
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,16 +32,38 @@ public class UserController {
     public RedirectView process() {
         return new RedirectView("homepage.html");
     }
+       
+    @GetMapping("/users/exists")
+    @ResponseBody
+    public boolean userExists(@RequestParam String name) {
+        List<User> nameList = userRepo.findByName(name);
+        return !nameList.isEmpty();
+    }
 
+    @GetMapping("/users/add")
+    public String getSignup(Model model) {
+    model.addAttribute("user", new User());
+    return "/users/signup";
+    }   
+   
     @PostMapping("/users/add")
-    public String addUser(@RequestParam Map<String, String> newuser, HttpServletResponse response) {
+    public String addUser(@RequestParam Map<String, String> newuser,  Model model, HttpServletResponse response) {
         System.out.println("ADD user");
         String newName = newuser.get("name");
         String newPwd = newuser.get("password");
         String newEmail = newuser.get("email");
+
+        List<User> nameList = userRepo.findByName(newName);
+        // match was found in the database
+        if (!nameList.isEmpty()) {
+             model.addAttribute("message", "Username is already in use");
+             return "users/signup";
+        }
+        else {
         userRepo.save(new User(newName, newEmail, newPwd)); 
         response.setStatus(201);
-        return "users/addedUser";
+            return "users/addedUser";
+        }
     }
 
     @GetMapping("/login")
@@ -63,7 +87,9 @@ public class UserController {
         
         if (userList.isEmpty()) {
             return "users/login";
-        } else {
+        } 
+        
+        else {
             // Successful login
             User user = userList.get(0);
             request.getSession().setAttribute("session_user", user);
