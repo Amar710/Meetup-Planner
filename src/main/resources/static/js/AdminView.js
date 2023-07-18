@@ -1,5 +1,5 @@
 function confirmDelete() {
-    var r = confirm("Are you sure you want to delete this user?"));
+    var r = confirm("Are you sure you want to delete this user?");
       if (r == true) {
         return true;
     } else {
