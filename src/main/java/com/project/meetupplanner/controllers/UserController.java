@@ -16,7 +16,6 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.project.meetupplanner.models.User;
 import com.project.meetupplanner.models.UserRepository;
-import com.project.meetupplanner.models.DateInfoService;
 import com.project.meetupplanner.models.EmailService;
 import com.project.meetupplanner.models.UserService;
 
