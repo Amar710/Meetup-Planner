@@ -213,44 +213,7 @@ public class UserController {
         redirectAttributes.addFlashAttribute("adminGranted", true);
         return "redirect:/adminView";
     }
-
-    @GetMapping("/displayCalendar")
-    public String displayCalendar(Model model) {
-        LocalDate currentDate = LocalDate.now();
-        int year = currentDate.getYear();
-        int month = currentDate.getMonthValue();
-
-        int daysInMonth = dateInfoService.getDaysInMonth(year, month);
-        DayOfWeek firstDayOfMonth = dateInfoService.getFirstDayOfMonth(year, month);
-
-        List<List<Integer>> calendarWeeks = new ArrayList<>();
-        List<Integer> week = new ArrayList<>();
-
-        // Add empty cells for the days before the first day of the month
-        for (int i = 1; i < firstDayOfMonth.getValue(); i++) {
-            week.add(null);
-        }
-
-        // Populate the calendar with the days of the month
-        for (int day = 1; day <= daysInMonth; day++) {
-            week.add(day);
-            if (week.size() == 7) {
-                calendarWeeks.add(week);
-                week = new ArrayList<>();
-            }
-        }
-
-        // Add remaining empty cells to complete the last week
-        while (week.size() < 7) {
-            week.add(null);
-        }
-        calendarWeeks.add(week);
-
-        model.addAttribute("calendarWeeks", calendarWeeks);
-
-        return "users/calendar";
-    }
-
+    
         @GetMapping("/calendar")
     public String Calendar(Model model, HttpSession session) {
         User user = (User) session.getAttribute("session_user");
@@ -260,8 +223,6 @@ public class UserController {
         model.addAttribute("profile", profile);
         return "users/index";
     }
-
-
 
     // friend view code
 
