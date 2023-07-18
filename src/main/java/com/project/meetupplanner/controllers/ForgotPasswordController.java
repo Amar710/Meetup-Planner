@@ -36,13 +36,12 @@ public class ForgotPasswordController {
     public String sendForgotPassword(HttpServletRequest request, Model model) {
         String email = request.getParameter("email");
         String token = RandomString.make(45);
-        
-        List<User> sendUser = userRepo.findByEmail(email);
-        User user = sendUser.get(0);
-        if (user == null)
+        User sendUser = userRepo.findByEmail(email);
+        if (sendUser == null)
         {
-            return "users/unsuccessful.html";
+            return "users/resetError";
         }
+        User user = sendUser;
         user.setResetPasswordToken(token);
         userRepo.save(user);
 
@@ -51,9 +50,9 @@ public class ForgotPasswordController {
             sendEmail(email,resetPasswordLink);
 
         } catch (UnsupportedEncodingException e) {
-            return "users/unsuccessful.html";
+            return "users/resetError";
         }
-        return "users/success.html";
+        return "users/resetMailSent";
         
     }
 
@@ -106,7 +105,7 @@ public class ForgotPasswordController {
             user.setResetPasswordToken(null);
             userRepo.save(user);
             response.setStatus(201);
-            return "/users/success";
+            return "/users/resetSuccess";
         }
     }
     
