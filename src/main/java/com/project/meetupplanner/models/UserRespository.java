@@ -19,3 +19,5 @@ public interface UserRespository extends JpaRepository<User, Integer> {
     List<User> findAllByIdWithFriends(@Param("ids") Set<Integer> ids);
     
 }
+
+

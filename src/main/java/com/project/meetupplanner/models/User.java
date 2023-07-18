@@ -14,6 +14,7 @@ public class User {
     private String email;
     private String password;
     private boolean admin;
+    private String resetPasswordToken;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_friends", joinColumns = @JoinColumn(name = "user_id"))
@@ -69,6 +70,14 @@ public class User {
     
     public void setAdmin(boolean admin) {
         this.admin = admin;
+    }
+
+    public String getResetPasswordToken() {
+        return resetPasswordToken;
+    }
+
+    public void setResetPasswordToken(String resetPasswordToken) {
+        this.resetPasswordToken = resetPasswordToken;
     }
     
     public Set<Integer> getFriends() {
