@@ -251,6 +251,16 @@ public class UserController {
         return "users/calendar";
     }
 
+        @GetMapping("/calendar")
+    public String Calendar(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("session_user");
+        model.addAttribute("user", user);
+
+        User profile = (User) session.getAttribute("session_user");
+        model.addAttribute("profile", profile);
+        return "users/index";
+    }
+
 
 
     // friend view code
