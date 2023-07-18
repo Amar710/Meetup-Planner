@@ -1,10 +1,7 @@
 package com.project.meetupplanner.controllers;
 
-import java.time.DayOfWeek;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.time.LocalDate;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,14 +32,12 @@ public class UserController {
     private final UserRepository userRepo;
     private final UserService userService;
     private final EmailService emailService;
-    private final DateInfoService dateInfoService;
     
     @Autowired
-    public UserController(UserRepository userRepo, UserService userService, EmailService emailService, DateInfoService dateInfoService) {
+    public UserController(UserRepository userRepo, UserService userService, EmailService emailService) {
         this.userRepo = userRepo;
         this.userService = userService;
         this.emailService = emailService;
-        this.dateInfoService = dateInfoService;
     }
     
 
