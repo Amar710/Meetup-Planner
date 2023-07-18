@@ -1,13 +1,10 @@
 package com.project.meetupplanner.controllers;
 
-import java.time.DayOfWeek;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.time.LocalDate;
+
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +16,6 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.project.meetupplanner.models.User;
 import com.project.meetupplanner.models.UserRepository;
-import com.project.meetupplanner.models.DateInfoService;
 import com.project.meetupplanner.models.EmailService;
 import com.project.meetupplanner.models.UserService;
 
@@ -31,18 +27,14 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class UserController {
 
-    
     private final UserRepository userRepo;
     private final UserService userService;
     private final EmailService emailService;
-    private final DateInfoService dateInfoService;
     
-    @Autowired
-    public UserController(UserRepository userRepo, UserService userService, EmailService emailService, DateInfoService dateInfoService) {
+    public UserController(UserRepository userRepo, UserService userService, EmailService emailService) {
         this.userRepo = userRepo;
         this.userService = userService;
         this.emailService = emailService;
-        this.dateInfoService = dateInfoService;
     }
     
 
@@ -71,6 +63,13 @@ public class UserController {
             String newPwd = newuser.get("password");
             String newEmail = newuser.get("email");
 
+            // Check if user with the given email already exists
+            User existingUser = userRepo.findByEmail(newEmail);
+            if (existingUser != null) {
+                response.setStatus(400); // Bad Request
+                return "users/signupError";
+        }
+
             // Generate confirmation code
             String confirmationCode = UUID.randomUUID().toString();
 
@@ -80,19 +79,24 @@ public class UserController {
             userRepo.save(newUser);
 
             // Send confirmation email
-            String subject = "Confirm your email";
-            String message = "Please click the following link to confirm your email: " +
-                    "http://localhost:8080/confirm?code=" + confirmationCode;
+            String subject = "Confirm your email address";
+            String message = "Dear " + newName + ",\n\n"
+                    + "Thank you for signing up for MeetUp Planner! To complete your registration, please click the link below to confirm your email address:\n\n"
+                    + "http://localhost:8080/confirm?code=" + confirmationCode + "\n\n"
+                    + "If the above link doesn't work, you can also copy and paste the above link into your browser:\n\n"
+                    + "If you did not sign up for MeetUp Planner, please ignore this email.\n\n"
+                    + "Thank you,\n"
+                    + "The MeetUp Planner Team";
 
             // Get the user's email from the form and pass it to the EmailService instance
             String recipientEmail = newuser.get("email");
             emailService.sendEmail(recipientEmail, subject, message);
             response.setStatus(201);
-            return "users/confirmEmail";
+            return "users/signupSuccess";
         }   catch (Exception e) {
             e.printStackTrace();
             response.setStatus(500); // Internal Server Error
-            return "users/errorPage";
+            return "users/signupError";
      }
 }
 
@@ -102,13 +106,11 @@ public class UserController {
         if (user != null) {
             user.setConfirmed(true);
             userRepo.save(user);
-            return "users/success.html";
+            return "users/confirmSuccess";
         } else {
             return "users/confirmError";
         }
     }
-
-
 
     @GetMapping("/login")
     public String getLogin(Model model, HttpServletResponse request, HttpSession session){
@@ -138,6 +140,10 @@ public class UserController {
             User user = userList.get(0);
             request.getSession().setAttribute("session_user", user);
             model.addAttribute("user", user);
+
+            User profile = (User) session.getAttribute("session_user");
+            model.addAttribute("profile", profile);
+
 
             if(user.isAdmin()) 
                 return adminView(model, session);
