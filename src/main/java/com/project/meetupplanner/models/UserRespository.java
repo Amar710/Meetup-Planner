@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+
 public interface UserRespository extends JpaRepository<User,Integer> {
     List<User> findByUid(int uid);
     List<User> findByName(String name);
@@ -13,3 +14,5 @@ public interface UserRespository extends JpaRepository<User,Integer> {
     List<User> findByAdmin(Boolean admin);
     List<User> findByResetPasswordToken(String token);
 }
+
+
