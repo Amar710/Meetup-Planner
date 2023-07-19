@@ -200,7 +200,9 @@ public class UserController {
         return "users/adminView";
     }
 
- // below is delete user functions
+//
+ // below is admin control functions
+ //
     @PostMapping("/delete")
     public String deleteUser(@RequestParam("userId") Integer userId, RedirectAttributes redirectAttributes) {
         System.out.println("DELETE user with ID: " + userId);
@@ -220,6 +222,18 @@ public class UserController {
         redirectAttributes.addFlashAttribute("adminGranted", true);
         return "redirect:/adminView";
     }
+
+    @PostMapping("/grantConfirm")
+    public String GrantConfirm(@RequestParam("userId") Integer userId, RedirectAttributes redirectAttributes) {
+        System.out.println("granting confirm access to user with ID: " + userId);
+        List<User> userList = userRepo.findByUid(userId);
+        User user = userList.get(0);
+        user.setConfirmed(true);
+        userRepo.save(user);
+        redirectAttributes.addFlashAttribute("confirmGranted", true);
+        return "redirect:/adminView";
+    }
+
     
         @GetMapping("/calendar")
     public String Calendar(Model model, HttpSession session) {

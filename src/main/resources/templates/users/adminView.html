@@ -90,7 +90,13 @@
                 <button class="form-button" type="submit">Grant admin</button>
               </div>
           </form>
-          
+
+          <form id="grantConfirm" method="post" action="/grantConfirm" onsubmit="return confirmConfirm()">
+            <input type="hidden" name="userId" th:value="${user.uid}">
+            <div class="form-button-container">
+              <button class="form-button" type="submit">Confirm user</button>
+            </div>
+        </form>
           
             <!-- <a href="#" class="links">User info</a>
             <a href="#" class="links">Audit log</a> -->

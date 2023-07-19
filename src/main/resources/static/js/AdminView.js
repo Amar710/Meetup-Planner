@@ -16,6 +16,15 @@ function confirmDelete() {
         return false;
     }
 }
+
+function confirmConfirm() {
+    var r = confirm("Are you sure you want to confirm user?");
+    if (r == true) {
+        return true;
+    } else {
+        return false;
+    }
+}
   
 
   
