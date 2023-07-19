@@ -83,7 +83,7 @@ public class UserController {
             String subject = "Confirm your email address";
             String message = "Dear " + newName + ",\n\n"
                     + "Thank you for signing up for MeetUp Planner! To complete your registration, please click the link below to confirm your email address:\n\n"
-                    + "http://localhost:8080/confirm?code=" + confirmationCode + "\n\n"
+                    + "https://meetup-planner.onrender.com/confirm?code=" + confirmationCode + "\n\n"
                     + "If the above link doesn't work, you can also copy and paste the above link into your browser:\n\n"
                     + "If you did not sign up for MeetUp Planner, please ignore this email.\n\n"
                     + "Thank you,\n"
