@@ -38,7 +38,7 @@ public class ForgotPasswordController {
         User sendUser = userRepo.findByEmail(email);
         if (sendUser == null)
         {
-            return "users/resetError";
+            return "users/reset/resetError";
         }
         User user = sendUser;
         user.setResetPasswordToken(token);
@@ -49,9 +49,9 @@ public class ForgotPasswordController {
             sendEmail(email,resetPasswordLink);
 
         } catch (UnsupportedEncodingException e) {
-            return "users/resetError";
+            return "users/reset/resetError";
         }
-        return "users/resetMailSent";
+        return "users/reset/resetMailSent";
         
     }
 
@@ -82,10 +82,10 @@ public class ForgotPasswordController {
 
         if (user == null){
             model.addAttribute("message", "Invalid Token");
-            return "users/invalidToken";
+            return "users/reset/invalidToken";
         }
         model.addAttribute("token", token);
-        return "users/resetPassword";
+        return "users/reset/resetPassword";
     }
     
     @PostMapping("/resetPassword")
@@ -96,7 +96,7 @@ public class ForgotPasswordController {
         User user = targetUser.get(0);
         if (user == null){
             model.addAttribute("message", "Invalid Token");
-            return "users/invalidToken";
+            return "users/reset/invalidToken";
         }
         
         else {
@@ -104,7 +104,7 @@ public class ForgotPasswordController {
             user.setResetPasswordToken(null);
             userRepo.save(user);
             response.setStatus(201);
-            return "/users/resetSuccess";
+            return "/users/reset/resetSuccess";
         }
     }
     

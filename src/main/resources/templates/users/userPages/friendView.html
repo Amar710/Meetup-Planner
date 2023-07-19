@@ -56,10 +56,17 @@
             </td>
     
             <td class="rightside">
-              uid: <span th:text="${user.uid}"></span> <br>
+              <!-- uid: <span th:text="${user.uid}"></span> <br> -->
               Name: <span th:text="${user.name}"></span> <br>
               email: <span th:text="${user.email}"></span> <br>
-              admin: <span th:text="${user.admin}"></span> <br>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <form id="ViewForm" method="post" action="/ViewUser">
+                <input type="hidden" name="userId" th:value="${user.uid}">
+                  <button class="form-button2" type="submit">View</button>
+              </form>
             </td>
           </tr>
         </table>  

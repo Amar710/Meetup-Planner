@@ -54,7 +54,7 @@ public class UserController {
     @GetMapping("/users/add")
     public String getSignup(Model model) {
     model.addAttribute("user", new User());
-    return "users/signup";
+    return "users/signUp/signup";
     }   
    
     @PostMapping("/users/add")
@@ -68,7 +68,7 @@ public class UserController {
             User existingUser = userRepo.findByEmail(newEmail);
             if (existingUser != null) {
                 response.setStatus(400); // Bad Request
-                return "users/signupError";
+                return "users/signUp/signupError";
         }
 
             // Generate confirmation code
@@ -93,11 +93,11 @@ public class UserController {
             String recipientEmail = newuser.get("email");
             emailService.sendEmail(recipientEmail, subject, message);
             response.setStatus(201);
-            return "users/signupSuccess";
+            return "users/signUp/signupSuccess";
         }   catch (Exception e) {
             e.printStackTrace();
             response.setStatus(500); // Internal Server Error
-            return "users/signupError";
+            return "users/signUp/signupError";
      }
 }
 
@@ -107,9 +107,9 @@ public class UserController {
         if (user != null) {
             user.setConfirmed(true);
             userRepo.save(user);
-            return "users/confirmSuccess";
+            return "users/signUp/confirmSuccess";
         } else {
-            return "users/confirmError";
+            return "users/signUp/confirmError";
         }
     }
 
@@ -149,7 +149,7 @@ public class UserController {
             if(user.isAdmin()) 
                 return adminView(model, session);
             else
-                return "users/userProfile";
+                return "users/userPages/userProfile";
         }
     }
 
@@ -170,7 +170,7 @@ public class UserController {
 
         User profile = (User) session.getAttribute("session_user");
         model.addAttribute("profile", profile);
-        return "users/userProfile";
+        return "users/userPages/userProfile";
     }
 
      @PostMapping("/ViewUser")
@@ -182,7 +182,7 @@ public class UserController {
 
         User user = (User) session.getAttribute("session_user");
         model.addAttribute("user", user);
-        return "users/userProfile";
+        return "users/userPages/userProfile";
     }
 
 
@@ -197,7 +197,7 @@ public class UserController {
         List<User> users = userRepo.findAll();
         model.addAttribute("users", users);
         model.addAttribute("user", user);
-        return "users/adminView";
+        return "users/userPages/adminView";
     }
 
 //
@@ -242,7 +242,7 @@ public class UserController {
 
         User profile = (User) session.getAttribute("session_user");
         model.addAttribute("profile", profile);
-        return "users/index";
+        return "users/userPages/index";
     }
 
     // friend view code
@@ -259,7 +259,7 @@ public class UserController {
         
         model.addAttribute("users", friends);
         model.addAttribute("user", user);
-        return "users/friendView";
+        return "users/userPages/friendView";
     }
     
     
