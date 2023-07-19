@@ -206,10 +206,27 @@ public class UserController {
     @PostMapping("/delete")
     public String deleteUser(@RequestParam("userId") Integer userId, RedirectAttributes redirectAttributes) {
         System.out.println("DELETE user with ID: " + userId);
+    
+        // Fetch all users from the database
+        List<User> allUsers = userRepo.findAll();
+    
+        // Iterate through each user
+        for (User user : allUsers) {
+            // If the user's friends set contains the ID of the user being deleted, remove it
+            if (user.getFriends().contains(userId)) {
+                user.getFriends().remove(userId);
+                // Save the changes made to the user
+                userRepo.save(user);
+            }
+        }
+    
+        // Delete the user
         userRepo.deleteById(userId);
+    
         redirectAttributes.addFlashAttribute("deletedUser", true);
         return "redirect:/adminView";
     }
+ 
 
 
     @PostMapping("/grantAdmin")
