@@ -23,6 +23,7 @@ public class User {
     @CollectionTable(name = "user_friends", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "friend_id")
     private Set<Integer> friends = new HashSet<>();
+    
 
     public User() {
     }
@@ -117,7 +118,7 @@ public class User {
     public void addFriend(int friendUid) {
         friends.add(friendUid);
     }
-
+    
     public void removeFriend(int friendUid) {
         friends.remove(friendUid);
     }

@@ -278,6 +278,28 @@ public class UserController {
         model.addAttribute("user", user);
         return "users/userPages/friendView";
     }
+
+    @PostMapping("/otherFriendView")
+    public String otherFriendView(@RequestParam("userId") Integer userId, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+        User user = (User) session.getAttribute("session_user");
+        if (user == null) {
+            // Redirect or handle the case where the user is not logged in
+            return "redirect:/login";
+        }
+        List<User> userList = userRepo.findByUid(userId);
+        
+        User profile = userList.get(0);
+        model.addAttribute("profile", profile);
     
+        
+        List<User> friends = userService.getUserFriends(profile);
+        
+        model.addAttribute("users", friends);
+        model.addAttribute("user", user);
+        return "users/userPages/friendView";
+    }
+    
+
+
     
 }
