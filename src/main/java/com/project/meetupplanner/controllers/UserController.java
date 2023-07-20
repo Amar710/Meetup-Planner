@@ -3,6 +3,8 @@ package com.project.meetupplanner.controllers;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -207,14 +209,23 @@ public class UserController {
     public String deleteUser(@RequestParam("userId") Integer userId, RedirectAttributes redirectAttributes) {
         System.out.println("DELETE user with ID: " + userId);
     
+        // Fetch the user to be deleted
+        Optional<User> userToDeleteOpt = userRepo.findById(userId);
+        if (!userToDeleteOpt.isPresent()) {
+            // handle this case, maybe return an error message
+            // let's assume for this example we just return
+            return "redirect:/adminView";
+        }
+        User userToDelete = userToDeleteOpt.get();
+    
         // Fetch all users from the database
         List<User> allUsers = userRepo.findAll();
     
         // Iterate through each user
         for (User user : allUsers) {
-            // If the user's friends set contains the ID of the user being deleted, remove it
-            if (user.getFriends().contains(userId)) {
-                user.getFriends().remove(userId);
+            // If the user's friends set contains the user being deleted, remove it
+            if (user.getFriends().contains(userToDelete)) {
+                user.removeFriend(userToDelete);
                 // Save the changes made to the user
                 userRepo.save(user);
             }
@@ -226,6 +237,7 @@ public class UserController {
         redirectAttributes.addFlashAttribute("deletedUser", true);
         return "redirect:/adminView";
     }
+ 
  
 
 
