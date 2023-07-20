@@ -4,10 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile Page</title>
+
+      <!-- <link href="css/main.css" rel="stylesheet" type="text/css"> -->
+    <!-- <link href="icons/style.css" rel="stylesheet" type="text/css">  -->
+
     <link rel="stylesheet" href="/css/topbar.css">
     <link rel="stylesheet" href="/css/userProfile.css">
     <script src="/js/topbar.js" defer></script>
     <script src="/js/userProfile.js" defer></script>
+
+
+    <link rel="stylesheet" href="/css/index.css">
+
+    
+    <script src="js/daypilot/daypilot-all.min.js"></script>
 </head>
 
 <body>
@@ -58,7 +68,38 @@
     </div>
 
     <div class="rightpanel">
-        <a class="profileUser">Temp display</a>
+    
+        <!-- <a class="profileUser">Temp display</a> -->
+
+
+        <div class="main">
+            <div class="wrap">
+                
+              <div class="left" style="display: none;">
+                <div id="nav"></div>
+              </div>
+        
+              <div class="right">
+                <div class="toolbar">
+                  <button id="previous">Previous</button>
+                  <button id="next">Next</button>
+        
+                  <div class="dropdown2">
+                    <img src="../image/questionMark.png" alt="Profile Picture" id="dropDownIcon2">
+                
+                    <div class="dropdown-content2">
+                      <a>- click and drag across the time frame you would to add an event to the schedule</a>
+                      <a>- click next to go to the next week and previous to go to the previous week</a>
+                      <a>- additionally if you click a date on the left monthly calendar you will be sent to that week</a>
+                    </div>
+                  </div>
+        
+                </div>
+                <div id="dp"></div>
+              </div>
+          </div>
+
+           
     </div>
 </div>
 
