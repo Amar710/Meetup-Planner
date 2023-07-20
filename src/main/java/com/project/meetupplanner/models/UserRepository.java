@@ -19,8 +19,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.friends WHERE u.uid IN :ids")
     List<User> findAllByIdWithFriends(@Param("ids") Set<Integer> ids); 
-    @Query("SELECT u FROM User u LEFT JOIN FETCH u.friends WHERE u.uid IN :ids OR :ids MEMBER OF u.friends")
-    List<User> findAllByIdOrFriend(@Param("ids") Set<Integer> ids); 
+
 
 }
 
