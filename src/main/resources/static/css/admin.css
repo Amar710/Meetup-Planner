@@ -11,7 +11,7 @@ body, html {
   
   #text {
     width: 250px;
-    height: 130px;
+    height: 150px;
     border: 1px solid black;
     
   display: flex;

@@ -36,8 +36,8 @@
         
         <a href="/calendar" class="links">Schedule</a>
         
-        <a href="#" class="links">Account Setting</a>
-        <a href="#" class="links">Preference</a>
+        <!-- <a href="#" class="links">Account Setting</a>
+        <a href="#" class="links">Preference</a> -->
 
         <!-- sign out button -->
         <a href="/logout" class="links">Sign Out</a>
@@ -82,18 +82,22 @@
               </div>
             </form>
 
-
-
             <form id="grantAdmin" method="post" action="/grantAdmin" onsubmit="return confirmAdmin()">
               <input type="hidden" name="userId" th:value="${user.uid}">
               <div class="form-button-container">
                 <button class="form-button" type="submit">Grant admin</button>
               </div>
           </form>
+
+          <form id="grantConfirm" method="post" action="/grantConfirm" onsubmit="return confirmConfirm()">
+            <input type="hidden" name="userId" th:value="${user.uid}">
+            <div class="form-button-container">
+              <button class="form-button" type="submit">Confirm user</button>
+            </div>
+        </form>
           
-          
-            <a href="#" class="links">User info</a>
-            <a href="#" class="links">Audit log</a>
+            <!-- <a href="#" class="links">User info</a>
+            <a href="#" class="links">Audit log</a> -->
           </div>
         </td>
 

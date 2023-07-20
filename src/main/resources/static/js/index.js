@@ -1,76 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Monthly Calendar in Spring Boot/Java (Open-Source)</title>
 
-    <link href="css/main.css" rel="stylesheet" type="text/css">
-    <link href="icons/style.css" rel="stylesheet" type="text/css">
-    
-    <link rel="stylesheet" href="/css/topbar.css">
-    <script src="/js/topbar.js" defer></script>
-
-</head>
-<body>
-<div class="header">
-  <!-- top bar start -->
-  <div class="topbar">
-    <a href="./homepage.html" class="LOGO">MeetUp Planner</a>
-
-    <!-- checks for admin approval -->
-    <span id="user" style="display: none">[[${user.admin}]]</span>
-
-    <div class="dropdown">
-      <a class="links">[[${user.name}]]</a> 
-      <img src="../image/dropdown button.png" alt="Profile Picture" id="dropDownIcon">
-
-      <!-- <button class="dropbtn"></button> -->
-
-      <div class="dropdown-content">
-
-        <a href="/adminView" class="links" id="view-all-link">View All</a>
-
-        <a href="/userProfile" class="links">Profile</a>
-
-        <a href="/friendView" class="links">Friends</a>
-        
-        <a href="/calendar" class="links">Schedule</a>
-        
-        <a href="#" class="links">Account Setting</a>
-        <a href="#" class="links">Preference</a>
-
-        <!-- sign out button -->
-        <a href="/logout" class="links">Sign Out</a>
-      </div>
-    </div>   
-    <img src="../image/pfp.png" alt="Profile Picture" id="pfp2">
-  </div>
-  <!-- top bar end -->
-
-
-
-<div class="main">
-    <div class="wrap">
-        <div class="left">
-            <div id="nav"></div>
-        </div>
-        <div class="right">
-            <div class="toolbar">
-                <button id="previous">Previous</button>
-                <button id="next">Next</button>
-            </div>
-            <div id="dp"></div>
-        </div>
-    </div>
-</div>
-
-<!-- DayPilot library -->
-<script src="js/daypilot/daypilot-all.min.js"></script>
-
-<script>
-
-  const datePicker = new DayPilot.Navigator("nav", {
+const datePicker = new DayPilot.Navigator("nav", {
     showMonths: 3,
     skipMonths: 3,
     selectMode: "Month",
@@ -228,16 +157,3 @@
   };
 
   app.init();
-
-</script>
-
-
-<style>
-    .month_default_event_inner {
-        border-radius: 20px;
-    }
-
-</style>
-
-</body>
-</html>

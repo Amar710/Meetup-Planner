@@ -17,17 +17,6 @@ a {
     margin: 10px 0px 10px 0px;
 }
 
-.topbar {
-    /* Add the topbar (header) css here */
-    background-color: #d9aaff;
-    padding: 15px;
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    border-bottom: solid black;
-    border-width: 1px;
-}
-
 .header a {
     color: white;
 }
@@ -94,66 +83,5 @@ a {
     margin-right: 5px;
     width: 100px;
     text-decoration: none;
-}
-
-.links {
-    color: #fff;
-    text-decoration: none;
-    font-size: 15px;
-}
-  
-.LOGO {
-    color: #fff;
-    text-decoration: none;
-    font-size: 30px;
-    margin-right: auto; /* Push LOGO element to the left */
-}
-
-#pfp2 {
-    width: 40px;
-    height: 40px;
-}
-
-#dropDownIcon {
-    width: 10px;
-    height: 10px;
-}
-
-/* #username:hover {
-background-color: #d441f5;
-} */
-
-/* dropdown menu */
-.dropdown {
-    position: relative;
-    display: inline-block;
-    padding: 0px 5px 0px 5px;
-}
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 120px;
-    z-index: 1;
-    right: 0; 
-    border: solid black;
-    border-width: 1px;
-}
-
-.dropdown:hover .dropdown-content {
-    display: block;
-}
-
-.dropdown-content a {
-    color: black;
-    display: block;
-    text-align: left;
-    padding: 5px 5px 5px 5px;
-}
-
-
-.dropdown-content a:hover {
-    background-color: #b1b1b1;
 }
 

@@ -54,7 +54,7 @@ public class UserController {
     @GetMapping("/users/add")
     public String getSignup(Model model) {
     model.addAttribute("user", new User());
-    return "/users/signup";
+    return "users/signUp/signup";
     }   
    
     @PostMapping("/users/add")
@@ -68,7 +68,7 @@ public class UserController {
             User existingUser = userRepo.findByEmail(newEmail);
             if (existingUser != null) {
                 response.setStatus(400); // Bad Request
-                return "users/signupError";
+                return "users/signUp/signupError";
         }
 
             // Generate confirmation code
@@ -83,7 +83,7 @@ public class UserController {
             String subject = "Confirm your email address";
             String message = "Dear " + newName + ",\n\n"
                     + "Thank you for signing up for MeetUp Planner! To complete your registration, please click the link below to confirm your email address:\n\n"
-                    + "http://localhost:8080/confirm?code=" + confirmationCode + "\n\n"
+                    + "https://meetup-planner.onrender.com/confirm?code=" + confirmationCode + "\n\n"
                     + "If the above link doesn't work, you can also copy and paste the above link into your browser:\n\n"
                     + "If you did not sign up for MeetUp Planner, please ignore this email.\n\n"
                     + "Thank you,\n"
@@ -93,11 +93,11 @@ public class UserController {
             String recipientEmail = newuser.get("email");
             emailService.sendEmail(recipientEmail, subject, message);
             response.setStatus(201);
-            return "users/signupSuccess";
+            return "users/signUp/signupSuccess";
         }   catch (Exception e) {
             e.printStackTrace();
             response.setStatus(500); // Internal Server Error
-            return "users/signupError";
+            return "users/signUp/signupError";
      }
 }
 
@@ -107,9 +107,9 @@ public class UserController {
         if (user != null) {
             user.setConfirmed(true);
             userRepo.save(user);
-            return "users/confirmSuccess";
+            return "users/signUp/confirmSuccess";
         } else {
-            return "users/confirmError";
+            return "users/signUp/confirmError";
         }
     }
 
@@ -149,7 +149,7 @@ public class UserController {
             if(user.isAdmin()) 
                 return adminView(model, session);
             else
-                return "users/userProfile";
+                return "users/userPages/userProfile";
         }
     }
 
@@ -170,7 +170,7 @@ public class UserController {
 
         User profile = (User) session.getAttribute("session_user");
         model.addAttribute("profile", profile);
-        return "users/userProfile";
+        return "users/userPages/userProfile";
     }
 
      @PostMapping("/ViewUser")
@@ -182,7 +182,7 @@ public class UserController {
 
         User user = (User) session.getAttribute("session_user");
         model.addAttribute("user", user);
-        return "users/userProfile";
+        return "users/userPages/userProfile";
     }
 
 
@@ -197,17 +197,36 @@ public class UserController {
         List<User> users = userRepo.findAll();
         model.addAttribute("users", users);
         model.addAttribute("user", user);
-        return "users/adminView";
+        return "users/userPages/adminView";
     }
 
- // below is delete user functions
+//
+ // below is admin control functions
+ //
     @PostMapping("/delete")
     public String deleteUser(@RequestParam("userId") Integer userId, RedirectAttributes redirectAttributes) {
         System.out.println("DELETE user with ID: " + userId);
+    
+        // Fetch all users from the database
+        List<User> allUsers = userRepo.findAll();
+    
+        // Iterate through each user
+        for (User user : allUsers) {
+            // If the user's friends set contains the ID of the user being deleted, remove it
+            if (user.getFriends().contains(userId)) {
+                user.getFriends().remove(userId);
+                // Save the changes made to the user
+                userRepo.save(user);
+            }
+        }
+    
+        // Delete the user
         userRepo.deleteById(userId);
+    
         redirectAttributes.addFlashAttribute("deletedUser", true);
         return "redirect:/adminView";
     }
+ 
 
 
     @PostMapping("/grantAdmin")
@@ -220,6 +239,18 @@ public class UserController {
         redirectAttributes.addFlashAttribute("adminGranted", true);
         return "redirect:/adminView";
     }
+
+    @PostMapping("/grantConfirm")
+    public String GrantConfirm(@RequestParam("userId") Integer userId, RedirectAttributes redirectAttributes) {
+        System.out.println("granting confirm access to user with ID: " + userId);
+        List<User> userList = userRepo.findByUid(userId);
+        User user = userList.get(0);
+        user.setConfirmed(true);
+        userRepo.save(user);
+        redirectAttributes.addFlashAttribute("confirmGranted", true);
+        return "redirect:/adminView";
+    }
+
     
         @GetMapping("/calendar")
     public String Calendar(Model model, HttpSession session) {
@@ -228,7 +259,7 @@ public class UserController {
 
         User profile = (User) session.getAttribute("session_user");
         model.addAttribute("profile", profile);
-        return "users/index";
+        return "users/userPages/index";
     }
 
     // friend view code
@@ -245,7 +276,7 @@ public class UserController {
         
         model.addAttribute("users", friends);
         model.addAttribute("user", user);
-        return "users/friendView";
+        return "users/userPages/friendView";
     }
     
     
