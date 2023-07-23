@@ -23,6 +23,26 @@ $("#name").on('change', function() {
     });
 });
 
+$("#email").on('change', function() {
+    var email = $(this).val();
+    console.log("Email: " + email);
+    $.ajax({
+        url: '/users/exists',
+        type: 'GET',
+        data: {
+            type: "email",
+            value: email
+        },
+        success: function(data) {
+            console.log("AJAX success");
+            if (data) {
+                $("#emailErrorMessage").text("Email is already in use").show();
+            } else {
+                $("#emailErrorMessage").hide();
+            }
+        }
+    });
+});
 
 
 
