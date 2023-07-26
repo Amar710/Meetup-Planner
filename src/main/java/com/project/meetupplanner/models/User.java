@@ -19,10 +19,14 @@ public class User {
     private boolean admin;
     private String resetPasswordToken;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_friends", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "friend_id")
-    private Set<Integer> friends = new HashSet<>();
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "user_friends",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "friend_id")
+    )
+    private Set<User> friends = new HashSet<>();
+    
 
     public User() {
     }
@@ -106,20 +110,22 @@ public class User {
         this.resetPasswordToken = resetPasswordToken;
     }
     
-    public Set<Integer> getFriends() {
+    public Set<User> getFriends() {
         return friends;
     }
 
-    public void setFriends(Set<Integer> friends) {
+    public void setFriends(Set<User> friends) {
         this.friends = friends;
     }
 
-    public void addFriend(int friendUid) {
-        friends.add(friendUid);
+    public void addFriend(User friend) {
+        this.friends.add(friend);
+        friend.getFriends().add(this);
     }
 
-    public void removeFriend(int friendUid) {
-        friends.remove(friendUid);
+    public void removeFriend(User friend) {
+        this.friends.remove(friend);
+        friend.getFriends().remove(this);
     }
 }
 

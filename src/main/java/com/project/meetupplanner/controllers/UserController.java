@@ -3,6 +3,8 @@ package com.project.meetupplanner.controllers;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,31 +48,30 @@ public class UserController {
        
     @GetMapping("/users/exists")
     @ResponseBody
-    public boolean userExists(@RequestParam String name) {
-        List<User> nameList = userRepo.findByName(name);
-        return !nameList.isEmpty();
+    public boolean userExists(@RequestParam String type, @RequestParam String value) {
+        if ("email".equalsIgnoreCase(type)) {
+            User existingUser = userRepo.findByEmail(value);
+            return existingUser != null;
+    }   else if ("username".equalsIgnoreCase(type)) {
+            List<User> nameList = userRepo.findByName(value);
+            return !nameList.isEmpty();
     }
+    return false; 
+}
 
     @GetMapping("/users/add")
     public String getSignup(Model model) {
-    model.addAttribute("user", new User());
+    model.addAttribute("newUser", new User());
     return "users/signUp/signup";
     }   
    
     @PostMapping("/users/add")
-    public String addUser(@RequestParam Map<String, String> newuser, HttpServletResponse response) {
+    public String addUser(@RequestParam Map<String, String> newuser, Model model, HttpServletResponse response) {
         try {
             String newName = newuser.get("name");
             String newPwd = newuser.get("password");
             String newEmail = newuser.get("email");
-
-            // Check if user with the given email already exists
-            User existingUser = userRepo.findByEmail(newEmail);
-            if (existingUser != null) {
-                response.setStatus(400); // Bad Request
-                return "users/signUp/signupError";
-        }
-
+            
             // Generate confirmation code
             String confirmationCode = UUID.randomUUID().toString();
 
@@ -78,6 +79,7 @@ public class UserController {
             User newUser = new User(newName, newEmail, newPwd);
             newUser.setConfirmationCode(confirmationCode);
             userRepo.save(newUser);
+            model.addAttribute("newUser", newUser);
 
             // Send confirmation email
             String subject = "Confirm your email address";
@@ -112,6 +114,7 @@ public class UserController {
             return "users/signUp/confirmError";
         }
     }
+
 
     @GetMapping("/login")
     public String getLogin(Model model, HttpServletResponse request, HttpSession session){
@@ -207,14 +210,23 @@ public class UserController {
     public String deleteUser(@RequestParam("userId") Integer userId, RedirectAttributes redirectAttributes) {
         System.out.println("DELETE user with ID: " + userId);
     
+        // Fetch the user to be deleted
+        Optional<User> userToDeleteOpt = userRepo.findById(userId);
+        if (!userToDeleteOpt.isPresent()) {
+            // handle this case, maybe return an error message
+            // let's assume for this example we just return
+            return "redirect:/adminView";
+        }
+        User userToDelete = userToDeleteOpt.get();
+    
         // Fetch all users from the database
         List<User> allUsers = userRepo.findAll();
     
         // Iterate through each user
         for (User user : allUsers) {
-            // If the user's friends set contains the ID of the user being deleted, remove it
-            if (user.getFriends().contains(userId)) {
-                user.getFriends().remove(userId);
+            // If the user's friends set contains the user being deleted, remove it
+            if (user.getFriends().contains(userToDelete)) {
+                user.removeFriend(userToDelete);
                 // Save the changes made to the user
                 userRepo.save(user);
             }
@@ -226,6 +238,7 @@ public class UserController {
         redirectAttributes.addFlashAttribute("deletedUser", true);
         return "redirect:/adminView";
     }
+ 
  
 
 
@@ -278,6 +291,28 @@ public class UserController {
         model.addAttribute("user", user);
         return "users/userPages/friendView";
     }
+
+    @PostMapping("/otherFriendView")
+    public String otherFriendView(@RequestParam("userId") Integer userId, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+        User user = (User) session.getAttribute("session_user");
+        if (user == null) {
+            // Redirect or handle the case where the user is not logged in
+            return "redirect:/login";
+        }
+        List<User> userList = userRepo.findByUid(userId);
+        
+        User profile = userList.get(0);
+        model.addAttribute("profile", profile);
     
+        
+        List<User> friends = userService.getUserFriends(profile);
+        
+        model.addAttribute("users", friends);
+        model.addAttribute("user", user);
+        return "users/userPages/friendView";
+    }
+    
+
+
     
 }

@@ -64,7 +64,11 @@
         <img src="../image/pfp.png" alt="Profile Picture" id="pfp"> <br>
         <a class="profileUsername">[[${profile.name}]]</a> <!-- Displaying the user profile name -->
         <br>
-        <a href="/friendView" class="friends" >Friends</a>
+
+        <form id="ViewForm" method="post" action="/otherFriendView" class="friends">
+            <input type="hidden" name="userId" th:value="${profile.uid}">
+              <button class="friends" type="submit">Friends</button>
+          </form>
     </div>
 
     <div class="rightpanel">

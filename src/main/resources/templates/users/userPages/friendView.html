@@ -46,31 +46,34 @@
   </div>
   <!-- top bar end -->
 
+  <div>
+    <label for="search">Search:</label>
+    <input type="search" id="search" name="search" class="form-control" placeholder="Enter">
+  </div>
 
-    <div id="container" th:each="user: ${users}">
-                                                  
-        <table id="text">
-          <tr>
-            <td class="leftside">
-              <img src="../image/pfp.png" alt="Profile Picture" id="pfp">
-            </td>
-    
-            <td class="rightside">
-              <!-- uid: <span th:text="${user.uid}"></span> <br> -->
-              Name: <span th:text="${user.name}"></span> <br>
-              email: <span th:text="${user.email}"></span> <br>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <form id="ViewForm" method="post" action="/ViewUser">
-                <input type="hidden" name="userId" th:value="${user.uid}">
-                  <button class="form-button2" type="submit">View</button>
-              </form>
-            </td>
-          </tr>
-        </table>  
-    </div>    
+  <div id="container" th:each="user: ${users}">
+                                                
+      <table id="text">
+        <tr>
+          <td class="leftside">
+            <img src="../image/pfp.png" alt="Profile Picture" id="pfp">
+          </td>
+  
+          <td class="rightside">
+            Name: <span th:text="${user.name}"></span> <br>
+            email: <span th:text="${user.email}"></span> <br>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <form id="ViewForm" method="post" action="/ViewUser">
+              <input type="hidden" name="userId" th:value="${user.uid}">
+                <button class="form-button2" type="submit">View</button>
+            </form>
+          </td>
+        </tr>
+      </table>  
+  </div>    
 
 </body>
 </html>

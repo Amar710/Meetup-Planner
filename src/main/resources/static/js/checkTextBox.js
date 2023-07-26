@@ -72,7 +72,7 @@ function validate(){
         return false;
     }
 
-    // check if the pawword and the confirmation are the same
+    // check if the password and the confirmation are the same
     if(confirm.trim() != password.trim())
     {
         alert("Your password confirmation doesn't match with your password")
