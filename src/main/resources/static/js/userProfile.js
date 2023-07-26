@@ -7,7 +7,7 @@ var profileUsernameLink = document.getElementById('username2');
 const datePicker = new DayPilot.Navigator("nav", {
     showMonths: 3,
     skipMonths: 3,
-    selectMode: "Month",
+    selectMode: "week",
     onTimeRangeSelected: args => {
       calendar.update({
         startDate: args.day
@@ -55,11 +55,11 @@ const app = {
     init() {
       app.elements.previous.addEventListener("click", () => {
         const current = datePicker.selectionDay;
-        datePicker.select(current.addMonths(-1));
+        datePicker.select(current.addHours(-196));
       });
       app.elements.next.addEventListener("click", () => {
         const current = datePicker.selectionDay;
-        datePicker.select(current.addMonths(1));
+        datePicker.select(current.addHours(196));
       });
 
       calendar.events.load("/api/events");

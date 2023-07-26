@@ -2,7 +2,7 @@
 const datePicker = new DayPilot.Navigator("nav", {
     showMonths: 3,
     skipMonths: 3,
-    selectMode: "Month",
+    selectMode: "Week",
     onTimeRangeSelected: args => {
       calendar.update({
         startDate: args.day
@@ -145,11 +145,11 @@ const datePicker = new DayPilot.Navigator("nav", {
     init() {
       app.elements.previous.addEventListener("click", () => {
         const current = datePicker.selectionDay;
-        datePicker.select(current.addMonths(-1));
+        datePicker.select(current.addHours(-168));
       });
       app.elements.next.addEventListener("click", () => {
         const current = datePicker.selectionDay;
-        datePicker.select(current.addMonths(1));
+        datePicker.select(current.addHours(168));
       });
 
       calendar.events.load("/api/events");
