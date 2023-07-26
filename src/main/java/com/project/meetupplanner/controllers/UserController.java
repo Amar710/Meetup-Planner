@@ -48,31 +48,30 @@ public class UserController {
        
     @GetMapping("/users/exists")
     @ResponseBody
-    public boolean userExists(@RequestParam String name) {
-        List<User> nameList = userRepo.findByName(name);
-        return !nameList.isEmpty();
+    public boolean userExists(@RequestParam String type, @RequestParam String value) {
+        if ("email".equalsIgnoreCase(type)) {
+            User existingUser = userRepo.findByEmail(value);
+            return existingUser != null;
+    }   else if ("username".equalsIgnoreCase(type)) {
+            List<User> nameList = userRepo.findByName(value);
+            return !nameList.isEmpty();
     }
+    return false; 
+}
 
     @GetMapping("/users/add")
     public String getSignup(Model model) {
-    model.addAttribute("user", new User());
+    model.addAttribute("newUser", new User());
     return "users/signUp/signup";
     }   
    
     @PostMapping("/users/add")
-    public String addUser(@RequestParam Map<String, String> newuser, HttpServletResponse response) {
+    public String addUser(@RequestParam Map<String, String> newuser, Model model, HttpServletResponse response) {
         try {
             String newName = newuser.get("name");
             String newPwd = newuser.get("password");
             String newEmail = newuser.get("email");
-
-            // Check if user with the given email already exists
-            User existingUser = userRepo.findByEmail(newEmail);
-            if (existingUser != null) {
-                response.setStatus(400); // Bad Request
-                return "users/signUp/signupError";
-        }
-
+            
             // Generate confirmation code
             String confirmationCode = UUID.randomUUID().toString();
 
@@ -80,6 +79,7 @@ public class UserController {
             User newUser = new User(newName, newEmail, newPwd);
             newUser.setConfirmationCode(confirmationCode);
             userRepo.save(newUser);
+            model.addAttribute("newUser", newUser);
 
             // Send confirmation email
             String subject = "Confirm your email address";
@@ -114,6 +114,7 @@ public class UserController {
             return "users/signUp/confirmError";
         }
     }
+
 
     @GetMapping("/login")
     public String getLogin(Model model, HttpServletResponse request, HttpSession session){
