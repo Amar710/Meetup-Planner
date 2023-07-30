@@ -2,8 +2,9 @@ package com.project.meetupplanner.controllers;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.project.meetupplanner.domain.Event;
-import com.project.meetupplanner.repository.EventRepository;
+import com.project.meetupplanner.models.events.Event;
+import com.project.meetupplanner.models.events.EventRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
@@ -26,8 +27,13 @@ public class CalendarController {
 
     @GetMapping("/api/events")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    Iterable<Event> events(@RequestParam("start") @DateTimeFormat(iso = ISO.DATE_TIME) LocalDateTime start, @RequestParam("end") @DateTimeFormat(iso = ISO.DATE_TIME) LocalDateTime end) {
+    Iterable<Event> events( @RequestParam("start") 
+                            @DateTimeFormat(iso = ISO.DATE_TIME) LocalDateTime start, 
+                            @RequestParam("end") 
+                            @DateTimeFormat(iso = ISO.DATE_TIME) LocalDateTime end) {
+
         return er.findBetween(start, end);
+
     }
 
     @PostMapping("/api/events/create")

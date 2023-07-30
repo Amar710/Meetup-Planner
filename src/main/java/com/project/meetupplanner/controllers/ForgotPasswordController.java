@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import net.bytebuddy.utility.RandomString;
 
-import com.project.meetupplanner.models.User;
-import com.project.meetupplanner.models.UserRepository;
+import com.project.meetupplanner.models.users.User;
+import com.project.meetupplanner.models.users.UserRepository;
 import com.project.meetupplanner.Utilities.EmailUtil;
 
 import jakarta.mail.MessagingException;

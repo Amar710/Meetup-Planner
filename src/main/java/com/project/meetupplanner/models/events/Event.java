@@ -1,8 +1,12 @@
-package com.project.meetupplanner.domain;
+package com.project.meetupplanner.models.events;
 
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.project.meetupplanner.models.userEvent.UserEvent;
 
 @Entity
 public class Event {
@@ -20,6 +24,10 @@ public class Event {
     LocalDateTime end;
 
     String color;
+
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<UserEvent> userEvents = new HashSet<>();
+
 
     public Long getId() {
         return id;
@@ -59,5 +67,13 @@ public class Event {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public Set<UserEvent> getUserEvents() {
+        return userEvents;
+    }
+
+    public void setUserEvents(Set<UserEvent> userEvents) {
+        this.userEvents = userEvents;
     }
 }

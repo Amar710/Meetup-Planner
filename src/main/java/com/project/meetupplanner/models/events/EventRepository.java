@@ -1,9 +1,8 @@
-package com.project.meetupplanner.repository;
+package com.project.meetupplanner.models.events;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.project.meetupplanner.domain.Event;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;

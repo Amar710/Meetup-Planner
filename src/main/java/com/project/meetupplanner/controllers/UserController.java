@@ -15,11 +15,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
-import com.project.meetupplanner.models.User;
-import com.project.meetupplanner.models.UserRepository;
-import com.project.meetupplanner.models.EmailService;
-import com.project.meetupplanner.models.UserService;
-
+import com.project.meetupplanner.models.email.EmailService;
+import com.project.meetupplanner.models.users.User;
+import com.project.meetupplanner.models.users.UserRepository;
+import com.project.meetupplanner.models.users.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -179,8 +178,7 @@ public class UserController {
      @PostMapping("/ViewUser")
     public String ViewUser(@RequestParam("userId") Integer userId, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
         System.out.println("View user with ID: " + userId);
-        List<User> userList = userRepo.findByUid(userId);
-        User profile = userList.get(0);
+        User profile = userRepo.findByUid(userId).orElseThrow(() -> new RuntimeException("User not found"));
         model.addAttribute("profile", profile);
 
         User user = (User) session.getAttribute("session_user");
@@ -245,8 +243,8 @@ public class UserController {
     @PostMapping("/grantAdmin")
     public String grantAdmin(@RequestParam("userId") Integer userId, RedirectAttributes redirectAttributes) {
         System.out.println("granting admin access to user with ID: " + userId);
-        List<User> userList = userRepo.findByUid(userId);
-        User user = userList.get(0);
+       User user = userRepo.findByUid(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        
         user.setAdmin(true);
         userRepo.save(user);
         redirectAttributes.addFlashAttribute("adminGranted", true);
@@ -256,8 +254,8 @@ public class UserController {
     @PostMapping("/grantConfirm")
     public String GrantConfirm(@RequestParam("userId") Integer userId, RedirectAttributes redirectAttributes) {
         System.out.println("granting confirm access to user with ID: " + userId);
-        List<User> userList = userRepo.findByUid(userId);
-        User user = userList.get(0);
+        User user = userRepo.findByUid(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        
         user.setConfirmed(true);
         userRepo.save(user);
         redirectAttributes.addFlashAttribute("confirmGranted", true);
@@ -299,9 +297,8 @@ public class UserController {
             // Redirect or handle the case where the user is not logged in
             return "redirect:/login";
         }
-        List<User> userList = userRepo.findByUid(userId);
+        User profile = userRepo.findByUid(userId).orElseThrow(() -> new RuntimeException("User not found"));
         
-        User profile = userList.get(0);
         model.addAttribute("profile", profile);
     
         
