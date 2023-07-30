@@ -5,7 +5,15 @@ import com.project.meetupplanner.models.users.User;
 
 import jakarta.persistence.*;
 
-@Entity
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+@JsonIdentityInfo(
+  generator = ObjectIdGenerators.PropertyGenerator.class, 
+  property = "id")
+
+  @Entity
+@Table(name = "user_event")
 public class UserEvent {
 
     @Id
@@ -13,13 +21,14 @@ public class UserEvent {
     @Column(name = "id")
     private int id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;  
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "event_id")
     private Event event;
+    
 
     public int getId() {
         return id;

@@ -6,9 +6,18 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.project.meetupplanner.models.userEvent.UserEvent;
 
-@Entity
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+@JsonIdentityInfo(
+  generator = ObjectIdGenerators.PropertyGenerator.class, 
+  property = "id")
+  @Entity
+@Table(name = "event")
 public class Event {
 
     @Id
@@ -17,9 +26,11 @@ public class Event {
 
     String text;
 
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     @Column(name = "event_start")
     LocalDateTime start;
 
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     @Column(name = "event_end")
     LocalDateTime end;
 
@@ -33,7 +44,7 @@ public class Event {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(  Long id) {
         this.id = id;
     }
 

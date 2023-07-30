@@ -1,9 +1,14 @@
 package com.project.meetupplanner.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.project.meetupplanner.models.events.Event;
 import com.project.meetupplanner.models.events.EventRepository;
+import com.project.meetupplanner.models.userEvent.UserEvent;
+import com.project.meetupplanner.models.userEvent.UserEventRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -12,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 @RestController
 public class CalendarController {
@@ -19,22 +25,42 @@ public class CalendarController {
     @Autowired
     EventRepository er;
 
+    @Autowired
+    UserEventRepository uer;
+
     @RequestMapping("/api")
     @ResponseBody
     String home() {
         return "Welcome!";
     }
 
-    @GetMapping("/api/events")
+
+    // @GetMapping("/api/events/")
+    // @JsonSerialize(using = LocalDateTimeSerializer.class)
+    // Iterable<Event> eventsSession(@PathVariable("uid") int uid, 
+    //                        @RequestParam("start") @DateTimeFormat(iso = ISO.DATE_TIME) LocalDateTime start, 
+    //                        @RequestParam("end") @DateTimeFormat(iso = ISO.DATE_TIME) LocalDateTime end) {
+    
+    //     List<UserEvent> userEvents = uer.findByUserUidAndEventStartAfterAndEventEndBefore(uid, start, end);
+    //     List<Event> events = userEvents.stream().map(UserEvent::getEvent).collect(Collectors.toList());
+    
+    //     return events;
+    // }
+
+
+    @GetMapping("/api/events/{uid}")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    Iterable<Event> events( @RequestParam("start") 
-                            @DateTimeFormat(iso = ISO.DATE_TIME) LocalDateTime start, 
-                            @RequestParam("end") 
-                            @DateTimeFormat(iso = ISO.DATE_TIME) LocalDateTime end) {
-
-        return er.findBetween(start, end);
-
+    Iterable<Event> events(@PathVariable("uid") int uid, 
+                           @RequestParam("start") @DateTimeFormat(iso = ISO.DATE_TIME) LocalDateTime start, 
+                           @RequestParam("end") @DateTimeFormat(iso = ISO.DATE_TIME) LocalDateTime end) {
+    
+        List<UserEvent> userEvents = uer.findByUserUidAndEventStartAfterAndEventEndBefore(uid, start, end);
+        List<Event> events = userEvents.stream().map(UserEvent::getEvent).collect(Collectors.toList());
+    
+        return events;
     }
+    
+
 
     @PostMapping("/api/events/create")
     @JsonSerialize(using = LocalDateTimeSerializer.class)

@@ -3,10 +3,15 @@ package com.project.meetupplanner.models.users;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-
 import com.project.meetupplanner.models.userEvent.UserEvent;
 
-@Entity
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+@JsonIdentityInfo(
+  generator = ObjectIdGenerators.PropertyGenerator.class, 
+  property = "uid")
+  @Entity
 @Table(name = "users")
 public class User {
     @Id
@@ -139,8 +144,4 @@ public class User {
     public void setUserEvents(Set<UserEvent> userEvents) {
         this.userEvents = userEvents;
     }
-
-
 }
-
-
