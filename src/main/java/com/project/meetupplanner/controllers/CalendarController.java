@@ -1,6 +1,5 @@
 package com.project.meetupplanner.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -23,7 +22,6 @@ import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @RestController
@@ -63,7 +61,6 @@ public class CalendarController {
                     .map(eventService::convertToEventDTO)
                     .collect(Collectors.toList());
     }
-    
     
     @GetMapping("/api/events/{uid}")
     @JsonSerialize(using = LocalDateTimeSerializer.class)

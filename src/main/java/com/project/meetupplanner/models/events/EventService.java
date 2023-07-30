@@ -14,10 +14,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import com.project.meetupplanner.models.events.Event;
-import com.project.meetupplanner.models.events.EventDTO;
-
-
 @Service
 @Transactional
 public class EventService {
