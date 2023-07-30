@@ -18,7 +18,9 @@ public class User {
     private Boolean confirmed; 
     private boolean admin;
     private String resetPasswordToken;
+    private byte[] profilePhoto;
 
+    @Lob
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_friends", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "friend_id")
@@ -27,10 +29,11 @@ public class User {
     public User() {
     }
 
-    public User(String name, String email, String password) {
+    public User(String name, String email, String password, byte[] profilePhoto) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.profilePhoto = profilePhoto;
         this.admin = false;
         this.confirmed = false;
     }
@@ -120,6 +123,14 @@ public class User {
 
     public void removeFriend(int friendUid) {
         friends.remove(friendUid);
+    }
+
+    public byte[] getProfilePhoto() {
+        return profilePhoto;
+    }
+
+    public void setProfilePhoto(byte[] profilePhoto) {
+        this.profilePhoto = profilePhoto;
     }
 }
 

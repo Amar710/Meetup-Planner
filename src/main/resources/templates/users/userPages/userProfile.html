@@ -56,16 +56,19 @@
     </div>
     <!-- top bar end -->
 
-
-
-    
 <div class="container">
-    <div class="leftpanel">
-        <img src="../image/pfp.png" alt="Profile Picture" id="pfp"> <br>
-        <a class="profileUsername">[[${profile.name}]]</a> <!-- Displaying the user profile name -->
-        <br>
-        <a href="/friendView" class="friends" >Friends</a>
-    </div>
+  <div class="leftpanel">
+    {% if profile.profilePhoto %}
+        <img src="data:image/jpeg;base64,{{ profile.profilePhoto | b64encode }}" alt="Profile Picture" id="pfp">
+    {% else %}
+        <img src="../image/pfp.png" alt="Default Profile Picture" id="pfp">
+    {% endif %}
+
+    <br>
+    <a class="profileUsername">{{ profile.name }}</a> <!-- Displaying the user profile name -->
+    <br>
+    <a href="/friendView" class="friends">Friends</a>
+</div>
 
     <div class="rightpanel">
     

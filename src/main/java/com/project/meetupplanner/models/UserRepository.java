@@ -16,6 +16,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     List<User> findByAdmin(Boolean admin);
     User findByConfirmationCode(String confirmationCode);
     List<User> findByResetPasswordToken(String token);
+    User findByProfilePhoto(byte[] profilePhoto);
+    List<User> findByProfilePhotoNotNull();
+    List<User> findByProfilePhotoIsNull();
 
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.friends WHERE u.uid IN :ids")
     List<User> findAllByIdWithFriends(@Param("ids") Set<Integer> ids);
