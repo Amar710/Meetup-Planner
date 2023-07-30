@@ -67,11 +67,11 @@ const app = {
   init() {
     app.elements.previous.addEventListener("click", () => {
       const current = datePicker.selectionDay;
-      datePicker.select(current.addHours(-196));
+      datePicker.select(current.addHours(-168));
     });
     app.elements.next.addEventListener("click", () => {
       const current = datePicker.selectionDay;
-      datePicker.select(current.addHours(196));
+      datePicker.select(current.addHours(168));
     });
 
     calendar.events.load(`/api/events/${profileUid}`);
