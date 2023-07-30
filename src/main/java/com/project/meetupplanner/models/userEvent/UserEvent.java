@@ -10,9 +10,8 @@ public class UserEvent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "uid")
-    private int uid;
-
+    @Column(name = "id")
+    private int id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -22,19 +21,18 @@ public class UserEvent {
     @JoinColumn(name = "event_id")
     private Event event;
 
-
-
-    public int getUid() {
-        return uid;
-    }
-    public void setUid(int uid) {
-        this.uid = uid;
+    public int getId() {
+        return id;
     }
     
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public User getUser() {
         return user;
     }
+    
     public void setUser(User user) {
         this.user = user;
     }
@@ -42,6 +40,7 @@ public class UserEvent {
     public Event getEvent() {
         return event;
     }
+    
     public void setEvent(Event event) {
         this.event = event;
     }
