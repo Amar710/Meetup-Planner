@@ -10,7 +10,13 @@
 </head>
 <body>
     <h3>Meetup Planner Maps</h3>
+    <input
+      id="pac-input"
+      class="controls"
+      type="text"
+      placeholder="Search Box"
+    />
     <div id = "map"></div>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCY2fd9kd3KWm-lclnFOJzmVe_ozqHbuqg&callback=initMap"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCY2fd9kd3KWm-lclnFOJzmVe_ozqHbuqg&libraries=places&callback=initMap"></script>
 </body>
 </html>
