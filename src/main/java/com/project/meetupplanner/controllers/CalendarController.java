@@ -140,19 +140,29 @@ public class CalendarController {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @Transactional
     EventDeleteResponse deleteEvent(HttpServletRequest request, @RequestBody EventDeleteParams params) {
-    
+
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("session_user");
-    
+
         // Delete from user_event
         UserEvent userEvent = uer.findByEventIdAndUser(params.id, user);
         if(userEvent != null) {
+            // Disassociate the user with the event
+            userEvent.getUser().getUserEvents().remove(userEvent);
+            userEvent.getEvent().getUserEvents().remove(userEvent);
+            
+            // Delete the userEvent
             uer.delete(userEvent);
         }
-    
-        // Delete event
-        er.deleteById(params.id);
-    
+
+        // Check if there are any other UserEvent records associated with the event
+        List<UserEvent> userEventsForEvent = uer.findByEventId(params.id);
+        
+        // If there are no other UserEvent records, delete the event
+        if (userEventsForEvent == null || userEventsForEvent.isEmpty()) {
+            er.deleteById(params.id);
+        }
+
         return new EventDeleteResponse() {{
             message = "Deleted";
         }};

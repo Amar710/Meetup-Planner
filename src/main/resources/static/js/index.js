@@ -72,17 +72,15 @@ const datePicker = new DayPilot.Navigator("nav", {
         {
           text: "Delete",
           onClick: async (args) => {
-            const e = args.source;
-            const params = {
-              id: e.id()
-            };
-
-            const {data} = await DayPilot.Http.post('/api/events/delete', params);
-            calendar.events.remove(e);
+              const e = args.source;
+              const params = {
+                  id: e.id()
+              };
+      
+              const {data} = await DayPilot.Http.post('/api/events/delete', params);
+              calendar.events.remove(e);
+              calendar.events.load("/api/events"); 
           }
-        },
-        {
-          text: "-"
         },
         {
           text: "invite",
@@ -107,6 +105,9 @@ const datePicker = new DayPilot.Navigator("nav", {
                   alert("No user id provided.");
               }
           }
+      },
+      {
+        text: "-"
       },      
       {
         text: "Blue",
