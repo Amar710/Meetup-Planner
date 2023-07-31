@@ -13,8 +13,8 @@ import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 @SpringBootApplication
 public class MeetupplannerApplication {
 
-	public static void main(String[] args) throws Exception {
-        SpringApplication.run(Application.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(MeetupplannerApplication.class, args);
+	}
 
 }
