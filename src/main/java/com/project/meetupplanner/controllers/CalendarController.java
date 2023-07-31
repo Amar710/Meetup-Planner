@@ -1,6 +1,8 @@
 package com.project.meetupplanner.controllers;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Collections;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
@@ -11,10 +13,13 @@ import com.project.meetupplanner.models.events.EventService;
 import com.project.meetupplanner.models.userEvent.UserEvent;
 import com.project.meetupplanner.models.userEvent.UserEventRepository;
 import com.project.meetupplanner.models.users.User;
+import com.project.meetupplanner.models.users.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.transaction.Transactional;
@@ -35,6 +40,12 @@ public class CalendarController {
 
     @Autowired
     UserEventRepository uer;
+
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    EventRepository eventRepository;
 
     @RequestMapping("/api")
     @ResponseBody
@@ -134,7 +145,7 @@ public class CalendarController {
         User user = (User) session.getAttribute("session_user");
     
         // Delete from user_event
-        UserEvent userEvent = uer.findByEventIdAndUser(params.id, user); // Assuming there's a method to fetch UserEvent by eventId and User
+        UserEvent userEvent = uer.findByEventIdAndUser(params.id, user);
         if(userEvent != null) {
             uer.delete(userEvent);
         }
@@ -145,6 +156,42 @@ public class CalendarController {
         return new EventDeleteResponse() {{
             message = "Deleted";
         }};
+    }
+
+
+    @PostMapping("/api/events/invite")
+    @Transactional
+    public ResponseEntity<Map<String, String>> inviteUser(@RequestBody EventInviteParams params) {
+        // Fetch the user and event by id
+        User user = userRepository.findById(params.uid).orElse(null);
+        Event event = eventRepository.findById(params.eventId).orElse(null);
+    
+        if (user == null || event == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Collections.singletonMap("message", "Invalid user or event id."));
+        }
+    
+        // Check if the UserEvent already exists
+        UserEvent userEvent = uer.findByEventAndUser(event, user);
+    
+        if (userEvent != null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Collections.singletonMap("message", "User has already been invited."));
+        }
+    
+        userEvent = new UserEvent();
+        userEvent.setUser(user);
+        userEvent.setEvent(event);
+        uer.save(userEvent);
+    
+        return ResponseEntity.ok(Collections.singletonMap("message", "User has been invited successfully."));
+    }
+    
+    
+
+    public static class EventInviteParams {
+        public Long eventId;
+        public int uid;
     }
 
     public static class EventDeleteParams {

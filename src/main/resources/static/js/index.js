@@ -85,43 +85,67 @@ const datePicker = new DayPilot.Navigator("nav", {
           text: "-"
         },
         {
-          text: "Blue",
-          icon: "icon icon-blue",
-          color: "#3c78d8",
-          onClick: (args) => {
-            app.updateColor(args.source, args.item.color);
+          text: "invite",
+          onClick: async (args) => {
+              const e = args.source;
+              const uid = prompt("Please enter user id to invite:"); 
+      
+              if (uid) {
+                  const params = {
+                      eventId: e.id(),
+                      uid: uid
+                  };
+                  const response = await DayPilot.Http.post('/api/events/invite', params);
+                  if (response.status === 200) {
+                      alert("Success: " + response.data.message);
+                  } else if (response.status === 409) {
+                      alert("Conflict: " + response.data.message);
+                  } else {
+                      alert("Failed to invite user: " + response.data.message);
+                  }
+              } else {
+                  alert("No user id provided.");
+              }
           }
-        },
-        {
-          text: "Green",
-          icon: "icon icon-green",
-          color: "#13A874",
-          onClick: (args) => {
-            app.updateColor(args.source, args.item.color);
-          }
-        },
-        {
-          text: "Yellow",
-          icon: "icon icon-yellow",
-          color: "#EFB914",
-          onClick: (args) => {
-            app.updateColor(args.source, args.item.color);
-          }
-        },
-        {
-          text: "Red",
-          icon: "icon icon-red",
-          color: "#F03030",
-          onClick: (args) => {
-            app.updateColor(args.source, args.item.color);
-          }
-        }, {
-          text: "Auto",
-          color: "auto",
-          onClick: (args) => {
-            app.updateColor(args.source, args.item.color);
-          }
-        },
+      },      
+      {
+        text: "Blue",
+        icon: "icon icon-blue",
+        color: "#3c78d8",
+        onClick: (args) => {
+          app.updateColor(args.source, args.item.color);
+        }
+      },
+      {
+        text: "Green",
+        icon: "icon icon-green",
+        color: "#13A874",
+        onClick: (args) => {
+          app.updateColor(args.source, args.item.color);
+        }
+      },
+      {
+        text: "Yellow",
+        icon: "icon icon-yellow",
+        color: "#EFB914",
+        onClick: (args) => {
+          app.updateColor(args.source, args.item.color);
+        }
+      },
+      {
+        text: "Red",
+        icon: "icon icon-red",
+        color: "#F03030",
+        onClick: (args) => {
+          app.updateColor(args.source, args.item.color);
+        }
+      }, {
+        text: "Auto",
+        color: "auto",
+        onClick: (args) => {
+          app.updateColor(args.source, args.item.color);
+        }
+      },
 
       ]
     })

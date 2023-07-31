@@ -1,6 +1,7 @@
 package com.project.meetupplanner.models.userEvent;
 
 import com.project.meetupplanner.models.users.User;
+import com.project.meetupplanner.models.events.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,7 +26,8 @@ public interface UserEventRepository extends JpaRepository<UserEvent, Long> {
         @Param("end") LocalDateTime end
     );
     
-    
+    UserEvent findByEventAndUser(Event event, User user);
+
     UserEvent findByEventIdAndUser(Long eventId, User user);
 
     
