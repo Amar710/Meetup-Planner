@@ -25,17 +25,18 @@ public class SecurityConfig {
                 csrf().disable().
                 sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).
                 and().
-                authorizeHttpRequests((authz) -> authz
-                    .anyRequest().authenticated()
-                )
+                // authorizeHttpRequests((authz) -> authz
+                //     .anyRequest().authenticated()
+                // ). Add code here to authenticate person
                 
-                .exceptionHandling().authenticationEntryPoint(unauthorizedEntryPoint());
+                exceptionHandling().authenticationEntryPoint(unauthorizedEntryPoint());
 
         return http.build();
     }
 
     @Bean
     public AuthenticationEntryPoint unauthorizedEntryPoint() {
+        // Error handling - If user is unauthorized it willl retuirn a 404 error page
         return (request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
     }
 
