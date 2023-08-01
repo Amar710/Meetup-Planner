@@ -327,7 +327,7 @@ public class UserController {
         // check if the user exist in the database
         if (findUserfriend.isEmpty()){
             model.addAttribute("confirmation", "That user doesn't exist. Ensure the name is properly added!");
-            return "users/userPages/friendView";
+            return "redirect:/friendView";
         }
 
         User friendingUser = findUserfriend.get(0);
@@ -335,15 +335,13 @@ public class UserController {
         userRepo.save(user);
         model.addAttribute("confirmation", "User have been added");
 
-        return "users/userPages/friendView";
+        return "redirect:/friendView";
     }
 
     @PostMapping("/unfriend")
     public String unfriending(@RequestParam("userId") Integer userid, HttpSession session, Model model) {
         System.out.println("Unfriending user with ID: " + userid);
         User user = (User) session.getAttribute("session_user");
-
-
 
         if (user == null) {
             // Redirect or handle the case where the user is not logged in
@@ -354,13 +352,13 @@ public class UserController {
         List<User> findUserUnfriend = userRepo.findByUid(userid);
 
         if (findUserUnfriend.isEmpty()){
-            return "users/userPages/friendView";
+            return "redirect:/friendView";
         }
 
         User unfriendUser = findUserUnfriend.get(0);
         user.removeFriend(unfriendUser);
         userRepo.save(user);
-        return "users/userPages/friendView";
+        return "redirect:/friendView";
     }
 
     
