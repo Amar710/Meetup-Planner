@@ -265,7 +265,7 @@ public class UserController {
     }
 
     
-        @GetMapping("/calendar")
+    @GetMapping("/calendar")
     public String Calendar(Model model, HttpSession session) {
         User user = (User) session.getAttribute("session_user");
         model.addAttribute("user", user);
@@ -312,7 +312,58 @@ public class UserController {
         return "users/userPages/friendView";
     }
     
+    @PostMapping("/addFriending")
+    public String friending(@RequestParam("friendName") String friendsName, HttpSession session, Model model){
+        System.out.println("friend user with name: " + friendsName);
+        User user = (User) session.getAttribute("session_user");
 
+        if (user == null) {
+            // Redirect or handle the case where the user is not logged in
+            return "redirect:/login";
+        }
+
+        List<User> findUserfriend = userRepo.findByName(friendsName);
+
+        // check if the user exist in the database
+        if (findUserfriend.isEmpty()){
+            model.addAttribute("confirmation", "That user doesn't exist. Ensure the name is properly added!");
+            return "redirect:/users/userPages/friendView";
+        }
+
+        User friendingUser = findUserfriend.get(0);
+        user.addFriend(friendingUser);
+        userRepo.save(user);
+        model.addAttribute("confirmation", "User have been added");
+
+        return "redirect:/users/userPages/friendView";
+    }
+
+    @PostMapping("/unfriend")
+    public String unfriending(@RequestParam("userId") Integer userid, HttpSession session, Model model) {
+        System.out.println("Unfriending user with ID: " + userid);
+        User user = (User) session.getAttribute("session_user");
+
+
+
+        if (user == null) {
+            // Redirect or handle the case where the user is not logged in
+            return "redirect:/login";
+        }
+
+        // unfriending both the user and the unfriended user
+        List<User> findUserUnfriend = userRepo.findByUid(userid);
+
+        if (findUserUnfriend.isEmpty()){
+            System.out.println("test1");
+            return "redirect:/users/userPages/friendView";
+        }
+
+        User unfriendUser = findUserUnfriend.get(0);
+        user.removeFriend(unfriendUser);
+        userRepo.save(user);
+        System.out.println("test");
+        return "redirect:/users/userPages/friendView";
+    }
 
     
 }
