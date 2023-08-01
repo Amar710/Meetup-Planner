@@ -56,35 +56,41 @@ body {
 }
 
 /* Center the search bar */
-#pac-container, #pac-input-origin {
+#pac-input {
   display: flex;
-  justify-content: center;
+  justify-content: right;
+  padding-top: 20px;
+}
+#pac-input-origin {
+  display: flex;
+  justify-content: left;
   padding-top: 20px;
 }
 
 /* Style the search bar and container */
-.pac-card, #pac-input-origin {
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-  font: 400 16px Roboto, Arial, sans-serif;
-  font-family: Roboto;
-  margin: 10px auto;
-  max-width: 400px;
-  padding: 10px;
-  width: 100%;
-}
 
-#pac-input, #pac-input-origin {
+
+#pac-input {
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-family: Roboto;
   font-size: 15px;
-  margin: 5px;
+  margin: 10px;
   padding: 8px;
-  width: 55%;
+  width: 32%;
+}
+
+#pac-input-origin {
+  
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: Roboto;
+  font-size: 15px;
+  margin: 10px;
+  padding: 8px;
+  width: 32%;
 }
 
 /* Style the autocomplete dropdown */

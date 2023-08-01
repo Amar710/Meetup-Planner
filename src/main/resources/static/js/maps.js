@@ -48,14 +48,14 @@ function initMap() {
   });
   
   directionsRenderer.setMap(map);
-  initAutocomplete();
   initAutocomplete1();
+  initAutocomplete();
   // Calculate once there is a location in the search box
   const onChangeHandler = function () {
     calculateAndDisplayRoute(directionsService, directionsRenderer);
   };
-  document.getElementById("pac-input").addEventListener("change", onChangeHandler);
   document.getElementById("pac-input-origin").addEventListener("change", onChangeHandler);
+  document.getElementById("pac-input").addEventListener("change", onChangeHandler);
   
 }
 
@@ -237,7 +237,7 @@ function calculateAndDisplayRoute(directionsService, directionsRenderer) {
                 document.getElementById("route-duration").textContent =
                   "Estimated Duration: " + routeDuration;
               } else {
-                window.alert("Directions request failed due to " + status);
+                window.alert("Directions request failed due to invalid Origin/Destination input");
               }
             }
           );
