@@ -49,11 +49,13 @@ function initMap() {
   
   directionsRenderer.setMap(map);
   initAutocomplete();
+  initAutocomplete1();
   // Calculate once there is a location in the search box
   const onChangeHandler = function () {
     calculateAndDisplayRoute(directionsService, directionsRenderer);
   };
   document.getElementById("pac-input").addEventListener("change", onChangeHandler);
+  document.getElementById("pac-input-origin").addEventListener("change", onChangeHandler);
   
 }
 
@@ -136,6 +138,73 @@ function initAutocomplete() {
     });
 }
 
+function initAutocomplete1() {
+    // Create the search box and link it to the UI element.
+    const input = document.getElementById("pac-input-origin");
+    const searchBox = new google.maps.places.SearchBox(input);
+  
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+    // Bias the SearchBox results towards current map's viewport.
+    map.addListener("bounds_changed", () => {
+      searchBox.setBounds(map.getBounds());
+    });
+  
+    let markers = [];
+  
+    // Listen for the event fired when the user selects a prediction and retrieve
+    // more details for that place.
+    searchBox.addListener("places_changed", () => {
+      const places = searchBox.getPlaces();
+  
+      if (places.length == 0) {
+        return;
+      }
+  
+      // Clear out the old markers.
+      markers.forEach((marker) => {
+        marker.setMap(null);
+      });
+      markers = [];
+  
+      // For each place, get the icon, name and location.
+      const bounds = new google.maps.LatLngBounds();
+  
+      places.forEach((place) => {
+        if (!place.geometry || !place.geometry.location) {
+          console.log("Returned place contains no geometry");
+          return;
+        }
+  
+        const icon = {
+          url: place.icon,
+          size: new google.maps.Size(71, 71),
+          origin: new google.maps.Point(0, 0),
+          anchor: new google.maps.Point(17, 34),
+          scaledSize: new google.maps.Size(25, 25),
+        };
+  
+        // Create a marker for each place. - Will not use since we are only using route
+        // markers.push(
+        //   new google.maps.Marker({
+        //     map,
+        //     icon,
+        //     animation: google.maps.Animation.DROP,
+        //     title: place.name,
+        //     position: place.geometry.location,
+        //   }),
+        // );
+    
+        if (place.geometry.viewport) {
+          // Only geocodes have viewport.
+          bounds.union(place.geometry.viewport);
+        } else {
+          bounds.extend(place.geometry.location);
+        }
+      });
+      map.fitBounds(bounds);
+    });
+}
+
 // Add a function get 2 coordinate points from the schedule and create a route
 // One point will be the users current location which is already initalized
 // Other point will be the given location which can be put into the autocomplete search bar
@@ -150,10 +219,12 @@ function calculateAndDisplayRoute(directionsService, directionsRenderer) {
   
           const destinationInput = document.getElementById("pac-input");
           const destinationPlace = destinationInput.value;
+          const originInput = document.getElementById("pac-input-origin");
+          const originPlace = originInput.value;
   
           directionsService.route(
             {
-              origin: pos,
+              origin: originPlace,
               destination: destinationPlace,
               travelMode: google.maps.TravelMode.DRIVING,
             },
@@ -177,11 +248,15 @@ function calculateAndDisplayRoute(directionsService, directionsRenderer) {
         }
       );
     } else {
-      const pos = { lat: 49.186751855008914, lng: -122.8491484050545 };
+        const destinationInput = document.getElementById("pac-input");
+        const destinationPlace = destinationInput.value;
+        const originInput = document.getElementById("pac-input-origin");
+        const originPlace = originInput.value;
+      //const pos = { lat: 49.186751855008914, lng: -122.8491484050545 };
       directionsService.route(
         {
-          origin: pos,
-          destination: { lat: 49.2786956418124, lng: -122.91971163861588 },
+          origin: originPlace,
+          destination: destinationPlace,
           travelMode: google.maps.TravelMode.DRIVING,
         },
         (response, status) => {

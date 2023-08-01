@@ -56,14 +56,14 @@ body {
 }
 
 /* Center the search bar */
-#pac-container {
+#pac-container, #pac-input-origin {
   display: flex;
   justify-content: center;
   padding-top: 20px;
 }
 
 /* Style the search bar and container */
-.pac-card {
+.pac-card, #pac-input-origin {
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -76,7 +76,7 @@ body {
   width: 100%;
 }
 
-#pac-input {
+#pac-input, #pac-input-origin {
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 4px;
