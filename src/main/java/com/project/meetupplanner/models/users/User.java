@@ -26,13 +26,14 @@ public class User {
     private boolean admin;
     private String resetPasswordToken;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_friends",
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "friend_id")
     )
     private Set<User> friends = new HashSet<>();
+    
     
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<UserEvent> userEvents = new HashSet<>();
@@ -131,11 +132,14 @@ public class User {
         this.friends.add(friend);
         friend.getFriends().add(this);
     }
-
+    
     public void removeFriend(User friend) {
-        this.friends.remove(friend);
-        friend.getFriends().remove(this);
-    }
+        if (this.friends.contains(friend)) {
+            this.friends.remove(friend);
+            friend.getFriends().remove(this);
+        }
+    }   
+    
 
     public Set<UserEvent> getUserEvents() {
         return userEvents;

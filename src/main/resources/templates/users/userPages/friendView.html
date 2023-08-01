@@ -53,7 +53,7 @@
     </form>
   </div>
 
-  <div id="container" th:each="user: ${users}">
+  <div id="container" th:each="friend: ${users}">
                                                 
       <table id="text">
         <tr>
@@ -62,22 +62,23 @@
           </td>
   
           <td class="rightside">
-            Name: <span th:text="${user.name}"></span> <br>
-            email: <span th:text="${user.email}"></span> <br>
+            Name: <span th:text="${friend.name}"></span> <br>
+            email: <span th:text="${friend.email}"></span> <br>
           </td>
         </tr>
         <tr>
           <td>
             <form id="ViewForm" method="post" action="/ViewUser">
-              <input type="hidden" name="userId" th:value="${user.uid}">
+              <input type="hidden" name="userId" th:value="${friend.uid}">
                 <button class="form-button2" type="submit">View</button>
             </form>
           </td>
           <td>
             <form id="unfriend" method="post" action="/unfriend">
-              <input type="hidden" name="userId" th:value="${user.uid}">
-                <button class="form-button2" type="submit">Unfriend</button>
-            </form>
+              <input type="hidden" name="friendId" th:value="${friend.uid}">
+              <button class="form-button2" type="submit">Unfriend</button>
+          </form>
+          
           </td>
         </tr>
       </table>  
