@@ -2,7 +2,7 @@
 const datePicker = new DayPilot.Navigator("nav", {
     showMonths: 3,
     skipMonths: 3,
-    selectMode: "Month",
+    selectMode: "Week",
     onTimeRangeSelected: args => {
       calendar.update({
         startDate: args.day
@@ -72,56 +72,87 @@ const datePicker = new DayPilot.Navigator("nav", {
         {
           text: "Delete",
           onClick: async (args) => {
+              const e = args.source;
+              const params = {
+                  id: e.id()
+              };
+      
+              const {data} = await DayPilot.Http.post('/api/events/delete', params);
+              calendar.events.remove(e);
+              calendar.events.load("/api/events"); 
+          }
+        },
+        {
+          text: "invite",
+          onClick: async (args) => {
             const e = args.source;
-            const params = {
-              id: e.id()
-            };
-
-            const {data} = await DayPilot.Http.post('/api/events/delete', params);
-            calendar.events.remove(e);
+            const uid = prompt("Please enter user id to invite:");
+      
+            if (uid) {
+                const params = {
+                    eventId: e.id(),
+                    uid: uid
+                };
+                try {
+                    const response = await DayPilot.Http.post('/api/events/invite', params);
+                    console.log(response.request.status);
+                    if (response.request.status === 200) {
+                      alert("Success: " + response.data.message); 
+                  } else if (response.request.status === 409) {
+                      alert("Conflict: " + response.data.message);
+                  } else {
+                      alert("Failed to invite user: " + response.data.message);
+                  }
+                } catch (error) {
+                    
+                    alert("Failed to send invite: " + error.message);
+                }
+            } else {
+                alert("No user id provided.");
+            }
           }
-        },
-        {
-          text: "-"
-        },
-        {
-          text: "Blue",
-          icon: "icon icon-blue",
-          color: "#3c78d8",
-          onClick: (args) => {
-            app.updateColor(args.source, args.item.color);
-          }
-        },
-        {
-          text: "Green",
-          icon: "icon icon-green",
-          color: "#13A874",
-          onClick: (args) => {
-            app.updateColor(args.source, args.item.color);
-          }
-        },
-        {
-          text: "Yellow",
-          icon: "icon icon-yellow",
-          color: "#EFB914",
-          onClick: (args) => {
-            app.updateColor(args.source, args.item.color);
-          }
-        },
-        {
-          text: "Red",
-          icon: "icon icon-red",
-          color: "#F03030",
-          onClick: (args) => {
-            app.updateColor(args.source, args.item.color);
-          }
-        }, {
-          text: "Auto",
-          color: "auto",
-          onClick: (args) => {
-            app.updateColor(args.source, args.item.color);
-          }
-        },
+      },
+      {
+        text: "-"
+      },      
+      {
+        text: "Blue",
+        icon: "icon icon-blue",
+        color: "#3c78d8",
+        onClick: (args) => {
+          app.updateColor(args.source, args.item.color);
+        }
+      },
+      {
+        text: "Green",
+        icon: "icon icon-green",
+        color: "#13A874",
+        onClick: (args) => {
+          app.updateColor(args.source, args.item.color);
+        }
+      },
+      {
+        text: "Yellow",
+        icon: "icon icon-yellow",
+        color: "#EFB914",
+        onClick: (args) => {
+          app.updateColor(args.source, args.item.color);
+        }
+      },
+      {
+        text: "Red",
+        icon: "icon icon-red",
+        color: "#F03030",
+        onClick: (args) => {
+          app.updateColor(args.source, args.item.color);
+        }
+      }, {
+        text: "Auto",
+        color: "auto",
+        onClick: (args) => {
+          app.updateColor(args.source, args.item.color);
+        }
+      },
 
       ]
     })
@@ -145,11 +176,11 @@ const datePicker = new DayPilot.Navigator("nav", {
     init() {
       app.elements.previous.addEventListener("click", () => {
         const current = datePicker.selectionDay;
-        datePicker.select(current.addMonths(-1));
+        datePicker.select(current.addHours(-168));
       });
       app.elements.next.addEventListener("click", () => {
         const current = datePicker.selectionDay;
-        datePicker.select(current.addMonths(1));
+        datePicker.select(current.addHours(168));
       });
 
       calendar.events.load("/api/events");

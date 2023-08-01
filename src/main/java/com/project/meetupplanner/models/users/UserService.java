@@ -1,4 +1,4 @@
-package com.project.meetupplanner.models;
+package com.project.meetupplanner.models.users;
 
 import java.util.List;
 import java.util.Set;
@@ -34,3 +34,6 @@ public class UserService {
     }
 
 }
+
+
+
