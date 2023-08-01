@@ -48,15 +48,15 @@ public class UserController {
     @GetMapping("/users/exists")
     @ResponseBody
     public boolean userExists(@RequestParam String type, @RequestParam String value) {
-        if ("email".equalsIgnoreCase(type)) {
-            User existingUser = userRepo.findByEmail(value);
-            return existingUser != null;
-    }   else if ("username".equalsIgnoreCase(type)) {
+        if ("name".equalsIgnoreCase(type)) {
             List<User> nameList = userRepo.findByName(value);
             return !nameList.isEmpty();
+        } else if ("email".equalsIgnoreCase(type)) {
+            User existingUser = userRepo.findByEmail(value);
+            return existingUser != null;
+        }
+        return false;
     }
-    return false; 
-}
 
     @GetMapping("/users/add")
     public String getSignup(Model model) {
