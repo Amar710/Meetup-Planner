@@ -16,23 +16,19 @@ const datePicker = new DayPilot.Navigator("nav", {
     eventEndSpec: "Date",
     viewType: "Week",
     headerDateFormat: "dddd MMMM d",
-    // produces "Thursday June 17"
     eventHeight: 30,
     eventBarVisible: false,
     onTimeRangeSelected: async (args) => {
-      const modal = await DayPilot.Modal.prompt("Create a new event:", "Event");
+      // Store the selected start and end dates for later use
+      document.getElementById('start-date-input').value = args.start;
+      document.getElementById('end-date-input').value = args.end;
+    
+      // Open the modal
+      document.getElementById('eventFormModal').style.display = "block";
+    
       calendar.clearSelection();
-      if (modal.canceled) {
-        return;
-      }
-      const params = {
-        start: args.start,
-        end: args.end,
-        text: modal.result
-      };
-      const {data} = await DayPilot.Http.post('/api/events/create', params);
-      calendar.events.add(data);
     },
+    
     onEventMove: async (args) => {
         const params = {
           id: args.e.id(),
@@ -170,20 +166,12 @@ const datePicker = new DayPilot.Navigator("nav", {
                 // Reload the events
                 calendar.events.load("/api/events");
             }
-
-            // Remove the event listener after it's done
-            window.removeEventListener('message', messageHandler);
         };
 
-        // Remove the previous event listener and add a new one
         window.removeEventListener('message', messageHandler);
         window.addEventListener('message', messageHandler);
     }
 },
-
-    
-
-
       {
         text: "-"
       },      
@@ -257,7 +245,65 @@ const datePicker = new DayPilot.Navigator("nav", {
 
       calendar.events.load("/api/events");
     }
+
+    
   };
+
+  const planButton = document.querySelector("#plan");
+  planButton.addEventListener("click", async () => {
+    // Gather the necessary parameters (start, end, text) from the user
+    // Replace these lines with the actual code for retrieving the parameters
+    let start = document.getElementById('start-date-input').value;
+    let end = document.getElementById('end-date-input').value;
+    let text = document.getElementById('event-text-input').value;
+    
+  
+    let params = {
+      start: start,
+      end: end,
+      text: text
+    };
+  
+    try {
+      const response = await fetch('/api/events/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(params),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      console.log(data);
+  
+      // After the event has been created successfully, you could open the plan_event.html page
+      // or you could do something else according to your requirements
+      // window.open("/plan_event.html", "_blank");
+  
+    } catch (error) {
+      console.log(error);
+    }
+    var modal = document.getElementById('eventFormModal');
+
+    document.getElementById('plan').onclick = function() {
+        modal.style.display = "block";
+    }
+
+    document.getElementsByClassName('close')[0].onclick = function() {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+  });
 
   let currentEventId; // This stores the id of the currently edited event
 
@@ -272,7 +318,7 @@ const datePicker = new DayPilot.Navigator("nav", {
           body: JSON.stringify({
             latitude: updatedLocation.lat,
             longitude: updatedLocation.lng,
-            address: updatedLocation.address, // Add this line
+            address: updatedLocation.address, 
         }),
     
       });
@@ -289,6 +335,33 @@ const datePicker = new DayPilot.Navigator("nav", {
       return data ? JSON.parse(data) : {};
   }
   
+
+  document.getElementById('submitEvent').onclick = async function(event) {
+    event.preventDefault(); // Prevent the form from submitting normally
+  
+    // Get the form values
+    const start = document.getElementById('start-date-input').value;
+    const end = document.getElementById('end-date-input').value;
+    const text = document.getElementById('event-text-input').value;
+  
+    // Build the parameters object
+    const params = {
+      start: start,
+      end: end,
+      text: text
+    };
+  
+    // Send the POST request
+    const { data } = await DayPilot.Http.post('/api/events/create', params);
+  
+    // Add the new event to the calendar
+    calendar.events.add(data);
+  
+    // Close the modal
+    document.getElementById('eventFormModal').style.display = "none";
+  }
+  
+
   function onEventSelection(id) {
       currentEventId = id; // Update the current event id when an event is selected
   }

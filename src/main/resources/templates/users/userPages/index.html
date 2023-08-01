@@ -75,7 +75,28 @@
         <div class="toolbar">
           <button id="previous">Previous</button>
           <button id="next">Next</button>
+          <button id="plan">Plan</button>
+          <!-- Event form modal -->
+          <div id="eventFormModal" class="modal">
+            <div class="modal-content">
+              <span class="close">&times;</span>
 
+              <form id="eventForm">
+                <label for="start-date-input">Start Date:</label>
+                <input type="datetime-local" id="start-date-input" name="start-date">
+                
+                <label for="end-date-input">End Date:</label>
+                <input type="datetime-local" id="end-date-input" name="end-date">
+
+                <label for="event-text-input">Event Text:</label>
+                <input type="text" id="event-text-input" name="event-text">
+
+                <button type="submit" id="submitEvent">Create Event</button>
+              </form>
+            </div>
+          </div>
+
+          
           <div class="dropdown2">
             <img src="../image/questionMark.png" alt="Profile Picture" id="dropDownIcon2">
         
@@ -85,6 +106,7 @@
               <a>- additionally if you click a date on the left monthly calendar you will be sent to that week</a>
             </div>
           </div>
+
 
         </div>
         <div id="dp"></div>
