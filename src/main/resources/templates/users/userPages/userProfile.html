@@ -1,100 +1,102 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile Page</title>
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>User Profile Page</title>
 
-      <!-- <link href="css/main.css" rel="stylesheet" type="text/css"> -->
-    <!-- <link href="icons/style.css" rel="stylesheet" type="text/css">  -->
+        <!-- <link href="css/main.css" rel="stylesheet" type="text/css"> -->
+      <!-- <link href="icons/style.css" rel="stylesheet" type="text/css">  -->
 
-    <link rel="stylesheet" href="/css/topbar.css">
-    <link rel="stylesheet" href="/css/userProfile.css">
-    <script src="/js/topbar.js" defer></script>
-    <script src="/js/userProfile.js" defer></script>
+      <link rel="stylesheet" href="/css/topbar.css">
+      <link rel="stylesheet" href="/css/userProfile.css">
+      <script src="/js/topbar.js" defer></script>
+      <script src="/js/userProfile.js" defer></script>
 
 
-    <link rel="stylesheet" href="/css/index.css">
+      <link rel="stylesheet" href="/css/index.css">
 
-    
-    <script src="js/daypilot/daypilot-all.min.js"></script>
-</head>
-
-<body>
-    
-    <!-- top bar start -->
-    <div class="topbar">
-        <a href="./homepage.html" class="LOGO">MeetUp Planner</a>
-
-        <!-- checks for admin approval -->
-        <span id="user" style="display: none">[[${user.admin}]]</span>
-
-        <div class="dropdown">
-            <a class="links">[[${user.name}]]</a> 
-            <img src="../image/dropdown button.png" alt="Profile Picture" id="dropDownIcon">
       
-            <!-- <button class="dropbtn"></button> -->
-      
-            <div class="dropdown-content">
-      
-              <a href="/adminView" class="links" id="view-all-link">View All</a>
-      
-              <a href="/userProfile" class="links">Profile</a>
-      
-              <a href="/friendView" class="links">Friends</a>
-              
-              <a href="/calendar" class="links">Schedule</a>
-              
-              <!-- <a href="#" class="links">Account Setting</a>
-              <a href="#" class="links">Preference</a> -->
-      
-              <!-- sign out button -->
-              <a href="/logout" class="links">Sign Out</a>
-            </div>
-          </div>   
-        <img src="../image/pfp.png" alt="Profile Picture" id="pfp2">
-    </div>
-    <!-- top bar end -->
+      <script src="js/daypilot/daypilot-all.min.js"></script>
+  </head>
 
-<div class="container">
-  <div class="leftpanel">
-    {% if profile.profilePhoto %}
-        <img src="data:image/jpeg;base64,{{ profile.profilePhoto | b64encode }}" alt="Profile Picture" id="pfp">
-    {% else %}
-        <img src="../image/pfp.png" alt="Default Profile Picture" id="pfp">
-    {% endif %}
+  <body>
+      
+      <!-- top bar start -->
+      <div class="topbar">
+          <a href="./homepage.html" class="LOGO">MeetUp Planner</a>
 
-    <br>
-    <a class="profileUsername">{{ profile.name }}</a> <!-- Displaying the user profile name -->
-    <br>
-    <a href="/friendView" class="friends">Friends</a>
-</div>
+          <!-- checks for admin approval -->
+          <span id="user" style="display: none">[[${user.admin}]]</span>
 
-    <div class="rightpanel">
-    
-        <!-- <a class="profileUser">Temp display</a> -->
-
-
-        <div class="main">
-            <div class="wrap">
+          <div class="dropdown">
+              <a class="links">[[${user.name}]]</a> 
+              <img src="../image/dropdown button.png" alt="Profile Picture" id="dropDownIcon">
+        
+              <!-- <button class="dropbtn"></button> -->
+        
+              <div class="dropdown-content">
+        
+                <a href="/adminView" class="links" id="view-all-link">View All</a>
+        
+                <a href="/userProfile" class="links">Profile</a>
+        
+                <a href="/friendView" class="links">Friends</a>
                 
-              <div class="left" style="display: none;">
-                <div id="nav"></div>
+                <a href="/calendar" class="links">Schedule</a>
+                
+                <!-- <a href="#" class="links">Account Setting</a>
+                <a href="#" class="links">Preference</a> -->
+        
+                <!-- sign out button -->
+                <a href="/logout" class="links">Sign Out</a>
               </div>
-        
-              <div class="right">
-                <div class="toolbar">
-                  <button id="previous">Previous</button>
-                  <button id="next">Next</button>
-        
+            </div>   
+          <img src="../image/pfp.png" alt="Profile Picture" id="pfp2">
+      </div>
+      <!-- top bar end -->
+
+
+
+      
+  <div class="container">
+      <div class="leftpanel">
+          <img src="../image/pfp.png" alt="Profile Picture" id="pfp"> <br>
+          <a class="profileUsername">[[${profile.name}]]</a> <!-- Displaying the user profile name -->
+          <br>
+
+          <form id="ViewForm" th:data-user-id="${profile.uid}" method="post" action="/otherFriendView" class="friends">
+
+            <input type="hidden" name="userId" th:value="${profile.uid}">
+            <button class="friends" type="submit">Friends</button>
+        </form>
+      </div>
+
+      <div class="rightpanel">
+      
+          <!-- <a class="profileUser">Temp display</a> -->
+
+
+          <div class="main">
+              <div class="wrap">
+                  
+                <div class="left" style="display: none;">
+                  <div id="nav"></div>
                 </div>
-                <div id="dp"></div>
-              </div>
-          </div>
+          
+                <div class="right">
+                  <div class="toolbar">
+                    <button id="previous">Previous</button>
+                    <button id="next">Next</button>
+          
+                  </div>
+                  <div id="dp"></div>
+                </div>
+            </div>
 
-           
-    </div>
-</div>
+            
+      </div>
+  </div>
 
-</body>
-</html>
+  </body>
+  </html>

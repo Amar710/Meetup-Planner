@@ -32,13 +32,19 @@
 
                 if (name.trim() === "") {
                     event.preventDefault();
-                    $("#errorMessage").text("Username cannot be empty");
-                    $("#errorMessage").show();
+                    $("#usernameErrorMessage").text("Username cannot be empty");
+                    $("#usernameErrorMessage").show();
+                
+                } else if (password.trim() == "") {
+                    event.preventDefault();
+                    $("#passwordErrorMessage").text("Password cannot be empty");
+                    $("#passwordErrorMessage").show();
+
                 } else if (password !== confirm) {
                     event.preventDefault();
-                    $("#errorMessage").text("Passwords do not match");
-                    $("#errorMessage").show();
-                }
+                    $("#passwordErrorMessage").text("Passwords do not match");
+                    $("#passwordErrorMessage").show();
+                } 
             });
         });
     </script>
@@ -51,22 +57,23 @@
                     <div class="card shadow-sm">
                         <div class="card-body">
                             <h2 class="text-center text-primary mb-4">Create Your Account</h2>
-                            <form action="/users/add" method="post" enctype="multipart/form-data">
+                            <form action="/users/add" method="post" id="signupForm">
                                 <div class="form-group">
                                     <label for="email">Email</label>
                                     <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" onkeypress="noSpace(event);">
-                                    <p id="emailExistsMessage" style="display: none; color: red"></p>
+                                    <p id="emailErrorMessage" style="display: none; color: red"></p>
                                 </div>
                                 <div class="form-group mt-3">
                                     <label for="name">Username</label>
                                     <small class="form-text text-muted"></small>
                                     <input type="text" id="name" name="name" class="form-control" placeholder="Enter your username" onkeypress="noSpace(event);">
-                                    <p id="errorMessage" style="display: none; color: red"></p>
+                                    <p id="usernameErrorMessage" style="display: none; color: red"></p>
                                 </div>
                                 <div class="form-group mt-3">
                                     <label for="password">Password</label>
                                     <small class="form-text text-muted"></small>
                                     <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" onkeypress="noSpace(event);">
+                                    <p id="passwordErrorMessage" style="display: none; color: red"></p>
                                 </div>
                                 <div class="form-group mt-3">
                                     <label for="confirm">Confirm Password</label>
@@ -86,6 +93,15 @@
             </div>
         </div>
     </div>
+    <footer class="footer mt-5 py-3 bg-light">
+        <div class="container">
+            <section id="contact" class="contact">
+                <h2>Contact Us</h2>
+                <p>For any inquiries, feedback, or support, <a href="mailto:info@meetupplanner.com">email us</a>.</p>
+            </section>
+            <p class="text-center">&copy; 2023 MeetUp Planner | All rights reserved.</p>
+        </div>
+    </footer>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,11 +17,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
-import com.project.meetupplanner.models.User;
-import com.project.meetupplanner.models.UserRepository;
-import com.project.meetupplanner.models.EmailService;
-import com.project.meetupplanner.models.UserService;
-
+import com.project.meetupplanner.models.email.EmailService;
+import com.project.meetupplanner.models.users.User;
+import com.project.meetupplanner.models.users.UserRepository;
+import com.project.meetupplanner.models.users.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -49,15 +50,15 @@ public class UserController {
     @GetMapping("/users/exists")
     @ResponseBody
     public boolean userExists(@RequestParam String type, @RequestParam String value) {
-        if ("email".equalsIgnoreCase(type)) {
-            User existingUser = userRepo.findByEmail(value);
-            return existingUser != null;
-    }   else if ("username".equalsIgnoreCase(type)) {
+        if ("name".equalsIgnoreCase(type)) {
             List<User> nameList = userRepo.findByName(value);
             return !nameList.isEmpty();
+        } else if ("email".equalsIgnoreCase(type)) {
+            User existingUser = userRepo.findByEmail(value);
+            return existingUser != null;
+        }
+        return false;
     }
-    return false; 
-}
 
     @GetMapping("/users/add")
     public String getSignup(Model model) {
@@ -183,8 +184,7 @@ public class UserController {
      @PostMapping("/ViewUser")
     public String ViewUser(@RequestParam("userId") Integer userId, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
         System.out.println("View user with ID: " + userId);
-        List<User> userList = userRepo.findByUid(userId);
-        User profile = userList.get(0);
+        User profile = userRepo.findByUid(userId).orElseThrow(() -> new RuntimeException("User not found"));
         model.addAttribute("profile", profile);
 
         User user = (User) session.getAttribute("session_user");
@@ -214,14 +214,23 @@ public class UserController {
     public String deleteUser(@RequestParam("userId") Integer userId, RedirectAttributes redirectAttributes) {
         System.out.println("DELETE user with ID: " + userId);
     
+        // Fetch the user to be deleted
+        Optional<User> userToDeleteOpt = userRepo.findById(userId);
+        if (!userToDeleteOpt.isPresent()) {
+            // handle this case, maybe return an error message
+            // let's assume for this example we just return
+            return "redirect:/adminView";
+        }
+        User userToDelete = userToDeleteOpt.get();
+    
         // Fetch all users from the database
         List<User> allUsers = userRepo.findAll();
     
         // Iterate through each user
         for (User user : allUsers) {
-            // If the user's friends set contains the ID of the user being deleted, remove it
-            if (user.getFriends().contains(userId)) {
-                user.getFriends().remove(userId);
+            // If the user's friends set contains the user being deleted, remove it
+            if (user.getFriends().contains(userToDelete)) {
+                user.removeFriend(userToDelete);
                 // Save the changes made to the user
                 userRepo.save(user);
             }
@@ -234,13 +243,14 @@ public class UserController {
         return "redirect:/adminView";
     }
  
+ 
 
 
     @PostMapping("/grantAdmin")
     public String grantAdmin(@RequestParam("userId") Integer userId, RedirectAttributes redirectAttributes) {
         System.out.println("granting admin access to user with ID: " + userId);
-        List<User> userList = userRepo.findByUid(userId);
-        User user = userList.get(0);
+       User user = userRepo.findByUid(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        
         user.setAdmin(true);
         userRepo.save(user);
         redirectAttributes.addFlashAttribute("adminGranted", true);
@@ -250,8 +260,8 @@ public class UserController {
     @PostMapping("/grantConfirm")
     public String GrantConfirm(@RequestParam("userId") Integer userId, RedirectAttributes redirectAttributes) {
         System.out.println("granting confirm access to user with ID: " + userId);
-        List<User> userList = userRepo.findByUid(userId);
-        User user = userList.get(0);
+        User user = userRepo.findByUid(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        
         user.setConfirmed(true);
         userRepo.save(user);
         redirectAttributes.addFlashAttribute("confirmGranted", true);
@@ -259,7 +269,7 @@ public class UserController {
     }
 
     
-        @GetMapping("/calendar")
+    @GetMapping("/calendar")
     public String Calendar(Model model, HttpSession session) {
         User user = (User) session.getAttribute("session_user");
         model.addAttribute("user", user);
@@ -285,6 +295,79 @@ public class UserController {
         model.addAttribute("user", user);
         return "users/userPages/friendView";
     }
+    
+
+    @PostMapping("/otherFriendView")
+    public String otherFriendView(@RequestParam("userId") Integer userId, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+        User user = (User) session.getAttribute("session_user");
+        if (user == null) {
+            // Redirect or handle the case where the user is not logged in
+            return "redirect:/login";
+        }
+        User profile = userRepo.findByUid(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        
+        model.addAttribute("profile", profile);
+    
+        
+        List<User> friends = userService.getUserFriends(profile);
+        
+        model.addAttribute("users", friends);
+        model.addAttribute("user", user);
+        return "users/userPages/friendView";
+    }
+    
+    @PostMapping("/addFriend")
+    public String friending(@RequestParam("friendName") String friendsName, HttpSession session, Model model){
+        System.out.println("friend user with name: " + friendsName);
+        User user = (User) session.getAttribute("session_user");
+
+        if (user == null) {
+            // Redirect or handle the case where the user is not logged in
+            return "redirect:/login";
+        }
+
+        List<User> findUserfriend = userRepo.findByName(friendsName);
+
+        // check if the user exist in the database
+        if (findUserfriend.isEmpty()){
+            model.addAttribute("confirmation", "That user doesn't exist. Ensure the name is properly added!");
+            return "redirect:/friendView";
+        }
+
+        User friendingUser = findUserfriend.get(0);
+        user.addFriend(friendingUser);
+        userRepo.save(user);
+        model.addAttribute("confirmation", "User have been added");
+
+        return "redirect:/friendView";
+    }
+    
+    
+    
+    @PostMapping("/unfriend")
+    public String removeFriend(@RequestParam("userId") Integer friendId, HttpSession session, Model model) {
+        User user = (User) session.getAttribute("session_user");
+        if (user == null) {
+            // Redirect or handle the case where the user is not logged in
+            return "redirect:/login";
+        }
+        userService.removeFriend(user.getUid(), friendId);
+    
+        // Fetch the updated user object from the database
+        User updatedUser = userRepo.findById(user.getUid()).orElseThrow(() -> new RuntimeException("User not found"));
+    
+        // Update the session with the updated user information
+        session.setAttribute("session_user", updatedUser);
+    
+        // Add the 'user' object to the model (optional, but can be useful in the view)
+        model.addAttribute("user", updatedUser);
+    
+        // Redirect to the friendView method with the updated friend list
+        return friendView(model, session);
+    }
+    
+    
+
     
     
 }

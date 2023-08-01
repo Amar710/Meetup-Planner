@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import net.bytebuddy.utility.RandomString;
 
-import com.project.meetupplanner.models.User;
-import com.project.meetupplanner.models.UserRepository;
+import com.project.meetupplanner.models.users.User;
+import com.project.meetupplanner.models.users.UserRepository;
 import com.project.meetupplanner.Utilities.EmailUtil;
 
 import jakarta.mail.MessagingException;
@@ -31,8 +31,11 @@ public class ForgotPasswordController {
     @Autowired
     private JavaMailSender mailSender;
 
+    // creates a token associated with the account we wish to change password
     @PostMapping("/forgotPassword")
     public String sendForgotPassword(HttpServletRequest request, Model model) {
+        
+        // gets the email from the database and attach a token to it
         String email = request.getParameter("email");
         String token = RandomString.make(45);
         User sendUser = userRepo.findByEmail(email);
@@ -40,10 +43,13 @@ public class ForgotPasswordController {
         {
             return "users/reset/resetError";
         }
+
+        // save the token into the database
         User user = sendUser;
         user.setResetPasswordToken(token);
         userRepo.save(user);
 
+        // send the email that contains a password reset link that is connected to that token
         try {
             String resetPasswordLink = EmailUtil.getSiteUrl(request) + "/reset_password?token=" + token;
             sendEmail(email,resetPasswordLink);
@@ -55,9 +61,12 @@ public class ForgotPasswordController {
         
     }
 
+    // the message the email will contain
     private void sendEmail(String email, String resetPasswordLink) throws UnsupportedEncodingException{
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
+
+        // creates the message that will be sent
         try {
             helper.setFrom("MeetUpPlannerSupport.com", "Meetup-Planner Support");
             helper.setTo(email);
@@ -70,36 +79,42 @@ public class ForgotPasswordController {
             helper.setSubject(subject);
             helper.setText(content,true);
             mailSender.send(message);
+
         } catch (MessagingException e){
             
         }
     }
 
+    // will send the user to the website that will allow them to change their password
     @GetMapping("/reset_password")
     public String showResetPassword(@Param(value = "token") String token, Model model) {
         List<User> targetUser = userRepo.findByResetPasswordToken(token);
-        User user = targetUser.get(0);
-
-        if (user == null){
-            model.addAttribute("message", "Invalid Token");
+        
+        if (targetUser.isEmpty()){
             return "users/reset/invalidToken";
         }
+
         model.addAttribute("token", token);
         return "users/reset/resetPassword";
     }
     
+    // update the database with the new password
     @PostMapping("/resetPassword")
     public String changePassword(HttpServletRequest request, Model model, HttpServletResponse response) {
+        
+        // get the updated password and token associated with it
         String token = request.getParameter("token");
         String password = request.getParameter("password");
         List<User> targetUser = userRepo.findByResetPasswordToken(token);
         User user = targetUser.get(0);
-        if (user == null){
+
+        if (targetUser.isEmpty()){
             model.addAttribute("message", "Invalid Token");
             return "users/reset/invalidToken";
         }
         
         else {
+            // saves the password to the associated account
             user.setPassword(password);
             user.setResetPasswordToken(null);
             userRepo.save(user);

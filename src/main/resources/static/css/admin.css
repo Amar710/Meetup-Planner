@@ -74,7 +74,7 @@ body, html {
 
 
 
-  /* delete button formatting to match the other drop box */
+  /* button formatting to match the other drop box */
   .form-button {
     display: block;
     min-width: 120px;

@@ -1,10 +1,17 @@
-package com.project.meetupplanner.models;
+package com.project.meetupplanner.models.users;
 
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import com.project.meetupplanner.models.userEvent.UserEvent;
 
-@Entity
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+@JsonIdentityInfo(
+  generator = ObjectIdGenerators.PropertyGenerator.class, 
+  property = "uid")
+  @Entity
 @Table(name = "users")
 public class User {
     @Id
@@ -18,22 +25,26 @@ public class User {
     private Boolean confirmed; 
     private boolean admin;
     private String resetPasswordToken;
-    private byte[] profilePhoto;
 
-    @Lob
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_friends", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "friend_id")
-    private Set<Integer> friends = new HashSet<>();
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "user_friends",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "friend_id")
+    )
+    private Set<User> friends = new HashSet<>();
+    
+    
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<UserEvent> userEvents = new HashSet<>();
 
     public User() {
     }
 
-    public User(String name, String email, String password, byte[] profilePhoto) {
+    public User(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.profilePhoto = profilePhoto;
         this.admin = false;
         this.confirmed = false;
     }
@@ -109,29 +120,32 @@ public class User {
         this.resetPasswordToken = resetPasswordToken;
     }
     
-    public Set<Integer> getFriends() {
+    public Set<User> getFriends() {
         return friends;
     }
 
-    public void setFriends(Set<Integer> friends) {
+    public void setFriends(Set<User> friends) {
         this.friends = friends;
     }
 
-    public void addFriend(int friendUid) {
-        friends.add(friendUid);
+    public void addFriend(User friend) {
+        this.friends.add(friend);
+        friend.getFriends().add(this);
+    }
+    
+    public void removeFriend(User friend) {
+        if (this.friends.contains(friend)) {
+            this.friends.remove(friend);
+            friend.getFriends().remove(this);
+        }
+    }   
+    
+
+    public Set<UserEvent> getUserEvents() {
+        return userEvents;
     }
 
-    public void removeFriend(int friendUid) {
-        friends.remove(friendUid);
-    }
-
-    public byte[] getProfilePhoto() {
-        return profilePhoto;
-    }
-
-    public void setProfilePhoto(byte[] profilePhoto) {
-        this.profilePhoto = profilePhoto;
+    public void setUserEvents(Set<UserEvent> userEvents) {
+        this.userEvents = userEvents;
     }
 }
-
-

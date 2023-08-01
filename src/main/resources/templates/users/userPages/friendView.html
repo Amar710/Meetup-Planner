@@ -46,31 +46,42 @@
   </div>
   <!-- top bar end -->
 
+  <div>
+    <form action = "/addFriend" method="post">
+      <label for="adding-friend">Add Friend's Name:</label>
+      <input type="text" id="friendName" name="friendName" class="form-control" placeholder="Enter">
+    </form>
+  </div>
 
-    <div id="container" th:each="user: ${users}">
-                                                  
-        <table id="text">
-          <tr>
-            <td class="leftside">
-              <img src="../image/pfp.png" alt="Profile Picture" id="pfp">
-            </td>
-    
-            <td class="rightside">
-              <!-- uid: <span th:text="${user.uid}"></span> <br> -->
-              Name: <span th:text="${user.name}"></span> <br>
-              email: <span th:text="${user.email}"></span> <br>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <form id="ViewForm" method="post" action="/ViewUser">
-                <input type="hidden" name="userId" th:value="${user.uid}">
-                  <button class="form-button2" type="submit">View</button>
-              </form>
-            </td>
-          </tr>
-        </table>  
-    </div>    
+  <div id="container" th:each="user: ${users}">
+                                                
+      <table id="text">
+        <tr>
+          <td class="leftside">
+            <img src="../image/pfp.png" alt="Profile Picture" id="pfp">
+          </td>
+  
+          <td class="rightside">
+            Name: <span th:text="${user.name}"></span> <br>
+            email: <span th:text="${user.email}"></span> <br>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <form id="ViewForm" method="post" action="/ViewUser">
+              <input type="hidden" name="userId" th:value="${user.uid}">
+                <button class="form-button2" type="submit">View</button>
+            </form>
+          </td>
+          <td>
+            <form id="unfriend" method="post" action="/unfriend">
+              <input type="hidden" name="userId" th:value="${user.uid}">
+                <button class="form-button2" type="submit">Unfriend</button>
+            </form>
+          </td>
+        </tr>
+      </table>  
+  </div>    
 
 </body>
 </html>
