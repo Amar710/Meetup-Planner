@@ -113,6 +113,70 @@ const datePicker = new DayPilot.Navigator("nav", {
           }
       },
       {
+        text: "Edit",
+        icon: "icon icon-edit",
+        onClick: async (args) => {
+          const e = args.source;
+          const newName = prompt("Enter the new event name:", e.data.text);
+          if (newName !== null) {
+            e.data.text = newName;
+            calendar.events.update(e);
+            const params = {
+              id: e.id(),
+              text: newName
+            };
+            const { data } = await DayPilot.Http.post('/api/events/update', params);
+            console.log(data.message); // You can handle the response as needed
+          }
+        }
+      },
+      // Inside the contextMenu definition, add a new item for the "Edit Location" button
+{
+    text: "Edit Location",
+    onClick: async (args) => {
+        const e = args.source;
+
+        // Open the "edit-location.html" page in a new window
+        const popup = window.open("edit-location.html", "Edit Location", "width=500,height=400");
+
+        // Pass the event ID and current location to the new page
+        popup.eventId = e.id();
+        popup.currentLocation = e.data.location;
+
+        // Update currentEventId with the selected event's ID
+        currentEventId = e.id();
+
+        // Define the message handler
+        const messageHandler = async function(event) {
+            // Retrieve the updated location from the new page
+            const updatedLocation = event.data;
+
+            if (updatedLocation !== undefined) {
+                // Update the event's location with the new location
+                e.data.location = updatedLocation;
+                calendar.events.update(e);
+
+                // Save the updated location to the server
+                await saveEventLocation(updatedLocation);
+
+                // Reload the events
+                calendar.events.load("/api/events");
+            }
+
+            // Remove the event listener after it's done
+            window.removeEventListener('message', messageHandler);
+        };
+
+        // Remove the previous event listener and add a new one
+        window.removeEventListener('message', messageHandler);
+        window.addEventListener('message', messageHandler);
+    }
+},
+
+    
+
+
+      {
         text: "-"
       },      
       {
@@ -186,5 +250,40 @@ const datePicker = new DayPilot.Navigator("nav", {
       calendar.events.load("/api/events");
     }
   };
+
+  let currentEventId; // This stores the id of the currently edited event
+
+  async function saveEventLocation(updatedLocation) {
+      console.log(`Updating location for event ${currentEventId} to`, updatedLocation);
+  
+      const response = await fetch(`/api/events/${currentEventId}/location`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+              latitude: updatedLocation.lat,
+              longitude: updatedLocation.lng
+          }),
+      });
+  
+      if (!response.ok) {
+          const message = `An error has occurred: ${response.status}`;
+          throw new Error(message);
+      }
+  
+      const data = await response.text();
+  
+      currentEventId = null; // Clear the current event id after the update
+  
+      return data ? JSON.parse(data) : {};
+  }
+  
+  function onEventSelection(id) {
+      currentEventId = id; // Update the current event id when an event is selected
+  }
+  
+  
+
 
   app.init();

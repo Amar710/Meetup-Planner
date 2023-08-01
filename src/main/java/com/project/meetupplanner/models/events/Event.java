@@ -6,7 +6,8 @@
     import java.util.HashSet;
     import java.util.Set;
 
-    import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+    import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
     import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
     import com.project.meetupplanner.models.userEvent.UserEvent;
 
@@ -35,6 +36,41 @@
         LocalDateTime end;
 
         String color;
+
+        @Embedded
+        private Location location;
+    
+        // Getter and setter methods for location
+        public Location getLocation() {
+            return location;
+        }
+    
+        public void setLocation(Location location) {
+            this.location = location;
+        }
+
+        @JsonDeserialize
+        @Embeddable
+        public static class Location {
+            Double latitude;
+            Double longitude;
+
+            public Double getLatitude() {
+                return latitude;
+            }
+        
+            public void setLatitude(Double latitude) {
+                this.latitude = latitude;
+            }
+        
+            public Double getLongitude() {
+                return longitude;
+            }
+        
+            public void setLongitude(Double longitude) {
+                this.longitude = longitude;
+            }
+        }
 
         @OneToMany(mappedBy = "event", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
         private Set<UserEvent> userEvents = new HashSet<>();
@@ -89,4 +125,5 @@
         public void setUserEvents(Set<UserEvent> userEvents) {
             this.userEvents = userEvents;
         }
+
     }

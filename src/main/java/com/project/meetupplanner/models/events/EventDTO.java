@@ -2,24 +2,28 @@ package com.project.meetupplanner.models.events;
 
 import java.time.LocalDateTime;
 
+import com.project.meetupplanner.models.events.Event.Location;
+
 public class EventDTO {
     private Long id;
     private String text;
     private LocalDateTime start;
     private LocalDateTime end;
     private String color;
+    private Location location; 
   
     // Default constructor
     public EventDTO() {
     }
 
     // Constructor with parameters
-    public EventDTO(Long id, String text, LocalDateTime start, LocalDateTime end, String color) {
+    public EventDTO(Long id, String text, LocalDateTime start, LocalDateTime end, String color, Location location) {
         this.id = id;
         this.text = text;
         this.start = start;
         this.end = end;
         this.color = color;
+        this.location = location;
     }
 
 
@@ -53,6 +57,14 @@ public class EventDTO {
     }
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
     
 }

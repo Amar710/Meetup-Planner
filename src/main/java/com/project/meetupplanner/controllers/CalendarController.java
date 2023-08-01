@@ -3,6 +3,8 @@ package com.project.meetupplanner.controllers;
 import java.util.List;
 import java.util.Map;
 import java.util.Collections;
+import java.util.Optional;
+
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
@@ -43,9 +45,6 @@ public class CalendarController {
 
     @Autowired
     UserRepository userRepository;
-
-    @Autowired
-    EventRepository eventRepository;
 
     @RequestMapping("/api")
     @ResponseBody
@@ -174,7 +173,7 @@ public class CalendarController {
     public ResponseEntity<Map<String, String>> inviteUser(@RequestBody EventInviteParams params) {
         // Fetch the user and event by id
         User user = userRepository.findById(params.uid).orElse(null);
-        Event event = eventRepository.findById(params.eventId).orElse(null);
+        Event event = er.findById(params.eventId).orElse(null);
     
         if (user == null || event == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -197,6 +196,27 @@ public class CalendarController {
         return ResponseEntity.ok(Collections.singletonMap("message", "User has been invited successfully."));
     }
     
+
+    @PostMapping("/api/events/{id}/location")
+    public ResponseEntity<Void> updateEventLocation(@PathVariable Long id, @RequestBody Event.Location location) {
+        System.out.println("location: " + location);  // log the location value
+    
+        Optional<Event> optionalEvent = er.findById(id);
+    
+        if (optionalEvent.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    
+        Event event = optionalEvent.get();
+        event.setLocation(location);
+        er.save(event);
+    
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    
+
+
+
     
 
     public static class EventInviteParams {
