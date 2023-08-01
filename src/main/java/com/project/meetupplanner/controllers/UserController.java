@@ -354,14 +354,12 @@ public class UserController {
         List<User> findUserUnfriend = userRepo.findByUid(userid);
 
         if (findUserUnfriend.isEmpty()){
-            System.out.println("test1");
             return "redirect:/users/userPages/friendView";
         }
 
         User unfriendUser = findUserUnfriend.get(0);
         user.removeFriend(unfriendUser);
         userRepo.save(user);
-        System.out.println("test");
         return "redirect:/users/userPages/friendView";
     }
 
