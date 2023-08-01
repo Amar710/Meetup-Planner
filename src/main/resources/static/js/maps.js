@@ -15,7 +15,7 @@ function initMap() {
   });
   
   infoWindow = new google.maps.InfoWindow();
-
+  
   const locationButton = document.createElement("button");
 
   locationButton.textContent = "Show Current Location";
@@ -46,6 +46,7 @@ function initMap() {
       handleLocationError(false, infoWindow, map.getCenter());
     }
   });
+  
   directionsRenderer.setMap(map);
   initAutocomplete();
   // Calculate once there is a location in the search box
@@ -53,7 +54,9 @@ function initMap() {
     calculateAndDisplayRoute(directionsService, directionsRenderer);
   };
   document.getElementById("pac-input").addEventListener("change", onChangeHandler);
+  
 }
+
 
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {
   infoWindow.setPosition(pos);
@@ -111,15 +114,17 @@ function initAutocomplete() {
           scaledSize: new google.maps.Size(25, 25),
         };
   
-        // Create a marker for each place.
-        markers.push(
-          new google.maps.Marker({
-            map,
-            icon,
-            title: place.name,
-            position: place.geometry.location,
-          }),
-        );
+        // Create a marker for each place. - Will not use since we are only using route
+        // markers.push(
+        //   new google.maps.Marker({
+        //     map,
+        //     icon,
+        //     animation: google.maps.Animation.DROP,
+        //     title: place.name,
+        //     position: place.geometry.location,
+        //   }),
+        // );
+    
         if (place.geometry.viewport) {
           // Only geocodes have viewport.
           bounds.union(place.geometry.viewport);
@@ -136,48 +141,64 @@ function initAutocomplete() {
 // Other point will be the given location which can be put into the autocomplete search bar
 function calculateAndDisplayRoute(directionsService, directionsRenderer) {
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const pos = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude,
-                };
-                 // Get the destination location from the autocomplete search box
-                const destinationInput = document.getElementById("pac-input");
-                const destinationPlace = destinationInput.value;
-                // Call directionsService.route inside the getCurrentPosition callback
-                directionsService.route({
-                    origin: pos,
-                    destination: destinationPlace,
-                    travelMode: google.maps.TravelMode.DRIVING
-                })
-                .then((response) => {
-                    directionsRenderer.setDirections(response);
-                })
-                .catch((e) => window.alert("Directions request failed due to " + status));
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const pos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+  
+          const destinationInput = document.getElementById("pac-input");
+          const destinationPlace = destinationInput.value;
+  
+          directionsService.route(
+            {
+              origin: pos,
+              destination: destinationPlace,
+              travelMode: google.maps.TravelMode.DRIVING,
             },
-            (error) => {
-                console.log("Geolocation error:", error);
-                handleLocationError(true, infoWindow, map.getCenter());
+            (response, status) => {
+              if (status === "OK") {
+                directionsRenderer.setDirections(response);
+  
+                // Extract the route duration and display it on the page
+                const routeDuration = response.routes[0].legs[0].duration.text;
+                document.getElementById("route-duration").textContent =
+                  "Estimated Duration: " + routeDuration;
+              } else {
+                window.alert("Directions request failed due to " + status);
+              }
             }
-        )
-    }
-    else {
-        const pos = { lat: 49.186751855008914, lng: -122.8491484050545 };
-        // Get the destination location from the autocomplete search box
-        const destinationInput = document.getElementById("pac-input");
-        const destinationPlace = destinationInput.value;
-        // Call directionsService.route if geolocation is not available
-        directionsService.route({
-            origin: pos,
-            destination: destinationPlace,
-            travelMode: google.maps.TravelMode.DRIVING
-        })
-        .then((response) => {
+          );
+        },
+        (error) => {
+          console.log("Geolocation error:", error);
+          handleLocationError(true, infoWindow, map.getCenter());
+        }
+      );
+    } else {
+      const pos = { lat: 49.186751855008914, lng: -122.8491484050545 };
+      directionsService.route(
+        {
+          origin: pos,
+          destination: { lat: 49.2786956418124, lng: -122.91971163861588 },
+          travelMode: google.maps.TravelMode.DRIVING,
+        },
+        (response, status) => {
+          if (status === "OK") {
             directionsRenderer.setDirections(response);
-        })
-        .catch((e) => window.alert("Directions request failed due to " + status));
+  
+            // Extract the route duration and display it on the page
+            const routeDuration = response.routes[0].legs[0].duration.text;
+            document.getElementById("route-duration").textContent =
+              "Estimated Duration: " + routeDuration;
+          } else {
+            window.alert("Directions request failed due to " + status);
+          }
+        }
+      );
     }
-}
+  }
+  
 
 window.initMap = initMap;
