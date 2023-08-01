@@ -3,12 +3,17 @@
 // failed.", it means you probably did not give permission for the browser to
 // locate you.
 let map, infoWindow;
+let directionsService;
+let directionsRenderer;
 
 function initMap() {
-  map = new google.maps.Map(document.getElementById("map"), {
+    directionsRenderer = new google.maps.DirectionsRenderer();
+    directionsService = new google.maps.DirectionsService();
+    map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 49.2786956418124, lng: -122.91971163861588 },
     zoom: 12,
   });
+  directionsRenderer.setMap(map);
   infoWindow = new google.maps.InfoWindow();
 
   const locationButton = document.createElement("button");
@@ -18,6 +23,7 @@ function initMap() {
   map.controls[google.maps.ControlPosition.TOP_CENTER].push(locationButton);
   locationButton.addEventListener("click", () => {
     // Try HTML5 geolocation.
+    // If location access is given
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -41,6 +47,7 @@ function initMap() {
     }
   });
   initAutocomplete();
+  calculateAndDisplayRoute(directionsService, directionsRenderer);
 }
 
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {
@@ -53,8 +60,7 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
   infoWindow.open(map);
 }
 
-// Add a function get 2 coordinate points from the schedule and create a route
-// One point will be the users current location which is already initalized.
+// Function to autocomplete the search bar and put a marker down on the given locataion
 function initAutocomplete() {
     // Create the search box and link it to the UI element.
     const input = document.getElementById("pac-input");
@@ -119,4 +125,28 @@ function initAutocomplete() {
       map.fitBounds(bounds);
     });
 }
+
+// Add a function get 2 coordinate points from the schedule and create a route
+// One point will be the users current location which is already initalized
+// Other point will be the given location which can be put into the autocomplete search bar
+function calculateAndDisplayRoute(directionsService, directionsRenderer) {
+    
+    directionsService
+      .route({
+        // Route can be changed and retrived values from the Meetup Planner Calender 
+        origin: { lat: 49.186751855008914, lng: -122.8491484050545 },
+        destination: { lat: 49.2786956418124, lng: -122.91971163861588 },
+        // Note that Javascript allows us to access the constant
+        // using square brackets and a string value as its
+        // "property."
+        travelMode: google.maps.TravelMode.DRIVING
+        // can change travel mode to transit, walk, drive, bike
+        //google.maps.TravelMode[selectedMode],
+      })
+      .then((response) => {
+        directionsRenderer.setDirections(response);
+      })
+      .catch((e) => window.alert("Directions request failed due to " + status));
+}
+
 window.initMap = initMap;
