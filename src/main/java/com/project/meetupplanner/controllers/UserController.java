@@ -1,6 +1,5 @@
 package com.project.meetupplanner.controllers;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -67,20 +65,17 @@ public class UserController {
     }   
    
     @PostMapping("/users/add")
-    public String addUser(@RequestParam Map<String, String> newuser, @RequestParam("profilePhoto") MultipartFile profilePhotoFile,Model model, HttpServletResponse response) {
+    public String addUser(@RequestParam Map<String, String> newuser, Model model, HttpServletResponse response) {
         try {
             String newName = newuser.get("name");
             String newPwd = newuser.get("password");
             String newEmail = newuser.get("email");
-
-            // Convert the profile photo to a byte array
-            byte[] profilePhoto = profilePhotoFile.getBytes();
             
             // Generate confirmation code
             String confirmationCode = UUID.randomUUID().toString();
 
             // Save the user with the confirmation code
-            User newUser = new User(newName, newEmail, newPwd, profilePhoto);
+            User newUser = new User(newName, newEmail, newPwd);
             newUser.setConfirmationCode(confirmationCode);
             userRepo.save(newUser);
             model.addAttribute("newUser", newUser);
@@ -100,12 +95,11 @@ public class UserController {
             emailService.sendEmail(recipientEmail, subject, message);
             response.setStatus(201);
             return "users/signUp/signupSuccess";
-        }   catch (IOException e) {
+        }   catch (Exception e) {
             e.printStackTrace();
             response.setStatus(500); // Internal Server Error
             return "users/signUp/signupError";
      }
-            
 }
 
     @GetMapping("/confirm")
