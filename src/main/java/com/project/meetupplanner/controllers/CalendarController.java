@@ -171,18 +171,25 @@ public class CalendarController {
     @PostMapping("/api/events/invite")
     @Transactional
     public ResponseEntity<Map<String, String>> inviteUser(@RequestBody EventInviteParams params) {
-        // Fetch the user and event by id
-        User user = userRepository.findById(params.uid).orElse(null);
-        Event event = er.findById(params.eventId).orElse(null);
+        // Fetch the user by username
+        User user = userRepository.findByName(params.name).orElse(null);
     
-        if (user == null || event == null) {
+        if (user == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Collections.singletonMap("message", "Invalid user or event id."));
+                    .body(Collections.singletonMap("message", "Invalid username."));
+        }
+    
+        // Fetch the event by id
+        Event event = er.findById(params.eventId).orElse(null);
+        
+        if (event == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Collections.singletonMap("message", "Invalid event id."));
         }
     
         // Check if the UserEvent already exists
         UserEvent userEvent = uer.findByEventAndUser(event, user);
-    
+        
         if (userEvent != null) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(Collections.singletonMap("message", "User has already been invited."));
@@ -221,7 +228,7 @@ public class CalendarController {
 
     public static class EventInviteParams {
         public Long eventId;
-        public int uid;
+        public String name;
     }
 
     public static class EventDeleteParams {

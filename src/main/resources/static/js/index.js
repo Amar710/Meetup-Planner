@@ -86,36 +86,36 @@ const datePicker = new DayPilot.Navigator("nav", {
               calendar.events.load("/api/events"); 
           }
         },
-        {
-          text: "invite",
-          onClick: async (args) => {
-            const e = args.source;
-            const uid = prompt("Please enter user id to invite:");
-      
-            if (uid) {
-                const params = {
-                    eventId: e.id(),
-                    uid: uid
-                };
-                try {
-                    const response = await DayPilot.Http.post('/api/events/invite', params);
-                    console.log(response.request.status);
-                    if (response.request.status === 200) {
-                      alert("Success: " + response.data.message); 
-                  } else if (response.request.status === 409) {
-                      alert("Conflict: " + response.data.message);
-                  } else {
-                      alert("Failed to invite user: " + response.data.message);
-                  }
-                } catch (error) {
-                    
-                    alert("Failed to send invite: " + error.message);
+       {
+    text: "Invite",
+    onClick: async (args) => {
+        const e = args.source;
+        const name = prompt("Please enter the name of the user you want to invite:");
+  
+        if (name) {
+            const params = {
+                eventId: e.id(),
+                name: name 
+            };
+            try {
+                const response = await DayPilot.Http.post('/api/events/invite', params);
+                console.log(response.request.status);
+                if (response.request.status === 200) {
+                  alert("Success: " + response.data.message); 
+                } else if (response.request.status === 409) {
+                  alert("Conflict: " + response.data.message);
+                } else {
+                  alert("Failed to invite user: " + response.data.message);
                 }
-            } else {
-                alert("No user id provided.");
+            } catch (error) {
+                alert("Failed to send invite: " + error.message);
             }
-          }
-      },
+        } else {
+            alert("No username provided.");
+        }
+    }
+},
+
       {
         text: "Edit",
         icon: "icon icon-edit",
