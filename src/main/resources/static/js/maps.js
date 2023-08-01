@@ -13,14 +13,14 @@ function initMap() {
     center: { lat: 49.2786956418124, lng: -122.91971163861588 },
     zoom: 12,
   });
-  directionsRenderer.setMap(map);
+  
   infoWindow = new google.maps.InfoWindow();
 
   const locationButton = document.createElement("button");
 
-  locationButton.textContent = "Pan to Current Location";
+  locationButton.textContent = "Show Current Location";
   locationButton.classList.add("custom-map-control-button");
-  map.controls[google.maps.ControlPosition.TOP_CENTER].push(locationButton);
+  map.controls[google.maps.ControlPosition.TOP_RIGHT].push(locationButton);
   locationButton.addEventListener("click", () => {
     // Try HTML5 geolocation.
     // If location access is given
@@ -46,8 +46,13 @@ function initMap() {
       handleLocationError(false, infoWindow, map.getCenter());
     }
   });
+  directionsRenderer.setMap(map);
   initAutocomplete();
-  calculateAndDisplayRoute(directionsService, directionsRenderer);
+  // Calculate once there is a location in the search box
+  const onChangeHandler = function () {
+    calculateAndDisplayRoute(directionsService, directionsRenderer);
+  };
+  document.getElementById("pac-input").addEventListener("change", onChangeHandler);
 }
 
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {
@@ -130,23 +135,49 @@ function initAutocomplete() {
 // One point will be the users current location which is already initalized
 // Other point will be the given location which can be put into the autocomplete search bar
 function calculateAndDisplayRoute(directionsService, directionsRenderer) {
-    
-    directionsService
-      .route({
-        // Route can be changed and retrived values from the Meetup Planner Calender 
-        origin: { lat: 49.186751855008914, lng: -122.8491484050545 },
-        destination: { lat: 49.2786956418124, lng: -122.91971163861588 },
-        // Note that Javascript allows us to access the constant
-        // using square brackets and a string value as its
-        // "property."
-        travelMode: google.maps.TravelMode.DRIVING
-        // can change travel mode to transit, walk, drive, bike
-        //google.maps.TravelMode[selectedMode],
-      })
-      .then((response) => {
-        directionsRenderer.setDirections(response);
-      })
-      .catch((e) => window.alert("Directions request failed due to " + status));
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const pos = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                };
+                 // Get the destination location from the autocomplete search box
+                const destinationInput = document.getElementById("pac-input");
+                const destinationPlace = destinationInput.value;
+                // Call directionsService.route inside the getCurrentPosition callback
+                directionsService.route({
+                    origin: pos,
+                    destination: destinationPlace,
+                    travelMode: google.maps.TravelMode.DRIVING
+                })
+                .then((response) => {
+                    directionsRenderer.setDirections(response);
+                })
+                .catch((e) => window.alert("Directions request failed due to " + status));
+            },
+            (error) => {
+                console.log("Geolocation error:", error);
+                handleLocationError(true, infoWindow, map.getCenter());
+            }
+        )
+    }
+    else {
+        const pos = { lat: 49.186751855008914, lng: -122.8491484050545 };
+        // Get the destination location from the autocomplete search box
+        const destinationInput = document.getElementById("pac-input");
+        const destinationPlace = destinationInput.value;
+        // Call directionsService.route if geolocation is not available
+        directionsService.route({
+            origin: pos,
+            destination: destinationPlace,
+            travelMode: google.maps.TravelMode.DRIVING
+        })
+        .then((response) => {
+            directionsRenderer.setDirections(response);
+        })
+        .catch((e) => window.alert("Directions request failed due to " + status));
+    }
 }
 
 window.initMap = initMap;
