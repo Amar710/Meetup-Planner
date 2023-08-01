@@ -268,7 +268,7 @@ function calculateAndDisplayRoute(directionsService, directionsRenderer) {
             document.getElementById("route-duration").textContent =
               "Estimated Duration: " + routeDuration;
           } else {
-            window.alert("Directions request failed due to " + status);
+            window.alert("Directions request failed due to invalid Origin/Destination input");
           }
         }
       );
