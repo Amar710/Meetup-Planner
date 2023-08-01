@@ -36,7 +36,9 @@ function initMap() {
             selectedLocation = {
                 lat: place.geometry.location.lat(),
                 lng: place.geometry.location.lng(),
+                address: place.formatted_address, // Add this line
             };
+        
 
             // Update the "pac-input" value with the formatted address
             document.getElementById("pac-input").value = place.formatted_address;

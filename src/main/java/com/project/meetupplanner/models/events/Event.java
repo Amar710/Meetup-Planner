@@ -54,6 +54,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
         public static class Location {
             Double latitude;
             Double longitude;
+            String address;
 
             public Double getLatitude() {
                 return latitude;
@@ -69,6 +70,13 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
         
             public void setLongitude(Double longitude) {
                 this.longitude = longitude;
+            }
+            public String getAddress() { // Added getter
+                return address;
+            }
+    
+            public void setAddress(String address) { // Added setter
+                this.address = address;
             }
         }
 

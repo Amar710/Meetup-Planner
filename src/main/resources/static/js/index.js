@@ -54,6 +54,12 @@ const datePicker = new DayPilot.Navigator("nav", {
       args.data.backColor = DayPilot.ColorUtil.lighter(color);
       args.data.borderColor = "darker";
       args.data.fontColor = "#ffffff";
+      
+      // Append the location information to the event text
+      const location = args.data.location;
+      const locationStr = location ? `Address: ${location.address}` : 'No location';
+      args.data.html = `${args.data.text}<br>${locationStr}`;
+      
       args.data.areas = [
         {
           top: 6,
@@ -67,6 +73,8 @@ const datePicker = new DayPilot.Navigator("nav", {
         }
       ];
     },
+    
+    
     contextMenu: new DayPilot.Menu({
       items: [
         {
@@ -262,9 +270,11 @@ const datePicker = new DayPilot.Navigator("nav", {
               'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-              latitude: updatedLocation.lat,
-              longitude: updatedLocation.lng
-          }),
+            latitude: updatedLocation.lat,
+            longitude: updatedLocation.lng,
+            address: updatedLocation.address, // Add this line
+        }),
+    
       });
   
       if (!response.ok) {
