@@ -299,97 +299,118 @@ const datePicker = new DayPilot.Navigator("nav", {
 
 
     if (planButton) {
-        planButton.addEventListener("click", () => {
-            var modal = document.getElementById('eventFormModal');
-            modal.style.display = "block";
+      planButton.addEventListener("click", () => {
+        var modal = document.getElementById('eventFormModal');
+        modal.style.display = "block";
 
-            const advanceButton = document.querySelector("#advance");
+        const advanceButton = document.querySelector("#advance");
 
-            if (advanceButton) {
-              advanceButton.addEventListener("click", async () => {
-                  // Ask the user for an event ID
-                  const eventId = prompt("Please enter the event ID");
+        if (advanceButton) {
+          advanceButton.addEventListener("click", async () => {
+              // Ask the user for an event ID
+              const eventId = prompt("Please enter the event ID");
 
-                  // Fetch the selected event from the backend
-                  const event = await fetchEvent(eventId);
+              // Fetch the event data based on the selected id
+              const eventData = await fetchEvent(eventId);
 
-                  // Log the ID, text (name), and location of the event to the console
-                  console.log(`ID for event: `, eventId);
-                  console.log(`Text (name) for event ID ${eventId}: `, event.text);
-                  console.log(`Location data for event ID ${eventId}: `, event.location);
-                  console.log(`End time for event ID ${eventId}: `, event.end); // Log the end time
-            
-                  // Convert the end time of the fetched event to the required format and set it as the start time of the new event
-                  // const fetchedEventEndTime = new Date(event.end);
+              // Extract the location from the event data and construct LatLng object
+              let eventLocation = {
+                lat: eventData.location.latitude,
+                lng: eventData.location.longitude
+              };
 
-                  const fetchedEventEndTime = new Date(event.end + 'Z');
-                  const formattedEndTime = fetchedEventEndTime.toISOString().slice(0,16);
-                  document.getElementById('start-date-input').value = formattedEndTime;
-                  
-                  // console.log(`Local end time for event ID ${eventId}: `, localEndTime);
+              // Open the "advance-mode.html" page in a new window with eventLocation as a query parameter
+              const encodedLocation = btoa(JSON.stringify(eventLocation));
+              const popup = window.open(`advanceBook.html?location=${encodedLocation}`, "Advance Mode", "width=500,height=400");
 
-                  console.log(`Converted end time for event ID ${eventId}: `, fetchedEventEndTime);
-                  console.log(`Converted end time for event ID ${eventId}: `, formattedEndTime);
+              // Pass the LatLng object to the new page
+              popup.eventLocation = eventLocation;
 
-                  document.getElementById('start-date-input').value = formattedEndTime;
+              // Define the message handler
+              const messageHandler = async function(event) {
+                  // Retrieve the updated event location from the new page and construct LatLng object
+                  const updatedLocation = {
+                    lat: event.data.latitude,
+                    lng: event.data.longitude
+                  };
+
+                  if (updatedLocation !== undefined) {
+                      // Update the event's location with the new LatLng object
+                      eventLocation = updatedLocation;
+
+                      // Convert the end time of the updated event to the required format and set it as the start time of the new event
+                      const fetchedEventEndTime = new Date(updatedLocation.end + 'Z');
+                      const formattedEndTime = fetchedEventEndTime.toISOString().slice(0,16);
+                      document.getElementById('start-date-input').value = formattedEndTime;
+
+                      // Re-initialize the map to use the new origin point.
+                      initMap(eventLocation);
+                  }
+              };
+
+              window.removeEventListener('message', messageHandler);
+              window.addEventListener('message', messageHandler);
+          });
+        }
+
+        
+          
+
+
+          const createEventButton = document.querySelector("#createEvent");
+
+          if (createEventButton) {
+              createEventButton.addEventListener("click", async () => {
+                  // Gather the necessary parameters (start, end, text) from the user
+                  let start = document.getElementById('start-date-input').value;
+                  let end = document.getElementById('end-date-input').value;
+                  let text = document.getElementById('event-text-input').value;
+
+                  let params = {
+                      start: start,
+                      end: end,
+                      text: text
+                  };
+
+                  try {
+                      const response = await fetch('/api/events/create', {
+                          method: 'POST',
+                          headers: {
+                              'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify(params),
+                      });
+
+                      if (!response.ok) {
+                          throw new Error(`HTTP error! status: ${response.status}`);
+                      }
+
+                      const data = await response.json();
+                      console.log(data);
+
+                      // Close the modal after event creation
+                      modal.style.display = "none";
+
+                  } catch (error) {
+                      console.log(error);
+                  }
               });
           }
 
+          const closeModal = document.querySelector('.close');
 
-            const createEventButton = document.querySelector("#createEvent");
+          if (closeModal) {
+              closeModal.onclick = function () {
+                  modal.style.display = "none";
+              }
+          }
 
-            if (createEventButton) {
-                createEventButton.addEventListener("click", async () => {
-                    // Gather the necessary parameters (start, end, text) from the user
-                    let start = document.getElementById('start-date-input').value;
-                    let end = document.getElementById('end-date-input').value;
-                    let text = document.getElementById('event-text-input').value;
-
-                    let params = {
-                        start: start,
-                        end: end,
-                        text: text
-                    };
-
-                    try {
-                        const response = await fetch('/api/events/create', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(params),
-                        });
-
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        }
-
-                        const data = await response.json();
-                        console.log(data);
-
-                        // Close the modal after event creation
-                        modal.style.display = "none";
-
-                    } catch (error) {
-                        console.log(error);
-                    }
-                });
-            }
-
-            const closeModal = document.querySelector('.close');
-
-            if (closeModal) {
-                closeModal.onclick = function () {
-                    modal.style.display = "none";
-                }
-            }
-
-            window.onclick = function (event) {
-                if (event.target == modal) {
-                    modal.style.display = "none";
-                }
-            }
-        });
+          window.onclick = function (event) {
+              if (event.target == modal) {
+                  modal.style.display = "none";
+              }
+          }
+      });
     }
 });
 
