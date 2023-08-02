@@ -1,6 +1,8 @@
 let map, infoWindow;
 let directionsService;
 let directionsRenderer;
+let routeTime = null; 
+
 
 let params = (new URL(document.location)).searchParams;
 let currentLocation = params.get('location');
@@ -64,6 +66,8 @@ const onChangeHandler = function () {
 };
 document.getElementById("pac-input").addEventListener("change", onChangeHandler);
 
+
+
 }
 
 // Function to autocomplete the search bar and put a marker down on the given locataion
@@ -84,10 +88,14 @@ function initAutocomplete() {
     // more details for that place.
     searchBox.addListener("places_changed", () => {
       const places = searchBox.getPlaces();
-  
+    
       if (places.length == 0) {
-        return;
+          return;
       }
+  
+      // Store the place_id of the selected place in the pac-input field
+      document.getElementById('pac-input').setAttribute('data-place-id', places[0].place_id);
+  
   
       // Clear out the old markers.
       markers.forEach((marker) => {
@@ -128,25 +136,56 @@ function calculateAndDisplayRoute(directionsService, directionsRenderer) {
     let end = document.getElementById('pac-input').value; // 'pac-input' is your destination input field
   
     directionsService.route(
-      {
-        origin: start,
-        destination: end,
-        travelMode: google.maps.TravelMode.DRIVING,
-      },
-      (response, status) => {
-        if (status === 'OK') {
-          directionsRenderer.setDirections(response);
+        {
+            origin: start,
+            destination: end,
+            travelMode: google.maps.TravelMode.WALKING, // Change this to your preferred travel mode
+        },
+        (response, status) => {
+            if (status === 'OK') {
+                directionsRenderer.setDirections(response);
 
-          // Extract the route duration and display it on the page
-          const routeDuration = response.routes[0].legs[0].duration.text;
-          document.getElementById("route-duration").textContent =
-              "Estimated Duration: " + routeDuration;
-        } else {
-          window.alert('Directions request failed due to ' + status);
+                // Extract the route duration and display it on the page
+                const routeDuration = response.routes[0].legs[0].duration.text;
+                routeTime = response.routes[0].legs[0].duration.value / 60; // duration in minutes
+
+                document.getElementById("route-duration").textContent =
+                    "Estimated Duration: " + routeDuration;
+            } else {
+                window.alert('Directions request failed due to ' + status);
+            }
         }
-      }
     );
 }
+
+
+
+
+document.addEventListener('DOMContentLoaded', (event) => {
+  document.getElementById("confirm-location").addEventListener("click", () => {
+    const selectedPlace = new google.maps.places.PlacesService(map).getDetails({
+        placeId: document.getElementById('pac-input').getAttribute('data-place-id'),
+    }, (place, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+            // Send the selected location and route time back to the parent window
+            window.opener.postMessage({
+              latitude: place.geometry.location.lat(),
+              longitude: place.geometry.location.lng(),
+              time: routeTime
+          }, '*');
+          
+
+            // Close the popup window
+            window.close();
+        }
+    });
+});
+
+});
+
+
+
+
 
 
 window.initMap = initMap;

@@ -333,28 +333,44 @@ const datePicker = new DayPilot.Navigator("nav", {
 
               // Define the message handler
               const messageHandler = async function(event) {
-                  // Retrieve the updated event location from the new page and construct LatLng object
-                  const updatedLocation = {
-                    lat: event.data.latitude,
-                    lng: event.data.longitude
-                  };
+                // Retrieve the updated event location from the new page and construct LatLng object
+                const updatedLocation = {
+                  lat: event.data.latitude,
+                  lng: event.data.longitude,
+                  time: event.data.time,
+              };
 
-                  if (updatedLocation !== undefined) {
-                      // Update the event's location with the new LatLng object
-                      eventLocation = updatedLocation;
+                console.log('Updated location received:', updatedLocation); // This line will print the updatedLocation object
 
-                      // Convert the end time of the updated event to the required format and set it as the start time of the new event
-                      const fetchedEventEndTime = new Date(updatedLocation.end + 'Z');
-                      const formattedEndTime = fetchedEventEndTime.toISOString().slice(0,16);
-                      document.getElementById('start-date-input').value = formattedEndTime;
+                if (updatedLocation.lat !== undefined && updatedLocation.lng !== undefined) {
+                  // Update the event's location with the new LatLng object
+                  // Convert the end time of the updated event to a Date object
+                  let fetchedEventEndTime = new Date(eventData.end);
+                  console.log('Fetched Event End Time:', fetchedEventEndTime); // This line will print the fetchedEventEndTime object
 
-                      // Re-initialize the map to use the new origin point.
-                      initMap(eventLocation);
-                  }
+                  // Add the route time (in minutes) to the fetchedEventEndTime
+                  fetchedEventEndTime.setMinutes(fetchedEventEndTime.getMinutes() + parseInt(updatedLocation.time));
+
+                  // Adjust for timezone difference
+                  let timezoneOffsetMinutes = fetchedEventEndTime.getTimezoneOffset();
+                  fetchedEventEndTime.setMinutes(fetchedEventEndTime.getMinutes() - timezoneOffsetMinutes);
+
+                  // Format date as "yyyy-MM-ddThh:mm" 
+                  let formattedStartTime = fetchedEventEndTime.toISOString().slice(0,16);
+                  console.log('Formatted Start Time:', formattedStartTime); // This line will print the formattedStartTime
+
+                  document.getElementById('start-date-input').value = formattedStartTime;
+
+
+          
+                  // // Re-initialize the map to use the new origin point.
+                  // initMap(eventLocation);
+              }
               };
 
               window.removeEventListener('message', messageHandler);
               window.addEventListener('message', messageHandler);
+
           });
         }
 
