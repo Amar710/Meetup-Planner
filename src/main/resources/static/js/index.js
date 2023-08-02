@@ -86,56 +86,85 @@ const datePicker = new DayPilot.Navigator("nav", {
               calendar.events.load("/api/events"); 
           }
         },
-       {
-    text: "Invite",
-    onClick: async (args) => {
-        const e = args.source;
-        const name = prompt("Please enter the name of the user you want to invite:");
-  
-        if (name) {
-            const params = {
-                eventId: e.id(),
-                name: name 
-            };
+        {
+          text: "Invite",
+          onClick: async (args) => {
+            const e = args.source;
+        
             try {
-                const response = await DayPilot.Http.post('/api/events/invite', params);
-                console.log(response.request.status);
-                if (response.request.status === 200) {
-                  alert("Success: " + response.data.message); 
-                } else if (response.request.status === 409) {
-                  alert("Conflict: " + response.data.message);
-                } else {
-                  alert("Failed to invite user: " + response.data.message);
-                }
+              const response = await DayPilot.Http.get('/api/user/friends');
+              if (response.request.status !== 200) {
+                  throw new Error("Failed to retrieve friends");
+              }
+              const friends = response.data; // this assumes the response data is an array of friend names
+        
+              // Define the menu items based on the friends list
+              let menuItems = friends.map(friend => ({
+                  text: friend,
+                  onClick: async () => {
+                    const params = {
+                        eventId: e.id(),
+                        name: friend
+                    };
+                    try {
+                        const inviteResponse = await DayPilot.Http.post('/api/events/invite', params);
+                        if (inviteResponse.request.status === 200) {
+                            alert("Success: " + inviteResponse.data.message);
+                        } else if (inviteResponse.request.status === 409) {
+                            alert("Conflict: " + inviteResponse.data.message);
+                        } else {
+                            alert("Failed to invite user: " + inviteResponse.data.message);
+                        }
+                    } catch (error) {
+                        alert("Failed to send invite: " + error.message);
+                    }
+                  }
+              }));
+        
+              // Create and display the new context menu
+              const friendsMenu = new DayPilot.Menu({items: menuItems});
+              friendsMenu.show(e);
+        
             } catch (error) {
-                alert("Failed to send invite: " + error.message);
+                alert("Failed to retrieve friends list: " + error.message);
             }
-        } else {
-            alert("No username provided.");
-        }
-    }
-},
-
-      {
-        text: "Edit",
-        icon: "icon icon-edit",
-        onClick: async (args) => {
-          const e = args.source;
-          const newName = prompt("Enter the new event name:", e.data.text);
-          if (newName !== null) {
-            e.data.text = newName;
-            calendar.events.update(e);
-            const params = {
-              id: e.id(),
-              text: newName
-            };
-            const { data } = await DayPilot.Http.post('/api/events/update', params);
-            console.log(data.message); // You can handle the response as needed
           }
-        }
+        },
+
+        {
+          text: "rename",
+          icon: "icon icon-edit",
+          onClick: async (args) => {
+            const e = args.source;
+            const newName = prompt("Enter the new event name:", e.data.text);
+            if (newName !== null) {
+              e.data.text = newName;
+              calendar.events.update(e);
+              const id = e.id();
+              const params = {
+                text: newName
+              };
+              const response = await fetch(
+                  `/api/events/${id}/update`,
+                  { 
+                      method: 'POST',
+                      headers: { 
+                          'Content-Type': 'application/json' 
+                      },
+                      body: JSON.stringify(params)
+                  }
+              );
+              if(response.ok) {
+                const data = await response.json();
+                console.log(data.message);
+              } else {
+                console.log("Response not OK");
+              }
+            }
+          }
       },
-      // Inside the contextMenu definition, add a new item for the "Edit Location" button
-{
+      
+    {
     text: "Edit Location",
     onClick: async (args) => {
         const e = args.source;

@@ -14,6 +14,7 @@ import com.project.meetupplanner.models.events.EventRepository;
 import com.project.meetupplanner.models.events.EventService;
 import com.project.meetupplanner.models.userEvent.UserEvent;
 import com.project.meetupplanner.models.userEvent.UserEventRepository;
+import com.project.meetupplanner.models.users.UserService;
 import com.project.meetupplanner.models.users.User;
 import com.project.meetupplanner.models.users.UserRepository;
 
@@ -45,6 +46,9 @@ public class CalendarController {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    UserService userService; 
 
     @RequestMapping("/api")
     @ResponseBody
@@ -203,6 +207,22 @@ public class CalendarController {
         return ResponseEntity.ok(Collections.singletonMap("message", "User has been invited successfully."));
     }
     
+    @GetMapping("/api/user/friends")
+    public ResponseEntity<List<String>> getUserFriends(HttpSession session) {
+        User user = (User) session.getAttribute("session_user");
+        
+        if (user == null) {
+            // Handle the case where the user is not logged in
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        List<User> friends = userService.getUserFriends(user);
+        List<String> friendNames = friends.stream().map(User::getName).collect(Collectors.toList());
+    
+        return ResponseEntity.ok(friendNames);
+    }
+    
+
 
     @PostMapping("/api/events/{id}/location")
     public ResponseEntity<Void> updateEventLocation(@PathVariable Long id, @RequestBody Event.Location location) {
@@ -220,11 +240,25 @@ public class CalendarController {
     
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    @PostMapping(value = "/api/events/{id}/update", consumes = "application/json")
+    public ResponseEntity<String> updateEventDescription(@PathVariable Long id, @RequestBody EventUpdateParams params) {
+        Optional<Event> optionalEvent = er.findById(id);
+
+        if (optionalEvent.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Event event = optionalEvent.get();
+        event.setText(params.text);
+        er.save(event);
+
+        return new ResponseEntity<>("{\"message\": \"Event updated successfully\"}", HttpStatus.OK);
+    }
+
     
-
-
-
-    
+    public static class EventUpdateParams {
+        public String text;
+    }
 
     public static class EventInviteParams {
         public Long eventId;
