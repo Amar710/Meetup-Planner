@@ -74,14 +74,14 @@ const datePicker = new DayPilot.Navigator("nav", {
     contextMenu: new DayPilot.Menu({
       items: [
         {
-          text: "Delete",
+          text: "Remove",
           onClick: async (args) => {
               const e = args.source;
               const params = {
                   id: e.id()
               };
       
-              const {data} = await DayPilot.Http.post('/api/events/delete', params);
+              const {data} = await DayPilot.Http.post('/api/events/Remove', params);
               calendar.events.remove(e);
               calendar.events.load("/api/events"); 
           }

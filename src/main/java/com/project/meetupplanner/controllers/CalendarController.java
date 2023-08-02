@@ -139,10 +139,10 @@ public class CalendarController {
         return e;
     }
 
-    @PostMapping("/api/events/delete")
+    @PostMapping("/api/events/Remove")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @Transactional
-    EventDeleteResponse deleteEvent(HttpServletRequest request, @RequestBody EventDeleteParams params) {
+    @Transactional  
+    EventDeleteResponse removeEvent(HttpServletRequest request, @RequestBody EventDeleteParams params) {
 
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("session_user");
