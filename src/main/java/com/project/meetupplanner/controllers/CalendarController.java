@@ -14,6 +14,7 @@ import com.project.meetupplanner.models.events.EventRepository;
 import com.project.meetupplanner.models.events.EventService;
 import com.project.meetupplanner.models.userEvent.UserEvent;
 import com.project.meetupplanner.models.userEvent.UserEventRepository;
+import com.project.meetupplanner.models.users.UserService;
 import com.project.meetupplanner.models.users.User;
 import com.project.meetupplanner.models.users.UserRepository;
 
@@ -45,6 +46,9 @@ public class CalendarController {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    UserService userService; 
 
     @RequestMapping("/api")
     @ResponseBody
@@ -171,18 +175,25 @@ public class CalendarController {
     @PostMapping("/api/events/invite")
     @Transactional
     public ResponseEntity<Map<String, String>> inviteUser(@RequestBody EventInviteParams params) {
-        // Fetch the user and event by id
-        User user = userRepository.findById(params.uid).orElse(null);
-        Event event = er.findById(params.eventId).orElse(null);
+        // Fetch the user by username
+        User user = userRepository.findByName(params.name).orElse(null);
     
-        if (user == null || event == null) {
+        if (user == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Collections.singletonMap("message", "Invalid user or event id."));
+                    .body(Collections.singletonMap("message", "Invalid username."));
+        }
+    
+        // Fetch the event by id
+        Event event = er.findById(params.eventId).orElse(null);
+        
+        if (event == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Collections.singletonMap("message", "Invalid event id."));
         }
     
         // Check if the UserEvent already exists
         UserEvent userEvent = uer.findByEventAndUser(event, user);
-    
+        
         if (userEvent != null) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(Collections.singletonMap("message", "User has already been invited."));
@@ -196,6 +207,22 @@ public class CalendarController {
         return ResponseEntity.ok(Collections.singletonMap("message", "User has been invited successfully."));
     }
     
+    @GetMapping("/api/user/friends")
+    public ResponseEntity<List<String>> getUserFriends(HttpSession session) {
+        User user = (User) session.getAttribute("session_user");
+        
+        if (user == null) {
+            // Handle the case where the user is not logged in
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        List<User> friends = userService.getUserFriends(user);
+        List<String> friendNames = friends.stream().map(User::getName).collect(Collectors.toList());
+    
+        return ResponseEntity.ok(friendNames);
+    }
+    
+
 
     @PostMapping("/api/events/{id}/location")
     public ResponseEntity<Void> updateEventLocation(@PathVariable Long id, @RequestBody Event.Location location) {
@@ -213,15 +240,29 @@ public class CalendarController {
     
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    @PostMapping(value = "/api/events/{id}/update", consumes = "application/json")
+    public ResponseEntity<String> updateEventDescription(@PathVariable Long id, @RequestBody EventUpdateParams params) {
+        Optional<Event> optionalEvent = er.findById(id);
+
+        if (optionalEvent.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Event event = optionalEvent.get();
+        event.setText(params.text);
+        er.save(event);
+
+        return new ResponseEntity<>("{\"message\": \"Event updated successfully\"}", HttpStatus.OK);
+    }
+
     
-
-
-
-    
+    public static class EventUpdateParams {
+        public String text;
+    }
 
     public static class EventInviteParams {
         public Long eventId;
-        public int uid;
+        public String name;
     }
 
     public static class EventDeleteParams {

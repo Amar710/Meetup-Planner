@@ -49,8 +49,8 @@ public class UserController {
     @ResponseBody
     public boolean userExists(@RequestParam String type, @RequestParam String value) {
         if ("name".equalsIgnoreCase(type)) {
-            List<User> nameList = userRepo.findByName(value);
-            return !nameList.isEmpty();
+            Optional<User> userOptional = userRepo.findByName(value);
+            return userOptional.isPresent();
         } else if ("email".equalsIgnoreCase(type)) {
             User existingUser = userRepo.findByEmail(value);
             return existingUser != null;
@@ -309,7 +309,7 @@ public class UserController {
         model.addAttribute("user", user);
         return "users/userPages/friendView";
     }
-    
+
     @PostMapping("/addFriend")
     public String friending(@RequestParam("friendName") String friendsName, HttpSession session, Model model){
         System.out.println("friend user with name: " + friendsName);
@@ -320,31 +320,31 @@ public class UserController {
             return "redirect:/login";
         }
 
-        List<User> findUserfriend = userRepo.findByName(friendsName);
+        Optional<User> friendOptional = userRepo.findByName(friendsName);
 
-        // check if the user exist in the database
-        if (findUserfriend.isEmpty()){
+        // check if the user exists in the database
+        if (!friendOptional.isPresent()){
             model.addAttribute("confirmation", "That user doesn't exist. Ensure the name is properly added!");
             return "redirect:/friendView";
         }
 
-        User friendingUser = findUserfriend.get(0);
+        User friendingUser = friendOptional.get();
         user.addFriend(friendingUser);
         userRepo.save(user);
         model.addAttribute("confirmation", "User have been added");
 
         return "redirect:/friendView";
     }
-    
-    
-    
+        
     @PostMapping("/unfriend")
     public String removeFriend(@RequestParam("userId") Integer friendId, HttpSession session, Model model) {
         User user = (User) session.getAttribute("session_user");
+
         if (user == null) {
             // Redirect or handle the case where the user is not logged in
             return "redirect:/login";
         }
+
         userService.removeFriend(user.getUid(), friendId);
     
         // Fetch the updated user object from the database
@@ -358,6 +358,7 @@ public class UserController {
     
         // Redirect to the friendView method with the updated friend list
         return friendView(model, session);
+
     }
     
     

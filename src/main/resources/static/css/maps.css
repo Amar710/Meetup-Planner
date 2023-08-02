@@ -82,7 +82,7 @@ body {
 }
 
 #pac-input-origin {
-  
+
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -92,6 +92,8 @@ body {
   padding: 8px;
   width: 32%;
 }
+
+
 
 /* Style the autocomplete dropdown */
 .pac-item {
@@ -123,4 +125,8 @@ body {
 
 #target {
   width: 345px;
+}
+#route-duration {
+  font-size: 16px;
+  color: #555;
 }
