@@ -1,4 +1,4 @@
-package com.project.meetupplanner.models;
+package com.project.meetupplanner.models.email;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

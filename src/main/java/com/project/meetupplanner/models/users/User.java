@@ -1,10 +1,17 @@
-package com.project.meetupplanner.models;
+package com.project.meetupplanner.models.users;
 
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import com.project.meetupplanner.models.userEvent.UserEvent;
 
-@Entity
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+@JsonIdentityInfo(
+  generator = ObjectIdGenerators.PropertyGenerator.class, 
+  property = "uid")
+  @Entity
 @Table(name = "users")
 public class User {
     @Id
@@ -19,7 +26,7 @@ public class User {
     private boolean admin;
     private String resetPasswordToken;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_friends",
         joinColumns = @JoinColumn(name = "user_id"),
@@ -27,6 +34,9 @@ public class User {
     )
     private Set<User> friends = new HashSet<>();
     
+    
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<UserEvent> userEvents = new HashSet<>();
 
     public User() {
     }
@@ -122,11 +132,20 @@ public class User {
         this.friends.add(friend);
         friend.getFriends().add(this);
     }
-
+    
     public void removeFriend(User friend) {
-        this.friends.remove(friend);
-        friend.getFriends().remove(this);
+        if (this.friends.contains(friend)) {
+            this.friends.remove(friend);
+            friend.getFriends().remove(this);
+        }
+    }   
+    
+
+    public Set<UserEvent> getUserEvents() {
+        return userEvents;
+    }
+
+    public void setUserEvents(Set<UserEvent> userEvents) {
+        this.userEvents = userEvents;
     }
 }
-
-

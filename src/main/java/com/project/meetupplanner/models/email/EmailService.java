@@ -1,4 +1,4 @@
-package com.project.meetupplanner.models;
+package com.project.meetupplanner.models.email;
 
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
