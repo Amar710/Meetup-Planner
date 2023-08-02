@@ -298,46 +298,68 @@ public class UserController {
             // Redirect or handle the case where the user is not logged in
             return "redirect:/login";
         }
-        User profile = userRepo.findByUid(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User profile = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         
         model.addAttribute("profile", profile);
-    
         
         List<User> friends = userService.getUserFriends(profile);
-        
         model.addAttribute("users", friends);
         model.addAttribute("user", user);
+    
+        // Check if the logged-in user has sent a friend request to the profile user
+        boolean sentFriendRequest = profile.getReceivedFriendRequests().contains(user);
+    
+        // Check if the profile user has sent a friend request to the logged-in user
+        boolean receivedFriendRequest = profile.getSentFriendRequests().contains(user);
+    
+        model.addAttribute("sentFriendRequest", sentFriendRequest);
+        model.addAttribute("receivedFriendRequest", receivedFriendRequest);
+    
         return "users/userPages/friendView";
     }
     
-    @PostMapping("/addFriend")
-    public String friending(@RequestParam("friendName") String friendsName, HttpSession session, Model model){
-        System.out.println("friend user with name: " + friendsName);
+    @PostMapping("/sendFriendRequest")
+    public String sendFriendRequest(@RequestParam("friendName") String friendName, HttpSession session, Model model) {
         User user = (User) session.getAttribute("session_user");
-
         if (user == null) {
             // Redirect or handle the case where the user is not logged in
             return "redirect:/login";
         }
 
-        List<User> findUserfriend = userRepo.findByName(friendsName);
-
-        // check if the user exist in the database
-        if (findUserfriend.isEmpty()){
-            model.addAttribute("confirmation", "That user doesn't exist. Ensure the name is properly added!");
-            return "redirect:/friendView";
+        List<User> friends = userRepo.findByName(friendName);
+            if (friends.isEmpty()) {
+                model.addAttribute("error", "Friend not found"); 
+            return friendView(model, session); 
         }
 
-        User friendingUser = findUserfriend.get(0);
-        user.addFriend(friendingUser);
+        User friend = friends.get(0); 
+        user.sendFriendRequest(friend);
         userRepo.save(user);
-        model.addAttribute("confirmation", "User have been added");
+        return "redirect:/otherFriendView?userId=" + friend.getUid();
+}
 
-        return "redirect:/friendView";
+
+    @PostMapping("/acceptFriendRequest")
+    public String acceptFriendRequest(@RequestParam("userId") Integer userId, HttpSession session, Model model) {
+        User user = (User) session.getAttribute("session_user");
+        if (user == null) {
+            // Redirect or handle the case where the user is not logged in
+            return "redirect:/login";
+        }
+
+        User friend = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Check if the friend request exists before accepting
+        if (!friend.getReceivedFriendRequests().contains(user)) {
+            model.addAttribute("error", "Friend request not found");
+            return friendView(model, session);
+        }
+        user.acceptFriendRequest(friend);
+        userRepo.save(user);
+        return "redirect:/otherFriendView?userId=" + userId;
+    
     }
-    
-    
-    
+ 
     @PostMapping("/unfriend")
     public String removeFriend(@RequestParam("userId") Integer friendId, HttpSession session, Model model) {
         User user = (User) session.getAttribute("session_user");

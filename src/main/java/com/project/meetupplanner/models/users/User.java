@@ -33,6 +33,40 @@ public class User {
         inverseJoinColumns = @JoinColumn(name = "friend_id")
     )
     private Set<User> friends = new HashSet<>();
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "friend_requests",
+        joinColumns = @JoinColumn(name = "sender_id"),
+        inverseJoinColumns = @JoinColumn(name = "receiver_id")
+    )
+    private Set<User> receivedFriendRequests = new HashSet<>();
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "received_requests",
+        joinColumns = @JoinColumn(name = "receiver_id"),
+        inverseJoinColumns = @JoinColumn(name = "sender_id")
+    )
+
+    private Set<User> sentFriendRequests = new HashSet<>();
+
+    public void sendFriendRequest(User friend) {
+        this.sentFriendRequests.add(friend);
+        friend.receivedFriendRequests.add(this);
+    }
+
+    public void acceptFriendRequest(User friend) {
+        this.receivedFriendRequests.remove(friend);
+        this.friends.add(friend);
+        friend.sentFriendRequests.remove(this);
+        friend.friends.add(this);
+    }
+
+    public void declineFriendRequest(User friend) {
+        this.receivedFriendRequests.remove(friend);
+        friend.sentFriendRequests.remove(this);
+    }
     
     
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -139,8 +173,23 @@ public class User {
             friend.getFriends().remove(this);
         }
     }   
-    
 
+    public Set<User> getReceivedFriendRequests() {
+        return receivedFriendRequests;
+    }
+
+    public void setReceivedFriendRequests(Set<User> receivedFriendRequests) {
+        this.receivedFriendRequests = receivedFriendRequests;
+    }
+
+    public Set<User> getSentFriendRequests() {
+        return sentFriendRequests;
+    }
+
+    public void setSentFriendRequests(Set<User> sentFriendRequests) {
+        this.sentFriendRequests = sentFriendRequests;
+    }
+    
     public Set<UserEvent> getUserEvents() {
         return userEvents;
     }

@@ -46,42 +46,49 @@
   </div>
   <!-- top bar end -->
 
-  <div>
-    <form action = "/addFriend" method="post">
-      <label for="adding-friend">Add Friend's Name:</label>
-      <input type="text" id="friendName" name="friendName" class="form-control" placeholder="Enter">
-    </form>
-  </div>
+  <form action="/sendFriendRequest" method="post">
+    <label for="adding-friend">Add Friend's Name:</label>
+    <input type="text" id="friendName" name="friendName" class="form-control" placeholder="Enter">
+    <button type="submit">Send Friend Request</button>
+</form>
 
-  <div id="container" th:each="user: ${users}">
-                                                
-      <table id="text">
-        <tr>
-          <td class="leftside">
-            <img src="../image/pfp.png" alt="Profile Picture" id="pfp">
-          </td>
-  
-          <td class="rightside">
-            Name: <span th:text="${user.name}"></span> <br>
-            email: <span th:text="${user.email}"></span> <br>
-          </td>
-        </tr>
-        <tr>
+<div id="container" th:each="profileUser: ${users}" th:if="${profileUser != null}">
+  <table id="text">
+      <!-- ... -->
+      <tr>
           <td>
-            <form id="ViewForm" method="post" action="/ViewUser">
-              <input type="hidden" name="userId" th:value="${user.uid}">
-                <button class="form-button2" type="submit">View</button>
-            </form>
+              <form id="ViewForm" method="post" th:action="@{'/ViewUser(userId=' + profileUser.uid + ')'}">
+                  <button class="form-button2" type="submit">View</button>
+              </form>
           </td>
           <td>
-            <form id="unfriend" method="post" action="/unfriend">
-              <input type="hidden" name="userId" th:value="${user.uid}">
-                <button class="form-button2" type="submit">Unfriend</button>
-            </form>
+              <form id="unfriend" method="post" th:action="@{'/unfriend(userId=' + profileUser.uid + ')'}">
+                  <button class="form-button2" type="submit">Unfriend</button>
+              </form>
           </td>
-        </tr>
-      </table>  
-  </div>    
+      </tr>
+      <tr>
+          <td colspan="2">
+              <!-- Display buttons or messages based on friend request status -->
+              <span th:if="${profileUser.sentFriendRequest}">
+                  Friend request sent
+              </span>
+              <span th:if="${profileUser.receivedFriendRequest}">
+                  Friend request received
+                  <form id="acceptFriendRequestForm" method="post" th:action="@{'/acceptFriendRequest(userId=' + profileUser.uid + ')'}">
+                      <button class="form-button2" type="submit">Accept</button>
+                  </form>
+              </span>
+              <span th:unless="${profileUser.sentFriendRequest or profileUser.receivedFriendRequest}">
+                  <form id="sendFriendRequestForm" method="post" th:action="@{'/sendFriendRequest(userId=' + profileUser.uid + ')'}">
+                      <button class="form-button2" type="submit">Send Friend Request</button>
+                  </form>
+              </span>
+          </td>
+      </tr>
+  </table>
+</div>
 
 </body>
 </html>
+
