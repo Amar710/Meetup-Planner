@@ -240,6 +240,7 @@ public class CalendarController {
     
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
     @PostMapping(value = "/api/events/{id}/update", consumes = "application/json")
     public ResponseEntity<String> updateEventDescription(@PathVariable Long id, @RequestBody EventUpdateParams params) {
         Optional<Event> optionalEvent = er.findById(id);
@@ -254,6 +255,22 @@ public class CalendarController {
 
         return new ResponseEntity<>("{\"message\": \"Event updated successfully\"}", HttpStatus.OK);
     }
+
+    @GetMapping("/api/events/next/{id}")
+    public ResponseEntity<EventDTO> getNextEventById(@PathVariable Long id) {
+        Optional<Event> optionalEvent = er.findById(id);
+
+        if (optionalEvent.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Event event = optionalEvent.get();
+        EventDTO eventDTO = eventService.convertToEventDTO(event);
+
+        return new ResponseEntity<>(eventDTO, HttpStatus.OK);
+    }
+
+
 
     
     public static class EventUpdateParams {

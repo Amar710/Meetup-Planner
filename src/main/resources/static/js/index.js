@@ -54,7 +54,8 @@ const datePicker = new DayPilot.Navigator("nav", {
       // Append the location information to the event text
       const location = args.data.location;
       const locationStr = location ? `Address: ${location.address}` : 'No location';
-      args.data.html = `${args.data.text}<br>${locationStr}`;
+      const eventId = args.data.id;  // Get the event ID
+      args.data.html = `Event ID: ${eventId} <br> ${args.data.text}<br>${locationStr}`;
       
       args.data.areas = [
         {
@@ -69,6 +70,7 @@ const datePicker = new DayPilot.Navigator("nav", {
         }
       ];
     },
+    
     
     
     contextMenu: new DayPilot.Menu({
@@ -278,70 +280,119 @@ const datePicker = new DayPilot.Navigator("nav", {
     
   };
 
+
+
   window.addEventListener('DOMContentLoaded', (event) => {
     const planButton = document.querySelector("#plan");
-    
-    if (planButton) {
-      planButton.addEventListener("click", () => {
-        var modal = document.getElementById('eventFormModal');
-        modal.style.display = "block";
-  
-        const createEventButton = document.querySelector("#createEvent");
-        
-        if (createEventButton) {
-          createEventButton.addEventListener("click", async () => {
-            // Gather the necessary parameters (start, end, text) from the user
-            let start = document.getElementById('start-date-input').value;
-            let end = document.getElementById('end-date-input').value;
-            let text = document.getElementById('event-text-input').value;
-  
-            let params = {
-              start: start,
-              end: end,
-              text: text
-            };
-  
-            try {
-              const response = await fetch('/api/events/create', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(params),
-              });
-  
-              if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-              }
-  
-              const data = await response.json();
-              console.log(data);
-  
-              // Close the modal after event creation
-              modal.style.display = "none";
-  
-            } catch (error) {
-              console.log(error);
-            }
-          });
+
+    async function fetchEvent(id) {
+        const response = await fetch(`/api/events/next/${id}`);
+
+        if (!response.ok) {
+            const message = `An error has occurred: ${response.status}`;
+            throw new Error(message);
         }
-  
-        const closeModal = document.querySelector('.close');
-  
-        if (closeModal) {
-          closeModal.onclick = function() {
-            modal.style.display = "none";
-          }
-        }
-  
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-      });
+
+        const data = await response.json();
+        return data;
     }
-  });
+
+
+    if (planButton) {
+        planButton.addEventListener("click", () => {
+            var modal = document.getElementById('eventFormModal');
+            modal.style.display = "block";
+
+            const advanceButton = document.querySelector("#advance");
+
+            if (advanceButton) {
+              advanceButton.addEventListener("click", async () => {
+                  // Ask the user for an event ID
+                  const eventId = prompt("Please enter the event ID");
+
+                  // Fetch the selected event from the backend
+                  const event = await fetchEvent(eventId);
+
+                  // Log the ID, text (name), and location of the event to the console
+                  console.log(`ID for event: `, eventId);
+                  console.log(`Text (name) for event ID ${eventId}: `, event.text);
+                  console.log(`Location data for event ID ${eventId}: `, event.location);
+                  console.log(`End time for event ID ${eventId}: `, event.end); // Log the end time
+            
+                  // Convert the end time of the fetched event to the required format and set it as the start time of the new event
+                  // const fetchedEventEndTime = new Date(event.end);
+
+                  const fetchedEventEndTime = new Date(event.end + 'Z');
+                  const formattedEndTime = fetchedEventEndTime.toISOString().slice(0,16);
+                  document.getElementById('start-date-input').value = formattedEndTime;
+                  
+                  // console.log(`Local end time for event ID ${eventId}: `, localEndTime);
+
+                  console.log(`Converted end time for event ID ${eventId}: `, fetchedEventEndTime);
+                  console.log(`Converted end time for event ID ${eventId}: `, formattedEndTime);
+
+                  document.getElementById('start-date-input').value = formattedEndTime;
+              });
+          }
+
+
+            const createEventButton = document.querySelector("#createEvent");
+
+            if (createEventButton) {
+                createEventButton.addEventListener("click", async () => {
+                    // Gather the necessary parameters (start, end, text) from the user
+                    let start = document.getElementById('start-date-input').value;
+                    let end = document.getElementById('end-date-input').value;
+                    let text = document.getElementById('event-text-input').value;
+
+                    let params = {
+                        start: start,
+                        end: end,
+                        text: text
+                    };
+
+                    try {
+                        const response = await fetch('/api/events/create', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(params),
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+
+                        const data = await response.json();
+                        console.log(data);
+
+                        // Close the modal after event creation
+                        modal.style.display = "none";
+
+                    } catch (error) {
+                        console.log(error);
+                    }
+                });
+            }
+
+            const closeModal = document.querySelector('.close');
+
+            if (closeModal) {
+                closeModal.onclick = function () {
+                    modal.style.display = "none";
+                }
+            }
+
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+        });
+    }
+});
+
   
 
   let currentEventId; // This stores the id of the currently edited event
@@ -375,35 +426,41 @@ const datePicker = new DayPilot.Navigator("nav", {
   }
   
 
-  document.getElementById('submitEvent').onclick = async function(event) {
-    event.preventDefault(); // Prevent the form from submitting normally
-  
-    // Get the form values
-    const start = document.getElementById('start-date-input').value;
-    const end = document.getElementById('end-date-input').value;
-    const text = document.getElementById('event-text-input').value;
-  
-    // Build the parameters object
-    const params = {
-      start: start,
-      end: end,
-      text: text
-    };
-  
-    // Send the POST request
-    const { data } = await DayPilot.Http.post('/api/events/create', params);
-  
-    // Add the new event to the calendar
-    calendar.events.add(data);
-  
-    // Close the modal
-    document.getElementById('eventFormModal').style.display = "none";
-  }
-  
+  window.addEventListener('DOMContentLoaded', (event) => {
+    const submitButton = document.getElementById('submitEvent');
 
-  function onEventSelection(id) {
-      currentEventId = id; // Update the current event id when an event is selected
-  }
+    if (submitButton) {
+        submitButton.onclick = async function(event) {
+            event.preventDefault(); // Prevent the form from submitting normally
+      
+            // Get the form values
+            const start = document.getElementById('start-date-input').value;
+            const end = document.getElementById('end-date-input').value;
+            const text = document.getElementById('event-text-input').value;
+      
+            // Build the parameters object
+            const params = {
+                start: start,
+                end: end,
+                text: text
+            };
+      
+            // Send the POST request
+            const { data } = await DayPilot.Http.post('/api/events/create', params);
+      
+            // Add the new event to the calendar
+            calendar.events.add(data);
+      
+            // Close the modal
+            document.getElementById('eventFormModal').style.display = "none";
+        }
+    }
+
+    window.onEventSelection = function(id) {
+        currentEventId = id; // Update the current event id when an event is selected
+    }
+});
+
   
   
 
