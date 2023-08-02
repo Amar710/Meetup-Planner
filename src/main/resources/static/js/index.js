@@ -16,17 +16,22 @@ const datePicker = new DayPilot.Navigator("nav", {
     eventEndSpec: "Date",
     viewType: "Week",
     headerDateFormat: "dddd MMMM d",
+    // produces "Thursday June 17"
     eventHeight: 30,
     eventBarVisible: false,
     onTimeRangeSelected: async (args) => {
-      // Store the selected start and end dates for later use
-      document.getElementById('start-date-input').value = args.start;
-      document.getElementById('end-date-input').value = args.end;
-    
-      // Open the modal
-      document.getElementById('eventFormModal').style.display = "block";
-    
+      const modal = await DayPilot.Modal.prompt("Create a new event:", "Event");
       calendar.clearSelection();
+      if (modal.canceled) {
+        return;
+      }
+      const params = {
+        start: args.start,
+        end: args.end,
+        text: modal.result
+      };
+      const {data} = await DayPilot.Http.post('/api/events/create', params);
+      calendar.events.add(data);
     },
     
     onEventMove: async (args) => {
