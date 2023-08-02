@@ -309,32 +309,42 @@ public class UserController {
         model.addAttribute("user", user);
         return "users/userPages/friendView";
     }
-
+    
     @PostMapping("/addFriend")
     public String friending(@RequestParam("friendName") String friendsName, HttpSession session, Model model){
         System.out.println("friend user with name: " + friendsName);
         User user = (User) session.getAttribute("session_user");
-
+    
         if (user == null) {
             // Redirect or handle the case where the user is not logged in
             return "redirect:/login";
         }
-
-        Optional<User> friendOptional = userRepo.findByName(friendsName);
-
-        // check if the user exists in the database
-        if (!friendOptional.isPresent()){
+    
+        Optional<User> findUserfriend = userRepo.findByName(friendsName);
+    
+        // check if the user exist in the database
+        if (findUserfriend.isEmpty()){
             model.addAttribute("confirmation", "That user doesn't exist. Ensure the name is properly added!");
             return "redirect:/friendView";
         }
-
-        User friendingUser = friendOptional.get();
-        user.addFriend(friendingUser);
-        userRepo.save(user);
-        model.addAttribute("confirmation", "User have been added");
-
-        return "redirect:/friendView";
+    
+        User friendingUser = findUserfriend.get();
+        userService.addFriend(user.getUid(), friendingUser.getUid());
+    
+        // Fetch the updated user object from the database
+        User updatedUser = userRepo.findById(user.getUid()).orElseThrow(() -> new RuntimeException("User not found"));
+    
+        // Update the session with the updated user information
+        session.setAttribute("session_user", updatedUser);
+    
+        // Add the 'user' object to the model (optional, but can be useful in the view)
+        model.addAttribute("user", updatedUser);
+    
+        // Redirect to the friendView method with the updated friend list
+        return friendView(model, session);
     }
+    
+    
         
     @PostMapping("/unfriend")
     public String removeFriend(@RequestParam("userId") Integer friendId, HttpSession session, Model model) {

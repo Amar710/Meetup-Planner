@@ -89,47 +89,47 @@ const datePicker = new DayPilot.Navigator("nav", {
         {
           text: "Invite",
           onClick: async (args) => {
-            const e = args.source;
-        
-            try {
-              const response = await DayPilot.Http.get('/api/user/friends');
-              if (response.request.status !== 200) {
-                  throw new Error("Failed to retrieve friends");
-              }
-              const friends = response.data; // this assumes the response data is an array of friend names
-        
-              // Define the menu items based on the friends list
-              let menuItems = friends.map(friend => ({
-                  text: friend,
-                  onClick: async () => {
-                    const params = {
-                        eventId: e.id(),
-                        name: friend
-                    };
-                    try {
-                        const inviteResponse = await DayPilot.Http.post('/api/events/invite', params);
-                        if (inviteResponse.request.status === 200) {
-                            alert("Success: " + inviteResponse.data.message);
-                        } else if (inviteResponse.request.status === 409) {
-                            alert("Conflict: " + inviteResponse.data.message);
-                        } else {
-                            alert("Failed to invite user: " + inviteResponse.data.message);
-                        }
-                    } catch (error) {
-                        alert("Failed to send invite: " + error.message);
-                    }
+              const e = args.source;
+              try {
+                  const response = await DayPilot.Http.get('/api/user/friends');
+                  if (response.request.status !== 200) {
+                      throw new Error("Failed to retrieve friends");
                   }
-              }));
-        
-              // Create and display the new context menu
-              const friendsMenu = new DayPilot.Menu({items: menuItems});
-              friendsMenu.show(e);
-        
-            } catch (error) {
-                alert("Failed to retrieve friends list: " + error.message);
-            }
+                  const friends = response.data; // this assumes the response data is an array of friend names
+      
+                  // Define the menu items based on the friends list
+                  let menuItems = friends.map(friend => ({
+                      text: friend,
+                      onClick: async () => {
+                          const params = {
+                              eventId: e.id(),
+                              name: friend
+                          };
+                          try {
+                              const inviteResponse = await DayPilot.Http.post('/api/events/invite', params);
+                              if (inviteResponse.request.status === 200) {
+                                  alert("Success: " + inviteResponse.data.message);
+                              } else if (inviteResponse.request.status === 409) {
+                                  alert("Conflict: " + inviteResponse.data.message);
+                              } else {
+                                  alert("Failed to invite user: " + inviteResponse.data.message);
+                              }
+                          } catch (error) {
+                              alert("Failed to invite user: " + error.message);
+                          }
+                      }
+                  }));
+      
+                  // Create and display the new context menu
+                  const friendsMenu = new DayPilot.Menu({items: menuItems});
+                  // Show the menu at the cursor position
+                  friendsMenu.show(args.source);
+              } catch (error) {
+                  alert("Failed to retrieve friends list: " + error.message);
+              }
           }
-        },
+      },
+      
 
         {
           text: "rename",
@@ -278,61 +278,71 @@ const datePicker = new DayPilot.Navigator("nav", {
     
   };
 
-  const planButton = document.querySelector("#plan");
-  planButton.addEventListener("click", async () => {
-    // Gather the necessary parameters (start, end, text) from the user
-    // Replace these lines with the actual code for retrieving the parameters
-    let start = document.getElementById('start-date-input').value;
-    let end = document.getElementById('end-date-input').value;
-    let text = document.getElementById('event-text-input').value;
+  window.addEventListener('DOMContentLoaded', (event) => {
+    const planButton = document.querySelector("#plan");
     
-  
-    let params = {
-      start: start,
-      end: end,
-      text: text
-    };
-  
-    try {
-      const response = await fetch('/api/events/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(params),
-      });
-  
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-  
-      const data = await response.json();
-      console.log(data);
-  
-      // After the event has been created successfully, you could open the plan_event.html page
-      // or you could do something else according to your requirements
-      // window.open("/plan_event.html", "_blank");
-  
-    } catch (error) {
-      console.log(error);
-    }
-    var modal = document.getElementById('eventFormModal');
-
-    document.getElementById('plan').onclick = function() {
+    if (planButton) {
+      planButton.addEventListener("click", () => {
+        var modal = document.getElementById('eventFormModal');
         modal.style.display = "block";
-    }
-
-    document.getElementsByClassName('close')[0].onclick = function() {
-        modal.style.display = "none";
-    }
-
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
+  
+        const createEventButton = document.querySelector("#createEvent");
+        
+        if (createEventButton) {
+          createEventButton.addEventListener("click", async () => {
+            // Gather the necessary parameters (start, end, text) from the user
+            let start = document.getElementById('start-date-input').value;
+            let end = document.getElementById('end-date-input').value;
+            let text = document.getElementById('event-text-input').value;
+  
+            let params = {
+              start: start,
+              end: end,
+              text: text
+            };
+  
+            try {
+              const response = await fetch('/api/events/create', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(params),
+              });
+  
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+  
+              const data = await response.json();
+              console.log(data);
+  
+              // Close the modal after event creation
+              modal.style.display = "none";
+  
+            } catch (error) {
+              console.log(error);
+            }
+          });
         }
+  
+        const closeModal = document.querySelector('.close');
+  
+        if (closeModal) {
+          closeModal.onclick = function() {
+            modal.style.display = "none";
+          }
+        }
+  
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+      });
     }
-
   });
+  
 
   let currentEventId; // This stores the id of the currently edited event
 
