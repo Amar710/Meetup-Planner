@@ -75,26 +75,30 @@
         <div class="toolbar">
           <button id="previous">Previous</button>
           <button id="next">Next</button>
-          <button id="plan">Plan</button>
+          <button id="plan">Add</button>
           <!-- Event form modal -->
           <div id="eventFormModal" class="modal">
-            <div class="modal-content">
+              <div class="modal-content">
               <span class="close">&times;</span>
-
               <form id="eventForm">
-                <label for="start-date-input">Start Date:</label>
-                <input type="datetime-local" id="start-date-input" name="start-date">
-                
-                <label for="end-date-input">End Date:</label>
-                <input type="datetime-local" id="end-date-input" name="end-date">
+                  <button type="button" id="advance">Advance</button>
+                  <label for="start-date-input">Start Date:</label>
+                  <input type="datetime-local" id="start-date-input" name="start-date">
 
-                <label for="event-text-input">Event Text:</label>
-                <input type="text" id="event-text-input" name="event-text">
+                  <label for="end-date-input">End Date:</label>
+                  <input type="datetime-local" id="end-date-input" name="end-date">
 
-                <button type="submit" id="submitEvent">Create Event</button>
+                  <!-- <label for="location">location:</label>
+                  <input type="location" id="location-input" name="location"> -->
+
+                  <label for="event-text-input">Event Text:</label>
+                  <input type="text" id="event-text-input" name="event-text">
+
+                  <button type="submit" id="createEvent">    Create Event</button>
               </form>
-            </div>
+              </div>
           </div>
+
 
           
           <div class="dropdown2">
