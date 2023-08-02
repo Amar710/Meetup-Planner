@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByUid(int uid);
-    List<User> findByName(String name);
+    Optional<User> findByName(String name);
     List<User> findByPassword(String password);
     User findByEmail(String email);
     List<User> findByNameAndPassword(String name, String password);
@@ -19,6 +19,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     List<User> findByResetPasswordToken(String token);
 
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.friends WHERE u.uid IN :ids")
-    List<User> findAllByIdWithFriends(@Param("ids") Set<Integer> ids); 
-    
+    List<User> findAllByIdWithFriends(@Param("ids") Set<Integer> ids);
 }

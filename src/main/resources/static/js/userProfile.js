@@ -43,6 +43,12 @@ const calendar = new DayPilot.Calendar("dp", {
     args.data.backColor = DayPilot.ColorUtil.lighter(color);
     args.data.borderColor = "darker";
     args.data.fontColor = "#ffffff";
+    
+    // Append the location information to the event text
+    const location = args.data.location;
+    const locationStr = location ? `Address: ${location.address}` : 'No location';
+    args.data.html = `${args.data.text}<br>${locationStr}`;
+    
     args.data.areas = [
       {
         top: 6,
@@ -56,6 +62,11 @@ const calendar = new DayPilot.Calendar("dp", {
       }
     ];
   },
+  
+
+  
+  
+  
 });
 calendar.init();
 

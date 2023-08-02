@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.hibernate.Hibernate;
+import org.springframework.transaction.annotation.Transactional;
+
 
 @Service
 public class UserService {
@@ -31,6 +33,22 @@ public class UserService {
         }
         
         return friends;
+    }
+
+    @Transactional
+    public void addFriend(Integer userId, Integer friendId) {
+        User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User friend = userRepo.findById(friendId).orElseThrow(() -> new RuntimeException("Friend not found"));
+        user.addFriend(friend);
+        userRepo.save(user);
+    }
+
+    @Transactional
+    public void removeFriend(Integer userId, Integer friendId) {
+        User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User friend = userRepo.findById(friendId).orElseThrow(() -> new RuntimeException("Friend not found"));
+        user.removeFriend(friend);
+        userRepo.save(user);
     }
 
 }

@@ -49,8 +49,9 @@ public class EventService {
     }
 
     public EventDTO convertToEventDTO(Event event) {
-        return new EventDTO(event.getId(), event.getText(), event.getStart(), event.getEnd(), event.getColor());
+        return new EventDTO(event.getId(), event.getText(), event.getStart(), event.getEnd(), event.getColor(), event.getLocation());
     }
+    
 
     public List<EventDTO> getAllEvents() {
         return StreamSupport.stream(eventRepository.findAll().spliterator(), false)
