@@ -309,7 +309,7 @@ public class UserController {
         model.addAttribute("user", user);
         return "users/userPages/friendView";
     }
-        
+
     @PostMapping("/addFriend")
     public String friending(@RequestParam("friendName") String friendsName, HttpSession session, Model model){
         System.out.println("friend user with name: " + friendsName);
@@ -339,10 +339,12 @@ public class UserController {
     @PostMapping("/unfriend")
     public String removeFriend(@RequestParam("userId") Integer friendId, HttpSession session, Model model) {
         User user = (User) session.getAttribute("session_user");
+
         if (user == null) {
             // Redirect or handle the case where the user is not logged in
             return "redirect:/login";
         }
+
         userService.removeFriend(user.getUid(), friendId);
     
         // Fetch the updated user object from the database
@@ -356,6 +358,7 @@ public class UserController {
     
         // Redirect to the friendView method with the updated friend list
         return friendView(model, session);
+
     }
     
     
