@@ -2,6 +2,7 @@ package com.project.meetupplanner.controllers;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -16,6 +17,7 @@ import com.project.meetupplanner.models.userEvent.UserEvent;
 import com.project.meetupplanner.models.userEvent.UserEventRepository;
 import com.project.meetupplanner.models.users.UserService;
 import com.project.meetupplanner.models.users.User;
+import com.project.meetupplanner.models.users.UserDTO;
 import com.project.meetupplanner.models.users.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -190,24 +192,21 @@ public class CalendarController {
         User user = userRepository.findByName(params.name).orElse(null);
     
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Collections.singletonMap("message", "Invalid username."));
+            return ResponseEntity.ok(Collections.singletonMap("message", "Invalid username."));
         }
     
         // Fetch the event by id
         Event event = er.findById(params.eventId).orElse(null);
         
         if (event == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Collections.singletonMap("message", "Invalid event id."));
+            return ResponseEntity.ok(Collections.singletonMap("message", "Invalid event id."));
         }
     
         // Check if the UserEvent already exists
         UserEvent userEvent = uer.findByEventAndUser(event, user);
         
         if (userEvent != null) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(Collections.singletonMap("message", "User has already been invited."));
+            return ResponseEntity.ok(Collections.singletonMap("message", "User has already been invited."));
         }
     
         userEvent = new UserEvent();
@@ -218,6 +217,7 @@ public class CalendarController {
         return ResponseEntity.ok(Collections.singletonMap("message", "User has been invited successfully."));
     }
     
+
     @GetMapping("/api/user/friends")
     public ResponseEntity<List<String>> getUserFriends(HttpSession session) {
         User user = (User) session.getAttribute("session_user");
@@ -280,6 +280,31 @@ public class CalendarController {
 
         return new ResponseEntity<>(eventDTO, HttpStatus.OK);
     }
+
+
+    @GetMapping("/api/event/{id}/users")
+    public List<UserDTO> getUsersRelatedToEvent(@PathVariable("id") Long eventId) {
+        Optional<Event> optionalEvent = er.findById(eventId);
+
+        if (optionalEvent.isPresent()) {
+            Event event = optionalEvent.get();
+            Set<UserEvent> userEvents = event.getUserEvents();
+
+            List<UserDTO> users = userEvents.stream()
+                .map(userEvent -> new UserDTO(userEvent.getUser()))
+                .collect(Collectors.toList());
+
+            // If you want to print users to the console
+            users.forEach(user -> System.out.println("Name: " + user.getName()));
+
+            return users;
+        } else {
+            throw new RuntimeException("Event with id " + eventId + " not found.");
+        }
+    }
+
+    
+    
 
 
 

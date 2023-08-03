@@ -81,18 +81,36 @@ const datePicker = new DayPilot.Navigator("nav", {
     contextMenu: new DayPilot.Menu({
       items: [
         {
-          text: "Remove",
+          text: "more info",
           onClick: async (args) => {
               const e = args.source;
-              const params = {
-                  id: e.id()
-              };
+              let info = "";
+              info += "Event ID: " + e.id() + "\n";
+              info += "Event name: " + e.data.text + "\n";
+              if (e.data.location) {
+                  info += "Latitude: " + e.data.location.latitude + "\n";
+                  info += "Longitude: " + e.data.location.longitude + "\n";
+                  info += "Address: " + e.data.location.address + "\n";
+              }
       
-              const {data} = await DayPilot.Http.post('/api/events/Remove', params);
-              calendar.events.remove(e);
-              calendar.events.load("/api/events"); 
+              // Fetch users related to event and print
+              const users = await fetch(`/api/event/${e.id()}/users`).then(response => response.json());
+              info += "\n" + 'participants: ';
+              // Iterate over users and add them to info string
+              users.forEach((user, index) => {
+                  info += `${user.name}, `;
+              });
+      
+              console.log(info);
+              alert(info);
           }
-        },
+      },
+      
+        
+        
+        {
+          text: "-"
+        }, 
         {
           text: "Invite",
           onClick: async (args) => {
@@ -114,13 +132,7 @@ const datePicker = new DayPilot.Navigator("nav", {
                           };
                           try {
                               const inviteResponse = await DayPilot.Http.post('/api/events/invite', params);
-                              if (inviteResponse.request.status === 200) {
-                                  alert("Success: " + inviteResponse.data.message);
-                              } else if (inviteResponse.request.status === 409) {
-                                  alert("Conflict: " + inviteResponse.data.message);
-                              } else {
-                                  alert("Failed to invite user: " + inviteResponse.data.message);
-                              }
+                              alert(inviteResponse.data.message);
                           } catch (error) {
                               alert("Failed to invite user: " + error.message);
                           }
@@ -207,6 +219,19 @@ const datePicker = new DayPilot.Navigator("nav", {
         window.removeEventListener('message', messageHandler);
         window.addEventListener('message', messageHandler);
     }
+},
+{
+  text: "Remove",
+  onClick: async (args) => {
+      const e = args.source;
+      const params = {
+          id: e.id()
+      };
+
+      const {data} = await DayPilot.Http.post('/api/events/Remove', params);
+      calendar.events.remove(e);
+      calendar.events.load("/api/events"); 
+  }
 },
       {
         text: "-"
@@ -361,11 +386,11 @@ const datePicker = new DayPilot.Navigator("nav", {
                   fetchedEventEndTime.setMinutes(fetchedEventEndTime.getMinutes() - timezoneOffsetMinutes);
 
                   // Format date as "yyyy-MM-ddThh:mm" 
-                  let formattedStartTime = fetchedEventEndTime.toISOString().slice(0,16);
-                  console.log('Formatted Start Time:', formattedStartTime); // This line will print the formattedStartTime
+                  let formattedTime  = fetchedEventEndTime.toISOString().slice(0,16);
+                  console.log('Formatted Start Time:', formattedTime); // This line will print the formattedStartTime
 
-                  document.getElementById('start-date-input').value = formattedStartTime;
-
+                  document.getElementById('start-date-input').value = formattedTime;
+                  document.getElementById('end-date-input').value = formattedTime;
 
           
                   // // Re-initialize the map to use the new origin point.
