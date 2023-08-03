@@ -139,7 +139,7 @@ function calculateAndDisplayRoute(directionsService, directionsRenderer) {
         {
             origin: start,
             destination: end,
-            travelMode: google.maps.TravelMode.WALKING, // Change this to your preferred travel mode
+            travelMode: google.maps.TravelMode.DRIVING, // Change this to your preferred travel mode
         },
         (response, status) => {
             if (status === 'OK') {
@@ -169,6 +169,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
             // Send the selected location and route time back to the parent window
             window.opener.postMessage({
+              address: document.getElementById('pac-input').value,
               latitude: place.geometry.location.lat(),
               longitude: place.geometry.location.lng(),
               time: routeTime

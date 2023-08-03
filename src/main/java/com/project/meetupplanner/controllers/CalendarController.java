@@ -90,7 +90,6 @@ public class CalendarController {
     
     
     
-
     @PostMapping("/api/events/create")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @Transactional
@@ -103,6 +102,16 @@ public class CalendarController {
         e.setStart(params.start);
         e.setEnd(params.end);
         e.setText(params.text);
+    
+        // Create a new Location object from the location params
+        Event.Location location = new Event.Location();
+        location.setLatitude(params.location.latitude);
+        location.setLongitude(params.location.longitude);
+        location.setAddress(params.location.address);
+    
+        // Set the location on the Event
+        e.setLocation(location);
+    
         er.save(e);
     
         // Add event to user_event
@@ -113,6 +122,8 @@ public class CalendarController {
     
         return e;
     }
+    
+    
     
     @PostMapping("/api/events/move")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
@@ -290,11 +301,20 @@ public class CalendarController {
         public String message;
     }
 
+    public static class LocationParams {
+        public Double latitude;
+        public Double longitude;
+        public String address;
+    }
+    
     public static class EventCreateParams {
         public LocalDateTime start;
         public LocalDateTime end;
         public String text;
+        public LocationParams location; // New field
     }
+    
+    
 
     public static class EventMoveParams {
         public Long id;

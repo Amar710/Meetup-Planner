@@ -287,6 +287,9 @@ const datePicker = new DayPilot.Navigator("nav", {
 
 
 
+
+
+
   window.addEventListener('DOMContentLoaded', (event) => {
     const planButton = document.querySelector("#plan");
 
@@ -309,6 +312,7 @@ const datePicker = new DayPilot.Navigator("nav", {
         modal.style.display = "block";
 
         const advanceButton = document.querySelector("#advance");
+        let updatedLocation = null;
 
         if (advanceButton) {
           advanceButton.addEventListener("click", async () => {
@@ -334,11 +338,12 @@ const datePicker = new DayPilot.Navigator("nav", {
               // Define the message handler
               const messageHandler = async function(event) {
                 // Retrieve the updated event location from the new page and construct LatLng object
-                const updatedLocation = {
+               updatedLocation = {
+                  address: event.data.address,
                   lat: event.data.latitude,
                   lng: event.data.longitude,
                   time: event.data.time,
-              };
+                };
 
                 console.log('Updated location received:', updatedLocation); // This line will print the updatedLocation object
 
@@ -375,8 +380,6 @@ const datePicker = new DayPilot.Navigator("nav", {
         }
 
         
-          
-
 
           const createEventButton = document.querySelector("#createEvent");
 
@@ -392,6 +395,15 @@ const datePicker = new DayPilot.Navigator("nav", {
                       end: end,
                       text: text
                   };
+
+                  if (updatedLocation) {
+                    params['location'] = {
+                      
+                      address: updatedLocation.address,
+                      latitude: updatedLocation.lat,
+                      longitude: updatedLocation.lng
+                    };
+                  }
 
                   try {
                       const response = await fetch('/api/events/create', {
