@@ -64,7 +64,12 @@ initAutocomplete();
 const onChangeHandler = function () {
     calculateAndDisplayRoute(directionsService, directionsRenderer);
 };
+// Event listener to calculate route when destination input changes
 document.getElementById("pac-input").addEventListener("change", onChangeHandler);
+
+// New: event listener to calculate route when mode of transportation changes
+document.getElementById("mode").addEventListener("change", onChangeHandler);
+
 
 
 
@@ -131,31 +136,35 @@ function initAutocomplete() {
     });
 }
 
+
 function calculateAndDisplayRoute(directionsService, directionsRenderer) {
-    let start = origin; // the origin you have defined previously
-    let end = document.getElementById('pac-input').value; // 'pac-input' is your destination input field
-  
-    directionsService.route(
-        {
-            origin: start,
-            destination: end,
-            travelMode: google.maps.TravelMode.DRIVING, // Change this to your preferred travel mode
-        },
-        (response, status) => {
-            if (status === 'OK') {
-                directionsRenderer.setDirections(response);
+  let start = origin; 
+  let end = document.getElementById('pac-input').value;
 
-                // Extract the route duration and display it on the page
-                const routeDuration = response.routes[0].legs[0].duration.text;
-                routeTime = response.routes[0].legs[0].duration.value / 60; // duration in minutes
+  // Get selected mode from the dropdown
+  let selectedMode = document.getElementById('mode').value;
 
-                document.getElementById("route-duration").textContent =
-                    "Estimated Duration: " + routeDuration;
-            } else {
-                window.alert('Directions request failed due to ' + status);
-            }
-        }
-    );
+  directionsService.route(
+      {
+          origin: start,
+          destination: end,
+          travelMode: google.maps.TravelMode[selectedMode],
+      },
+      (response, status) => {
+      if (status === 'OK') {
+          directionsRenderer.setDirections(response);
+
+          // Extract the route duration and display it on the page
+          const routeDuration = response.routes[0].legs[0].duration.text;
+          routeTime = response.routes[0].legs[0].duration.value / 60; // duration in minutes
+
+          document.getElementById("route-duration").textContent =
+              "Estimated Duration: " + routeDuration;
+      } else {
+          window.alert('Directions request failed due to ' + status);
+      }
+      }
+  );
 }
 
 
