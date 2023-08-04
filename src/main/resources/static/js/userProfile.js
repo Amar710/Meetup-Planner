@@ -49,18 +49,6 @@ const calendar = new DayPilot.Calendar("dp", {
     const locationStr = location ? `Address: ${location.address}` : 'No location';
     args.data.html = `${args.data.text}<br>${locationStr}`;
     
-    args.data.areas = [
-      {
-        top: 6,
-        right: 6,
-        width: 18,
-        height: 18,
-        icon: "icon-triangle-down",
-        visibility: "Visible",
-        action: "ContextMenu",
-        style: "font-size: 12px; background-color: #fff; border: 1px solid #ccc; padding: 2px 2px 0px 2px; cursor:pointer; box-sizing: border-box; border-radius: 15px;"
-      }
-    ];
   },
   
 
