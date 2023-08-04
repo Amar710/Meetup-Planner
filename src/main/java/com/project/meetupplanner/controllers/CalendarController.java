@@ -110,6 +110,7 @@ public class CalendarController {
                     .collect(Collectors.toList());
     }
     
+    
     @PutMapping("/api/userevent/accept/{eventId}")
     public UserEvent acceptInvitation(HttpServletRequest request, @PathVariable("eventId") Long eventId) {
         HttpSession session = request.getSession();
