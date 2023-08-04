@@ -74,6 +74,7 @@ public class CalendarController {
     
         List<Event> events = eventService.findUserEventsByUidAndEventStartAndEnd(uid, start, end);
         return events.stream()
+                    .filter(event -> uer.findByEventAndUserUid(event, profile.getUid()).getAccepted())
                     .map(eventService::convertToEventDTO)
                     .collect(Collectors.toList());
     }
@@ -86,10 +87,41 @@ public class CalendarController {
     
         List<Event> events = eventService.findUserEventsByUidAndEventStartAndEnd(uid, start, end);
         return events.stream()
+                    .filter(event -> uer.findByEventAndUserUid(event, uid).getAccepted())
                     .map(eventService::convertToEventDTO)
                     .collect(Collectors.toList());
     }
     
+    
+    @GetMapping("/api/events/invitations")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    public Iterable<EventDTO> eventsRequestSession(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        User profile = (User) session.getAttribute("session_user");
+        int uid = profile.getUid();
+    
+        LocalDateTime start = LocalDateTime.now().plusYears(-1); // start is current local time
+        LocalDateTime end = start.plusYears(1); // end is one year from now
+    
+        List<Event> events = eventService.findUserEventsByUidAndEventStartAndEnd(uid, start, end);
+        return events.stream()
+                    .filter(event ->  !uer.findByEventAndUserUid(event, uid).getAccepted())
+                    .map(eventService::convertToEventDTO)
+                    .collect(Collectors.toList());
+    }
+    
+    @PutMapping("/api/userevent/accept/{eventId}")
+    public UserEvent acceptInvitation(HttpServletRequest request, @PathVariable("eventId") Long eventId) {
+        HttpSession session = request.getSession();
+        User profile = (User) session.getAttribute("session_user");
+        int uid = profile.getUid();
+
+        // You might want to handle the case when the UserEvent doesn't exist
+        UserEvent userEvent = uer.findByEventIdAndUserUid(eventId, uid);
+        userEvent.setAccepted(true);
+        return uer.save(userEvent);
+    }
+
     
     
     @PostMapping("/api/events/create")
@@ -106,20 +138,22 @@ public class CalendarController {
         e.setText(params.text);
     
         // Create a new Location object from the location params
-        Event.Location location = new Event.Location();
-        location.setLatitude(params.location.latitude);
-        location.setLongitude(params.location.longitude);
-        location.setAddress(params.location.address);
-    
-        // Set the location on the Event
-        e.setLocation(location);
-    
+        if(params.location != null){
+            Event.Location location = new Event.Location();
+            location.setLatitude(params.location.latitude);
+            location.setLongitude(params.location.longitude);
+            location.setAddress(params.location.address);
+        
+            // Set the location on the Event
+            e.setLocation(location);
+    }
         er.save(e);
     
         // Add event to user_event
         UserEvent userEvent = new UserEvent();
         userEvent.setUser(user);
         userEvent.setEvent(e);
+        userEvent.setAccepted(true);
         uer.save(userEvent);
     
         return e;
@@ -212,6 +246,7 @@ public class CalendarController {
         userEvent = new UserEvent();
         userEvent.setUser(user);
         userEvent.setEvent(event);
+        userEvent.setAccepted(false);
         uer.save(userEvent);
     
         return ResponseEntity.ok(Collections.singletonMap("message", "User has been invited successfully."));

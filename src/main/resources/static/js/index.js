@@ -1,3 +1,54 @@
+fetch('/api/events/invitations')
+    .then(response => response.json()) 
+    .then(data => {
+        const invitationsDiv = document.querySelector('#invitation');
+        data.forEach(event => {
+            const eventDiv = document.createElement('div');
+            eventDiv.style.border = '1px solid black';
+            eventDiv.style.margin = '10px';
+            eventDiv.style.padding = '10px';
+            eventDiv.style.backgroundColor = event.color;
+
+            let startDate = new Date(event.start);
+            let endDate = new Date(event.end);
+            const eventInfo = document.createElement('p');
+            eventInfo.textContent = `Event: ${event.id}, Start: ${startDate.toLocaleString()}, End: ${endDate.toLocaleString()}`;
+
+            const acceptBtn = document.createElement('button');
+            acceptBtn.textContent = 'Accept';
+            acceptBtn.onclick = () => acceptInvitation(event.id);
+
+            eventDiv.appendChild(eventInfo);
+            eventDiv.appendChild(acceptBtn);
+            invitationsDiv.appendChild(eventDiv);
+        });
+    })
+    .catch(error => console.error('Error:', error));
+
+    function acceptInvitation(eventId) {
+      // Implement the function to send a request to your server and change the UserEvent to true
+      // e.g., using fetch API to send a PUT request:
+      fetch(`/api/userevent/accept/${eventId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ accepted: true }),
+      })
+      .then(response => {
+          if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+      })
+      .then(data => {
+          console.log(data);
+          window.location.reload();  // refresh the page
+      })
+      .catch((error) => console.error('Error:', error));
+  }
+  
+
 
 const datePicker = new DayPilot.Navigator("nav", {
     showMonths: 3,

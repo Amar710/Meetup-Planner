@@ -29,6 +29,16 @@ public class UserEvent {
     @JoinColumn(name = "event_id")
     private Event event;
     
+    @Column(name = "accepted")
+    private Boolean accepted;
+
+    public Boolean getAccepted() {
+        return accepted;
+    }
+
+    public void setAccepted(Boolean accepted) {
+        this.accepted = accepted;
+    }   
 
     public int getId() {
         return id;
