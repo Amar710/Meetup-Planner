@@ -323,23 +323,25 @@ public class CalendarController {
     @GetMapping("/api/event/{id}/users")
     public List<UserDTO> getUsersRelatedToEvent(@PathVariable("id") Long eventId) {
         Optional<Event> optionalEvent = er.findById(eventId);
-
+    
         if (optionalEvent.isPresent()) {
             Event event = optionalEvent.get();
             Set<UserEvent> userEvents = event.getUserEvents();
-
+    
             List<UserDTO> users = userEvents.stream()
+                .filter(userEvent -> userEvent.getAccepted()) // add a filter for accepted UserEvents
                 .map(userEvent -> new UserDTO(userEvent.getUser()))
                 .collect(Collectors.toList());
-
+    
             // If you want to print users to the console
             users.forEach(user -> System.out.println("Name: " + user.getName()));
-
+    
             return users;
         } else {
             throw new RuntimeException("Event with id " + eventId + " not found.");
         }
     }
+    
 
     
     
