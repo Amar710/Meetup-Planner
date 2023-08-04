@@ -137,6 +137,8 @@ public class CalendarController {
         e.setStart(params.start);
         e.setEnd(params.end);
         e.setText(params.text);
+        e.setColor("#acaab8");
+
     
         // Create a new Location object from the location params
         if(params.location != null){
