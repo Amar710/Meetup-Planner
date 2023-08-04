@@ -101,8 +101,8 @@ const datePicker = new DayPilot.Navigator("nav", {
     eventEndSpec: "Date",
     viewType: "Week",
     headerDateFormat: "dddd MMMM d",
-    // produces "Thursday June 17"
-    eventHeight: 30,
+
+    cellHeight: 30,
     eventBarVisible: false,
     onTimeRangeSelected: async (args) => {
       const modal = await DayPilot.Modal.prompt("Create a new event:", "Event");
@@ -172,10 +172,18 @@ const datePicker = new DayPilot.Navigator("nav", {
               let info = "";
               info += "Event ID: " + e.id() + "\n";
               info += "Event name: " + e.data.text + "\n";
+              let startDate = new Date(e.data.start);
+              let endDate = new Date(e.data.end);
+              
+              info += "Event start time: " + startDate.toLocaleString() + "\n";
+              info += "Event end time: " + endDate.toLocaleString() + "\n";
               if (e.data.location) {
-                  info += "Latitude: " + e.data.location.latitude + "\n";
-                  info += "Longitude: " + e.data.location.longitude + "\n";
+                  // info += "Latitude: " + e.data.location.latitude + "\n";
+                  // info += "Longitude: " + e.data.location.longitude + "\n";
                   info += "Address: " + e.data.location.address + "\n";
+              }
+              else{
+                info += "address: no location\n";
               }
       
               // Fetch users related to event and print
