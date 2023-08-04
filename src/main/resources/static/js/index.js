@@ -26,16 +26,51 @@ fetch('/api/events/invitations')
 
             const declineBtn = document.createElement('button');
             declineBtn.textContent = 'Decline';
-            declineBtn.onclick = () => declineInvitation(event.id); // add the decline button
+            declineBtn.onclick = () => declineInvitation(event.id);
+
+            const moreInfoBtn = document.createElement('button');  // create a "More Info" button
+            moreInfoBtn.textContent = 'More Info';
+            moreInfoBtn.onclick = () => moreInfo(event);  // assign a click handler
 
             eventDiv.appendChild(eventInfo);
             eventDiv.appendChild(locationInfo);
             eventDiv.appendChild(acceptBtn);
             eventDiv.appendChild(declineBtn);
+            eventDiv.appendChild(moreInfoBtn); // append the button to the eventDiv
             invitationsDiv.appendChild(eventDiv);
         });
     })
     .catch(error => console.error('Error:', error));
+
+    async function moreInfo(event) {
+      let info = "";
+      info += "Event ID: " + event.id + "\n";
+      info += "Event name: " + event.text + "\n";
+      let startDate = new Date(event.start);
+      let endDate = new Date(event.end);
+  
+      info += "Event start time: " + startDate.toLocaleString() + "\n";
+      info += "Event end time: " + endDate.toLocaleString() + "\n";
+      if (event.location) {
+          info += "Address: " + event.location.address + "\n";
+      }
+      else{
+          info += "Address: no location\n";
+      }
+  
+      // Fetch users related to event and print
+      const users = await fetch(`/api/event/${event.id}/users`).then(response => response.json());
+      info += "\nParticipants: ";
+      // Iterate over users and add them to info string
+      users.forEach((user, index) => {
+          info += `${user.name}, `;
+      });
+  
+      alert(info);
+  }
+   
+  
+  
 
 function acceptInvitation(eventId) {
 
