@@ -1,3 +1,88 @@
+fetch('/api/events/invitations')
+    .then(response => response.json()) 
+    .then(data => {
+        const invitationsDiv = document.querySelector('#invitation');
+        data.forEach(event => {
+            const eventDiv = document.createElement('div');
+            eventDiv.style.border = '1px solid black';
+            eventDiv.style.margin = '10px';
+            eventDiv.style.padding = '10px';
+            eventDiv.style.color = 'white';
+            eventDiv.style.backgroundColor = event.color;
+
+            let startDate = new Date(event.start);
+            let endDate = new Date(event.end);
+            const eventInfo = document.createElement('p');
+            eventInfo.textContent = `Event ID: ${event.id}, Name: ${event.text}, Start: ${startDate.toLocaleString()}, End: ${endDate.toLocaleString()}`;
+
+            const location = event.location;
+            const locationStr = location ? `Location: ${location.address}` : 'No location';
+            const locationInfo = document.createElement('p');
+            locationInfo.textContent = locationStr;
+
+            const acceptBtn = document.createElement('button');
+            acceptBtn.textContent = 'Accept';
+            acceptBtn.onclick = () => acceptInvitation(event.id);
+
+            const declineBtn = document.createElement('button');
+            declineBtn.textContent = 'Decline';
+            declineBtn.onclick = () => declineInvitation(event.id); // add the decline button
+
+            eventDiv.appendChild(eventInfo);
+            eventDiv.appendChild(locationInfo);
+            eventDiv.appendChild(acceptBtn);
+            eventDiv.appendChild(declineBtn);
+            invitationsDiv.appendChild(eventDiv);
+        });
+    })
+    .catch(error => console.error('Error:', error));
+
+function acceptInvitation(eventId) {
+
+    fetch(`/api/userevent/accept/${eventId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ accepted: true }),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data);
+        window.location.reload();  // refresh the page
+    })
+    .catch((error) => console.error('Error:', error));
+}
+
+function declineInvitation(eventId) {
+
+    fetch(`/api/events/Remove`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: eventId }), // send the eventId in the request body
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data);
+        window.location.reload();  // refresh the page
+    })
+    .catch((error) => console.error('Error:', error));
+}
+
+  
+
 
 const datePicker = new DayPilot.Navigator("nav", {
     showMonths: 3,
@@ -81,18 +166,36 @@ const datePicker = new DayPilot.Navigator("nav", {
     contextMenu: new DayPilot.Menu({
       items: [
         {
-          text: "Remove",
+          text: "more info",
           onClick: async (args) => {
               const e = args.source;
-              const params = {
-                  id: e.id()
-              };
+              let info = "";
+              info += "Event ID: " + e.id() + "\n";
+              info += "Event name: " + e.data.text + "\n";
+              if (e.data.location) {
+                  info += "Latitude: " + e.data.location.latitude + "\n";
+                  info += "Longitude: " + e.data.location.longitude + "\n";
+                  info += "Address: " + e.data.location.address + "\n";
+              }
       
-              const {data} = await DayPilot.Http.post('/api/events/Remove', params);
-              calendar.events.remove(e);
-              calendar.events.load("/api/events"); 
+              // Fetch users related to event and print
+              const users = await fetch(`/api/event/${e.id()}/users`).then(response => response.json());
+              info += "\n" + 'participants: ';
+              // Iterate over users and add them to info string
+              users.forEach((user, index) => {
+                  info += `${user.name}, `;
+              });
+      
+              console.log(info);
+              alert(info);
           }
-        },
+      },
+      
+        
+        
+        {
+          text: "-"
+        }, 
         {
           text: "Invite",
           onClick: async (args) => {
@@ -114,13 +217,7 @@ const datePicker = new DayPilot.Navigator("nav", {
                           };
                           try {
                               const inviteResponse = await DayPilot.Http.post('/api/events/invite', params);
-                              if (inviteResponse.request.status === 200) {
-                                  alert("Success: " + inviteResponse.data.message);
-                              } else if (inviteResponse.request.status === 409) {
-                                  alert("Conflict: " + inviteResponse.data.message);
-                              } else {
-                                  alert("Failed to invite user: " + inviteResponse.data.message);
-                              }
+                              alert(inviteResponse.data.message);
                           } catch (error) {
                               alert("Failed to invite user: " + error.message);
                           }
@@ -208,6 +305,19 @@ const datePicker = new DayPilot.Navigator("nav", {
         window.addEventListener('message', messageHandler);
     }
 },
+{
+  text: "Remove",
+  onClick: async (args) => {
+      const e = args.source;
+      const params = {
+          id: e.id()
+      };
+
+      const {data} = await DayPilot.Http.post('/api/events/Remove', params);
+      calendar.events.remove(e);
+      calendar.events.load("/api/events"); 
+  }
+},
       {
         text: "-"
       },      
@@ -243,8 +353,8 @@ const datePicker = new DayPilot.Navigator("nav", {
           app.updateColor(args.source, args.item.color);
         }
       }, {
-        text: "Auto",
-        color: "auto",
+        text: "defualt",
+        color: "#acaab8",
         onClick: (args) => {
           app.updateColor(args.source, args.item.color);
         }
@@ -287,6 +397,9 @@ const datePicker = new DayPilot.Navigator("nav", {
 
 
 
+
+
+
   window.addEventListener('DOMContentLoaded', (event) => {
     const planButton = document.querySelector("#plan");
 
@@ -309,6 +422,7 @@ const datePicker = new DayPilot.Navigator("nav", {
         modal.style.display = "block";
 
         const advanceButton = document.querySelector("#advance");
+        let updatedLocation = null;
 
         if (advanceButton) {
           advanceButton.addEventListener("click", async () => {
@@ -334,11 +448,12 @@ const datePicker = new DayPilot.Navigator("nav", {
               // Define the message handler
               const messageHandler = async function(event) {
                 // Retrieve the updated event location from the new page and construct LatLng object
-                const updatedLocation = {
+               updatedLocation = {
+                  address: event.data.address,
                   lat: event.data.latitude,
                   lng: event.data.longitude,
                   time: event.data.time,
-              };
+                };
 
                 console.log('Updated location received:', updatedLocation); // This line will print the updatedLocation object
 
@@ -356,11 +471,11 @@ const datePicker = new DayPilot.Navigator("nav", {
                   fetchedEventEndTime.setMinutes(fetchedEventEndTime.getMinutes() - timezoneOffsetMinutes);
 
                   // Format date as "yyyy-MM-ddThh:mm" 
-                  let formattedStartTime = fetchedEventEndTime.toISOString().slice(0,16);
-                  console.log('Formatted Start Time:', formattedStartTime); // This line will print the formattedStartTime
+                  let formattedTime  = fetchedEventEndTime.toISOString().slice(0,16);
+                  console.log('Formatted Start Time:', formattedTime); // This line will print the formattedStartTime
 
-                  document.getElementById('start-date-input').value = formattedStartTime;
-
+                  document.getElementById('start-date-input').value = formattedTime;
+                  document.getElementById('end-date-input').value = formattedTime;
 
           
                   // // Re-initialize the map to use the new origin point.
@@ -375,8 +490,6 @@ const datePicker = new DayPilot.Navigator("nav", {
         }
 
         
-          
-
 
           const createEventButton = document.querySelector("#createEvent");
 
@@ -392,6 +505,15 @@ const datePicker = new DayPilot.Navigator("nav", {
                       end: end,
                       text: text
                   };
+
+                  if (updatedLocation) {
+                    params['location'] = {
+                      
+                      address: updatedLocation.address,
+                      latitude: updatedLocation.lat,
+                      longitude: updatedLocation.lng
+                    };
+                  }
 
                   try {
                       const response = await fetch('/api/events/create', {

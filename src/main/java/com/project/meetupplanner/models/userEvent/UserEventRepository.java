@@ -30,5 +30,9 @@ public interface UserEventRepository extends JpaRepository<UserEvent, Long> {
 
     UserEvent findByEventIdAndUser(Long eventId, User user);
 
+    UserEvent findByEventAndUserUid(Event event, int uid);
+    
+    UserEvent findByEventIdAndUserUid(long eventId, int uid);
+
     
 }

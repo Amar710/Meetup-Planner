@@ -2,6 +2,7 @@ package com.project.meetupplanner.controllers;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -16,6 +17,7 @@ import com.project.meetupplanner.models.userEvent.UserEvent;
 import com.project.meetupplanner.models.userEvent.UserEventRepository;
 import com.project.meetupplanner.models.users.UserService;
 import com.project.meetupplanner.models.users.User;
+import com.project.meetupplanner.models.users.UserDTO;
 import com.project.meetupplanner.models.users.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +74,7 @@ public class CalendarController {
     
         List<Event> events = eventService.findUserEventsByUidAndEventStartAndEnd(uid, start, end);
         return events.stream()
+                    .filter(event -> uer.findByEventAndUserUid(event, profile.getUid()).getAccepted())
                     .map(eventService::convertToEventDTO)
                     .collect(Collectors.toList());
     }
@@ -84,13 +87,44 @@ public class CalendarController {
     
         List<Event> events = eventService.findUserEventsByUidAndEventStartAndEnd(uid, start, end);
         return events.stream()
+                    .filter(event -> uer.findByEventAndUserUid(event, uid).getAccepted())
                     .map(eventService::convertToEventDTO)
                     .collect(Collectors.toList());
     }
     
     
+    @GetMapping("/api/events/invitations")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    public Iterable<EventDTO> eventsRequestSession(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        User profile = (User) session.getAttribute("session_user");
+        int uid = profile.getUid();
     
+        LocalDateTime start = LocalDateTime.now().plusYears(-1); // start is current local time
+        LocalDateTime end = start.plusYears(1); // end is one year from now
+    
+        List<Event> events = eventService.findUserEventsByUidAndEventStartAndEnd(uid, start, end);
+        return events.stream()
+                    .filter(event ->  !uer.findByEventAndUserUid(event, uid).getAccepted())
+                    .map(eventService::convertToEventDTO)
+                    .collect(Collectors.toList());
+    }
+    
+    
+    @PutMapping("/api/userevent/accept/{eventId}")
+    public UserEvent acceptInvitation(HttpServletRequest request, @PathVariable("eventId") Long eventId) {
+        HttpSession session = request.getSession();
+        User profile = (User) session.getAttribute("session_user");
+        int uid = profile.getUid();
 
+        // You might want to handle the case when the UserEvent doesn't exist
+        UserEvent userEvent = uer.findByEventIdAndUserUid(eventId, uid);
+        userEvent.setAccepted(true);
+        return uer.save(userEvent);
+    }
+
+    
+    
     @PostMapping("/api/events/create")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @Transactional
@@ -103,16 +137,30 @@ public class CalendarController {
         e.setStart(params.start);
         e.setEnd(params.end);
         e.setText(params.text);
+    
+        // Create a new Location object from the location params
+        if(params.location != null){
+            Event.Location location = new Event.Location();
+            location.setLatitude(params.location.latitude);
+            location.setLongitude(params.location.longitude);
+            location.setAddress(params.location.address);
+        
+            // Set the location on the Event
+            e.setLocation(location);
+    }
         er.save(e);
     
         // Add event to user_event
         UserEvent userEvent = new UserEvent();
         userEvent.setUser(user);
         userEvent.setEvent(e);
+        userEvent.setAccepted(true);
         uer.save(userEvent);
     
         return e;
     }
+    
+    
     
     @PostMapping("/api/events/move")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
@@ -179,34 +227,33 @@ public class CalendarController {
         User user = userRepository.findByName(params.name).orElse(null);
     
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Collections.singletonMap("message", "Invalid username."));
+            return ResponseEntity.ok(Collections.singletonMap("message", "Invalid username."));
         }
     
         // Fetch the event by id
         Event event = er.findById(params.eventId).orElse(null);
         
         if (event == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Collections.singletonMap("message", "Invalid event id."));
+            return ResponseEntity.ok(Collections.singletonMap("message", "Invalid event id."));
         }
     
         // Check if the UserEvent already exists
         UserEvent userEvent = uer.findByEventAndUser(event, user);
         
         if (userEvent != null) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(Collections.singletonMap("message", "User has already been invited."));
+            return ResponseEntity.ok(Collections.singletonMap("message", "User has already been invited."));
         }
     
         userEvent = new UserEvent();
         userEvent.setUser(user);
         userEvent.setEvent(event);
+        userEvent.setAccepted(false);
         uer.save(userEvent);
     
         return ResponseEntity.ok(Collections.singletonMap("message", "User has been invited successfully."));
     }
     
+
     @GetMapping("/api/user/friends")
     public ResponseEntity<List<String>> getUserFriends(HttpSession session) {
         User user = (User) session.getAttribute("session_user");
@@ -271,6 +318,31 @@ public class CalendarController {
     }
 
 
+    @GetMapping("/api/event/{id}/users")
+    public List<UserDTO> getUsersRelatedToEvent(@PathVariable("id") Long eventId) {
+        Optional<Event> optionalEvent = er.findById(eventId);
+
+        if (optionalEvent.isPresent()) {
+            Event event = optionalEvent.get();
+            Set<UserEvent> userEvents = event.getUserEvents();
+
+            List<UserDTO> users = userEvents.stream()
+                .map(userEvent -> new UserDTO(userEvent.getUser()))
+                .collect(Collectors.toList());
+
+            // If you want to print users to the console
+            users.forEach(user -> System.out.println("Name: " + user.getName()));
+
+            return users;
+        } else {
+            throw new RuntimeException("Event with id " + eventId + " not found.");
+        }
+    }
+
+    
+    
+
+
 
     
     public static class EventUpdateParams {
@@ -290,11 +362,20 @@ public class CalendarController {
         public String message;
     }
 
+    public static class LocationParams {
+        public Double latitude;
+        public Double longitude;
+        public String address;
+    }
+    
     public static class EventCreateParams {
         public LocalDateTime start;
         public LocalDateTime end;
         public String text;
+        public LocationParams location; // New field
     }
+    
+    
 
     public static class EventMoveParams {
         public Long id;
