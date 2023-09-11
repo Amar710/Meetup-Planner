@@ -363,7 +363,8 @@ const datePicker = new DayPilot.Navigator("nav", {
 },
       {
         text: "-"
-      },      
+      },   
+      // select colour    
       {
         text: "Blue",
         icon: "icon icon-blue",
@@ -395,14 +396,26 @@ const datePicker = new DayPilot.Navigator("nav", {
         onClick: (args) => {
           app.updateColor(args.source, args.item.color);
         }
-      }, {
+      }, 
+      {
         text: "defualt",
         color: "#acaab8",
         onClick: (args) => {
           app.updateColor(args.source, args.item.color);
         }
       },
+      // custom colour
+      {
+        text: "custom",
 
+        onClick: async (args) => {
+          const e = args.source;
+          const newColour = "#" + prompt("Enter the hex code:", e.data.text);
+          if (newColour !== null) {
+            app.updateColor(args.source, newColour);
+          }
+        }
+      },
       ]
     })
   });
