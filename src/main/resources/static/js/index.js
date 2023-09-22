@@ -176,11 +176,12 @@ const datePicker = new DayPilot.Navigator("nav", {
       args.data.borderColor = "darker";
       args.data.fontColor = "#ffffff";
       
+      
       // Append the location information to the event text
       const location = args.data.location;
       const locationStr = location ? `Address: ${location.address}` : 'No location';
       const eventId = args.data.id;  // Get the event ID
-      args.data.html = `Event ID: ${eventId} <br> ${args.data.text}<br>${locationStr}`;
+      args.data.html = ` ${args.data.text}<br>${locationStr}`;
       
       args.data.areas = [
         {
@@ -407,10 +408,9 @@ const datePicker = new DayPilot.Navigator("nav", {
       // custom colour
       {
         text: "custom",
-
         onClick: async (args) => {
           const e = args.source;
-          const newColour = "#" + prompt("Enter the hex code:", e.data.text);
+          const newColour = "#" + prompt("Enter the hex code:", e.data.colo);
           if (newColour !== null) {
             app.updateColor(args.source, newColour);
           }
