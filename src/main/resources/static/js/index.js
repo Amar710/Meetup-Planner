@@ -137,7 +137,10 @@ const datePicker = new DayPilot.Navigator("nav", {
     viewType: "Week",
     headerDateFormat: "dddd MMMM d",
 
+    businessBeginsHour: 7,
+    businessEndsHour: 21,
     cellHeight: 30,
+    
     eventBarVisible: false,
     onTimeRangeSelected: async (args) => {
       const modal = await DayPilot.Modal.prompt("Create a new event:", "Event");
@@ -181,7 +184,7 @@ const datePicker = new DayPilot.Navigator("nav", {
       const location = args.data.location;
       const locationStr = location ? `Address: ${location.address}` : 'No location';
       const eventId = args.data.id;  // Get the event ID
-      args.data.html = ` ${args.data.text}<br>${locationStr}`;
+      args.data.html = `${args.data.text}<br>${locationStr}`;
       
       args.data.areas = [
         {
@@ -208,6 +211,7 @@ const datePicker = new DayPilot.Navigator("nav", {
               let info = "";
               info += "Event ID: " + e.id() + "\n";
               info += "Event name: " + e.data.text + "\n";
+              info += "Event Color: " + e.data.color + "\n";
               let startDate = new Date(e.data.start);
               let endDate = new Date(e.data.end);
               
